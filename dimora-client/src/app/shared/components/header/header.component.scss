@@ -1,0 +1,280 @@
+/* header.component.scss - Updated for better matching */
+
+/* Overall header */
+.airbnb-header {
+  background-color: white;
+  color: black;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd;
+
+  .logo {
+    flex: 0 0 auto;
+    .logo-img {
+      height: 40px;
+    }
+  }
+
+  .nav-tabs {
+    display: flex;
+    margin-left: 40px;
+    .tab {
+      font-weight: 600;
+      color: #222;
+      &.active {
+        border-bottom: 2px solid #222;
+      }
+    }
+  }
+
+  .search-bar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 850px;
+    margin: 0 20px;
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-container);
+      border: 1px solid #ddd;
+      border-radius: 40px;
+      height: 66px;
+      width: 100%;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      padding: 0 8px;
+    }
+
+
+  }
+
+
+
+  .right-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .host-button {
+      font-weight: 600;
+      color: #222;
+    }
+
+    .globe-button,
+    .profile-button {
+      border: 1px solid ;
+      border-radius: 40px;
+      height: 42px;
+      width: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+
+      mat-icon {
+        color: var(--on-surface);
+      }
+    }
+
+    .profile-button {
+      gap: 4px;
+    }
+  }
+}
+
+/* Menu styles */
+.date-picker-menu,
+.guests-menu {
+  width: 600px; /* Adjust for calendar */
+  padding: 16px;
+
+  .date-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 16px;
+  }
+
+  .guest-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+
+    div {
+      flex: 1;
+    }
+
+    button {
+      min-width: 32px;
+    }
+
+    span {
+      padding: 0 16px;
+    }
+  }
+}
+
+
+
+
+.search-field{
+  width: 250px;
+}
+
+.search-button {
+  margin-left: 8px;
+  background-color: var(--primary);
+  border-radius: 24px;
+  padding: 0 24px;
+  font-weight: 600;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+  
+  mat-icon {
+    color: white;
+    margin-right: 8px;
+  }
+}
+.custom-option{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 72px;
+}
+.image-options{
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tab:hover {
+  border-bottom: 2px solid #ddd;
+}
+
+/* For active state - add class 'active' dynamically if needed */
+.search-section.active {
+  background-color: #f7f7f7;
+  border-radius: 40px;
+}
+
+ ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+mat-form-field {
+  border-right: 1px solid var(--outline-variant);
+  --mdc-outlined-text-field-outline-color: transparent;
+  --mdc-outlined-text-field-outline: 0px 1px 0px 0px;
+  --mdc-outlined-text-field-hover-outline-color: transparent;
+  --mdc-outlined-text-field-focus-outline-color: transparent;
+  --mdc-outlined-text-field-outline-width: 0px 1px 0px 0px;
+  --mdc-outlined-text-field-focus-outline-width: 0px;
+}
+
+::ng-deep .mat-mdc-autocomplete-panel {
+  border-radius: 16px !important;
+}
+
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+  margin-top: 10px !important;
+}
+
+/* Guests Menu Styles */
+::ng-deep .guests-menu {
+  .mat-mdc-menu-panel {
+    min-width: 400px !important;
+    max-width: 400px !important;
+    padding: 0 !important;
+  }
+}
+
+.guests-container {
+  padding: 16px;
+  
+  .guest-category {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    
+    .guest-info {
+      flex: 1;
+      
+      .guest-label {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--on-surface);
+        margin-bottom: 4px;
+      }
+      
+      .guest-description {
+        font-size: 14px;
+        color: var(--neutral);
+        
+        .service-animal-link {
+          color: var(--on-surface);
+          text-decoration: underline;
+          font-size: 14px;
+          
+         
+        }
+      }
+    }
+    
+    .guest-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      button {
+        border: 1px solid var(--outline-variant);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          line-height: 18px;
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+        
+        &:not(:disabled):hover {
+          background-color: var(--surface-container);
+        }
+      }
+      
+      .guest-count {
+        font-weight: 600;
+        font-size: 16px;
+        color: #222;
+        min-width: 20px;
+        text-align: center;
+      }
+    }
+  }
+  
+  mat-divider {
+    margin: 0;
+  }
+}
+
+
+
+
+
+

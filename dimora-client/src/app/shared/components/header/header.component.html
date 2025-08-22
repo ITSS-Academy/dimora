@@ -1,0 +1,145 @@
+<!-- header.component.html -->
+<mat-toolbar class="airbnb-header" >
+  <!-- Logo -->
+  <div class="logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb Logo" class="logo-img">
+  </div>
+
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <form class="search-container" [formGroup]="range" (keydown)="onFormKeyDown($event)">
+      <mat-form-field appearance="outline" class="search-field" (click)="onLocationInputClick()">
+      <input #locationInput type="text" matInput formControlName="location" [matAutocomplete]="auto" placeholder="Where are you going?"  >
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
+        @for (option of filteredOptions | async; track option) {
+          <mat-option [value]="option" >
+            <div class="custom-option">
+              <img class="image-options" src="{{option.image}}"  alt="Location Icon">
+              <span>{{option.name}}</span>
+            </div>
+          </mat-option>
+
+        }
+      </mat-autocomplete>
+      </mat-form-field>
+
+
+
+
+      <mat-form-field appearance="outline" class="search-field" (click)="picker.open()">
+        <mat-date-range-input  [rangePicker]="picker" >
+          <input matStartDate formControlName="start" readonly placeholder="Start date"  >
+          <input matEndDate formControlName="end" readonly placeholder="End date"  >
+        </mat-date-range-input>
+        <mat-icon matSuffix>calendar_month</mat-icon>
+
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field" [matMenuTriggerFor]="guestsMenu" (click)="onGuestsInputClick()">
+        <input matInput formControlName="guests" readonly placeholder="Who" >
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+
+      <button mat-flat-button class="search-button" (click)="onSearch()">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+    </form>
+
+
+  </div>
+
+  <!-- Right Side -->
+  <div class="right-section">
+ 
+    <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">
+      <mat-icon>menu</mat-icon>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item>Sign up</button>
+      <button mat-menu-item>Log in</button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>Gift cards</button>
+      <button mat-menu-item>Airbnb your home</button>
+      <button mat-menu-item>Help Center</button>
+    </mat-menu>
+
+    <!-- Guests Menu -->
+    <mat-menu #guestsMenu="matMenu" class="guests-menu">
+      <div class="guests-container" (click)="$event.stopPropagation()">
+        <div class="guest-category">
+          <div class="guest-info">
+            <div class="guest-label">Adults</div>
+            <div class="guest-description">Ages 13 or above</div>
+          </div>
+          <div class="guest-controls" (click)="$event.stopPropagation()">
+            <button mat-icon-button (click)="decreaseAdults($event)" [disabled]="adults <= 1">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="guest-count">{{adults}}</span>
+            <button mat-icon-button (click)="increaseAdults($event)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="guest-category">
+          <div class="guest-info">
+            <div class="guest-label">Children</div>
+            <div class="guest-description">Ages 2 – 12</div>
+          </div>
+          <div class="guest-controls" (click)="$event.stopPropagation()">
+            <button mat-icon-button (click)="decreaseChildren($event)" [disabled]="children <= 0">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="guest-count">{{children}}</span>
+            <button mat-icon-button (click)="increaseChildren($event)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="guest-category">
+          <div class="guest-info">
+            <div class="guest-label">Infants</div>
+            <div class="guest-description">Under 2</div>
+          </div>
+          <div class="guest-controls" (click)="$event.stopPropagation()">
+            <button mat-icon-button (click)="decreaseInfants($event)" [disabled]="infants <= 0">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="guest-count">{{infants}}</span>
+            <button mat-icon-button (click)="increaseInfants($event)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="guest-category">
+          <div class="guest-info">
+            <div class="guest-label">Pets</div>
+            
+          </div>
+          <div class="guest-controls" (click)="$event.stopPropagation()">
+            <button mat-icon-button (click)="decreasePets($event)" [disabled]="pets <= 0">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="guest-count">{{pets}}</span>
+            <button mat-icon-button (click)="increasePets($event)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-menu>
+  </div>
+</mat-toolbar>

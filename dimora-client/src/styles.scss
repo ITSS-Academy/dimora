@@ -1,0 +1,326 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.dev/guide/theming
+//@use '@angular/material' as mat;
+//
+//html {
+//  @include mat.theme((
+//    color: (
+//      theme-type: light,
+//      primary: mat.$azure-palette,
+//      tertiary: mat.$blue-palette,
+//    ),
+//    typography: Roboto,
+//    density: 0,
+//  ));
+//}/* You can add global styles to this file, and also import other style files */
+//
+//html, body { height: 100%; }
+//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?bold-font-weight=700&brand-font-family=Archivo&medium-font-weight=500&plain-font-family=Archivo&regular-font-weight=400&seed-error=%23ba1a1a&seed-neutral=%238a7172&seed-neutral-variant=%23906f70&seed-primary=%23FF385C&seed-secondary=%23a73544&seed-tertiary=%23984800 */
+/* Seed Colors: primary: #FF385C, secondary: #a73544, tertiary: #984800, error: #ba1a1a, neutral: #8a7172, neutral-variant: #906f70 */
+/* Seed Typography: plain-font-family: Archivo, brand-font-family: Archivo, bold-font-weight: 700, medium-font-weight: 500, regular-font-weight: 400 */
+
+/* Make sure to import fonts in `<head>` of html */
+/*
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo&family=Archivo&display=swap');
+</style>
+
+OR
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo&family=Archivo&display=swap">
+*/
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?bold-font-weight=700&brand-font-family=Archivo&medium-font-weight=500&plain-font-family=Archivo&regular-font-weight=400&seed-error=%23ba1a1a&seed-neutral=%23877276&seed-neutral-variant=%238d6f76&seed-primary=%23B9005C&seed-secondary=%239d3c5d&seed-tertiary=%23af3101 */
+/* Seed Colors: primary: #B9005C, secondary: #9d3c5d, tertiary: #af3101, error: #ba1a1a, neutral: #877276, neutral-variant: #8d6f76 */
+/* Seed Typography: plain-font-family: Archivo, brand-font-family: Archivo, bold-font-weight: 700, medium-font-weight: 500, regular-font-weight: 400 */
+
+/* Make sure to import fonts in `<head>` of html */
+/*
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo&family=Archivo&display=swap');
+</style>
+
+OR
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo&family=Archivo&display=swap">
+*/
+
+
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?bold-font-weight=700&brand-font-family=Roboto&medium-font-weight=500&plain-font-family=Roboto&regular-font-weight=400&seed-error=%23ba1a1a&seed-neutral=%23857374&seed-neutral-variant=%238b7173&seed-primary=%23B53752&seed-secondary=%238b4c55&seed-tertiary=%23974800 */
+/* Seed Colors: primary: #B53752, secondary: #8b4c55, tertiary: #974800, error: #ba1a1a, neutral: #857374, neutral-variant: #8b7173 */
+/* Seed Typography: plain-font-family: Roboto, brand-font-family: Roboto, bold-font-weight: 700, medium-font-weight: 500, regular-font-weight: 400 */
+
+/* Make sure to import fonts in `<head>` of html */
+/*
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto&display=swap');
+</style>
+
+OR
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto&display=swap">
+*/
+
+@use "@angular/material" as mat;
+
+
+/* Light Theme */
+:root, :host {
+  @include mat.theme-overrides((
+    primary: #be0035,
+    on-primary: #ffffff,
+    primary-container: #ffdada,
+    on-primary-container: #40000c,
+    inverse-primary: #ffb3b5,
+    primary-fixed: #ffdada,
+    primary-fixed-dim: #ffb3b5,
+    on-primary-fixed: #40000c,
+    on-primary-fixed-variant: #920026,
+    secondary: #ab3141,
+    on-secondary: #ffffff,
+    secondary-container: #ffdada,
+    on-secondary-container: #40000c,
+    secondary-fixed: #ffdada,
+    secondary-fixed-dim: #ffb3b5,
+    on-secondary-fixed: #40000c,
+    on-secondary-fixed-variant: #8a172c,
+    tertiary: #994700,
+    on-tertiary: #ffffff,
+    tertiary-container: #ffdbc8,
+    on-tertiary-container: #321300,
+    tertiary-fixed: #ffdbc8,
+    tertiary-fixed-dim: #ffb68b,
+    on-tertiary-fixed: #321300,
+    on-tertiary-fixed-variant: #743400,
+    background: #fff8f7,
+    on-background: #1d1b1b,
+    surface: #fff8f7,
+    surface-dim: #dfd8d8,
+    surface-bright: #fff8f7,
+    surface-container-lowest: #ffffff,
+    surface-container-low: #f9f2f1,
+    surface-container: #f3eceb,
+    surface-container-high: #eee7e6,
+    surface-container-highest: #e8e1e0,
+    on-surface: #1d1b1b,
+    shadow: #000000,
+    scrim: #000000,
+    surface-tint: #715859,
+    inverse-surface: #33302f,
+    inverse-on-surface: #f6efee,
+    outline: #817474,
+    outline-variant: #d3c3c2,
+    neutral: #7b7676,
+    neutral10: #1d1b1b,
+    error: #ba1a1a,
+    error-container: #ffdad6,
+    on-error: #ffffff,
+    on-error-container: #410002,
+    surface-variant: #f0dede,
+    on-surface-variant: #504444,
+    neutral-variant: #827474,
+    neutral-variant20: #382e2e,
+    inverse-secondary: #ffb3b5,
+    inverse-tertiary: #ffb68b,
+  ));
+}
+
+/* Dark Theme */
+.dark {
+  @include mat.theme-overrides((
+    primary: #ffb3b5,
+    on-primary: #680019,
+    primary-container: #920026,
+    on-primary-container: #ffdada,
+    inverse-primary: #be0035,
+    primary-fixed: #ffdada,
+    primary-fixed-dim: #ffb3b5,
+    on-primary-fixed: #40000c,
+    on-primary-fixed-variant: #920026,
+    secondary: #ffb3b5,
+    on-secondary: #680019,
+    secondary-container: #8a172c,
+    on-secondary-container: #ffdada,
+    secondary-fixed: #ffdada,
+    secondary-fixed-dim: #ffb3b5,
+    on-secondary-fixed: #40000c,
+    on-secondary-fixed-variant: #8a172c,
+    tertiary: #ffb68b,
+    on-tertiary: #522300,
+    tertiary-container: #743400,
+    on-tertiary-container: #ffdbc8,
+    tertiary-fixed: #ffdbc8,
+    tertiary-fixed-dim: #ffb68b,
+    on-tertiary-fixed: #321300,
+    on-tertiary-fixed-variant: #743400,
+    background: #151313,
+    on-background: #e8e1e0,
+    surface: #151313,
+    surface-dim: #151313,
+    surface-bright: #3c3838,
+    surface-container-lowest: #100e0e,
+    surface-container-low: #1d1b1b,
+    surface-container: #221f1f,
+    surface-container-high: #2c2929,
+    surface-container-highest: #373434,
+    on-surface: #e8e1e0,
+    shadow: #000000,
+    scrim: #000000,
+    surface-tint: #debfbf,
+    inverse-surface: #e8e1e0,
+    inverse-on-surface: #33302f,
+    outline: #9b8e8d,
+    outline-variant: #504444,
+    neutral: #7b7676,
+    neutral10: #1d1b1b,
+    error: #ffb4ab,
+    error-container: #93000a,
+    on-error: #690005,
+    on-error-container: #ffdad6,
+    surface-variant: #504444,
+    on-surface-variant: #d3c3c2,
+    neutral-variant: #827474,
+    neutral-variant20: #382e2e,
+    inverse-secondary: #ab3141,
+    inverse-tertiary: #994700,
+  ));
+}
+
+/* Typography */
+
+
+/* Typography */
+:root, :host {
+  /* core typography tokens are not generating css variables, hence below */
+  --mat-sys-brand-font-family: Nunito;
+  --mat-sys-plain-font-family: Nunito;
+  --mat-sys-bold-font-weight: 700;
+  --mat-sys-medium-font-weight: 500;
+  --mat-sys-regular-font-weight: 400;
+
+  @include mat.theme-overrides((
+    brand-family: Nunito,
+    plain-family: Nunito,
+    bold-weight: 700,
+    medium-weight: 500,
+    regular-weight: 400,
+    body-large-font: var(--mat-sys-plain-font-family),
+    body-medium-font: var(--mat-sys-plain-font-family),
+    body-small-font: var(--mat-sys-plain-font-family),
+    label-large-font: var(--mat-sys-plain-font-family),
+    label-medium-font: var(--mat-sys-plain-font-family),
+    label-small-font: var(--mat-sys-plain-font-family),
+    title-medium-font: var(--mat-sys-plain-font-family),
+    title-small-font: var(--mat-sys-plain-font-family),
+    body-large: var(--mat-sys-body-large-weight) var(--mat-sys-body-large-size) / var(--mat-sys-body-large-line-height) var(--mat-sys-body-large-font),
+    body-medium: var(--mat-sys-body-medium-weight) var(--mat-sys-body-medium-size) / var(--mat-sys-body-medium-line-height) var(--mat-sys-body-medium-font),
+    body-small: var(--mat-sys-body-small-weight) var(--mat-sys-body-small-size) / var(--mat-sys-body-small-line-height) var(--mat-sys-body-small-font),
+    label-large: var(--mat-sys-label-large-weight) var(--mat-sys-label-large-size) / var(--mat-sys-label-large-line-height) var(--mat-sys-label-large-font),
+    label-medium: var(--mat-sys-label-medium-weight) var(--mat-sys-label-medium-size) / var(--mat-sys-label-medium-line-height) var(--mat-sys-label-medium-font),
+    label-small: var(--mat-sys-label-small-weight) var(--mat-sys-label-small-size) / var(--mat-sys-label-small-line-height) var(--mat-sys-label-small-font),
+    title-large: var(--mat-sys-title-large-weight) var(--mat-sys-title-large-size) / var(--mat-sys-title-large-line-height) var(--mat-sys-title-large-font),
+    title-medium: var(--mat-sys-title-medium-weight) var(--mat-sys-title-medium-size) / var(--mat-sys-title-medium-line-height) var(--mat-sys-title-medium-font),
+    title-small: var(--mat-sys-title-small-weight) var(--mat-sys-title-small-size) / var(--mat-sys-title-small-line-height) var(--mat-sys-title-small-font),
+    headline-large: var(--mat-sys-headline-large-weight) var(--mat-sys-headline-large-size) / var(--mat-sys-headline-large-line-height) var(--mat-sys-headline-large-font),
+    headline-medium: var(--mat-sys-headline-medium-weight) var(--mat-sys-headline-medium-size) / var(--mat-sys-headline-medium-line-height) var(--mat-sys-headline-medium-font),
+    headline-small: var(--mat-sys-headline-small-weight) var(--mat-sys-headline-small-size) / var(--mat-sys-headline-small-line-height) var(--mat-sys-headline-small-font),
+    display-large: var(--mat-sys-display-large-weight) var(--mat-sys-display-large-size) / var(--mat-sys-display-large-line-height) var(--mat-sys-display-large-font),
+    display-medium: var(--mat-sys-display-medium-weight) var(--mat-sys-display-medium-size) / var(--mat-sys-display-medium-line-height) var(--mat-sys-display-medium-font),
+    display-small: var(--mat-sys-display-small-weight) var(--mat-sys-display-small-size) / var(--mat-sys-display-small-line-height) var(--mat-sys-display-small-font),
+    headline-large-font: var(--mat-sys-brand-font-family),
+    headline-medium-font: var(--mat-sys-brand-font-family),
+    headline-small-font: var(--mat-sys-brand-font-family),
+    display-large-font: var(--mat-sys-brand-font-family),
+    display-medium-font: var(--mat-sys-brand-font-family),
+    display-small-font: var(--mat-sys-brand-font-family),
+    title-large-font: var(--mat-sys-brand-font-family),
+  ));
+}
+
+:root {
+    --primary: #be0035;
+    --on-primary: #ffffff;
+    --primary-container: #ffdada;
+    --on-primary-container: #40000c;
+    --inverse-primary: #ffb3b5;
+    --primary-fixed: #ffdada;
+    --primary-fixed-dim: #ffb3b5;
+    --on-primary-fixed: #40000c;
+    --on-primary-fixed-variant: #920026;
+    --secondary: #ab3141;
+    --on-secondary: #ffffff;
+    --secondary-container: #ffdada;
+    --on-secondary-container: #40000c;
+    --secondary-fixed: #ffdada;
+    --secondary-fixed-dim: #ffb3b5;
+    --on-secondary-fixed: #40000c;
+    --on-secondary-fixed-variant: #8a172c;
+    --tertiary: #994700;
+    --on-tertiary: #ffffff;
+    --tertiary-container: #ffdbc8;
+    --on-tertiary-container: #321300;
+    --tertiary-fixed: #ffdbc8;
+    --tertiary-fixed-dim: #ffb68b;
+    --on-tertiary-fixed: #321300;
+    --on-tertiary-fixed-variant: #743400;
+    --background: #fff8f7;
+    --on-background: #1d1b1b;
+    --surface: #fff8f7;
+    --surface-dim: #dfd8d8;
+    --surface-bright: #fff8f7;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f9f2f1;
+    --surface-container: #f3eceb;
+    --surface-container-high: #eee7e6;
+    --surface-container-highest: #e8e1e0;
+    --on-surface: #1d1b1b;
+    --shadow: #000000;
+    --scrim: #000000;
+    --surface-tint: #715859;
+    --inverse-surface: #33302f;
+    --inverse-on-surface: #f6efee;
+    --outline: #817474;
+    --outline-variant: #d3c3c2;
+    --neutral: #7b7676;
+    --neutral10: #1d1b1b;
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --on-error: #ffffff;
+    --on-error-container: #410002;
+    --surface-variant: #f0dede;
+    --on-surface-variant: #504444;
+    --neutral-variant: #827474;
+    --neutral-variant20: #382e2e;
+    --inverse-secondary: #ffb3b5;
+    --inverse-tertiary: #ffb68b;
+
+}
+
+
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+    ),
+    typography: Nunito,
+    density: 0,
+  ));
+}/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+}
+*{
+  box-sizing: border-box;
+
+}
