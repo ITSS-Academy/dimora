@@ -13,6 +13,10 @@ export const routes: Routes = [
     path:'detail/:id',
     loadComponent: () => import('../app/pages/detail/detail.component').then(m => m.DetailComponent)
   },
+  {
+    path:'create-post',
+    loadComponent: () => import('../app/pages/create-post/create-post.component').then(m => m.CreatePostComponent)
+  },
 
 
 
