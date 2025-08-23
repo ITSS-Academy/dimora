@@ -35,11 +35,11 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    max-width: 850px;
-    margin: 0 20px;
+    max-width: 900px;
 
     .search-container {
       display: flex;
+      justify-content: center;
       align-items: center;
       background-color: var(--surface-container);
       border: 1px solid #ddd;
@@ -118,6 +118,13 @@
   }
 }
 
+.outline-button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
 
 
 
@@ -125,22 +132,6 @@
   width: 250px;
 }
 
-.search-button {
-  margin-left: 8px;
-  background-color: var(--primary);
-  border-radius: 24px;
-  padding: 0 24px;
-  font-weight: 600;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-  
-  mat-icon {
-    color: white;
-    margin-right: 8px;
-  }
-}
 .custom-option{
   display: flex;
   align-items: center;
@@ -197,67 +188,67 @@ mat-form-field {
 
 .guests-container {
   padding: 16px;
-  
+
   .guest-category {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
-    
+
     .guest-info {
       flex: 1;
-      
+
       .guest-label {
         font-weight: 600;
         font-size: 16px;
         color: var(--on-surface);
         margin-bottom: 4px;
       }
-      
+
       .guest-description {
         font-size: 14px;
         color: var(--neutral);
-        
+
         .service-animal-link {
           color: var(--on-surface);
           text-decoration: underline;
           font-size: 14px;
-          
-         
+
+
         }
       }
     }
-    
+
     .guest-controls {
       display: flex;
       align-items: center;
       gap: 16px;
-      
+
       button {
         border: 1px solid var(--outline-variant);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         mat-icon {
           font-size: 18px;
           width: 18px;
           height: 18px;
           line-height: 18px;
         }
-        
+
         &:disabled {
           opacity: 0.5;
           cursor: not-allowed;
           pointer-events: none;
         }
-        
+
         &:not(:disabled):hover {
           background-color: var(--surface-container);
         }
       }
-      
+
       .guest-count {
         font-weight: 600;
         font-size: 16px;
@@ -267,7 +258,7 @@ mat-form-field {
       }
     }
   }
-  
+
   mat-divider {
     margin: 0;
   }

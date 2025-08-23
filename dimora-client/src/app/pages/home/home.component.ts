@@ -5,9 +5,10 @@ import {AuthState} from '../../ngrx/state/auth.state';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {AuthModel} from '../../models/auth.model';
+import {LoadingComponent} from '../../shared/components/loading/loading.component';
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule],
+  imports: [MaterialModule, LoadingComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

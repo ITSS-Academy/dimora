@@ -42,10 +42,14 @@
         <mat-icon matSuffix>person</mat-icon>
       </mat-form-field>
 
-      <button mat-flat-button class="search-button" (click)="onSearch()">
-        <mat-icon>search</mat-icon>
-        Search
-      </button>
+      <div class="outline-button">
+        <button mat-flat-button class="search-button" (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+          Search
+        </button>
+      </div>
+
+
     </form>
 
 
@@ -53,7 +57,7 @@
 
   <!-- Right Side -->
   <div class="right-section">
- 
+
     <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">
       <mat-icon>menu</mat-icon>
       <mat-icon>account_circle</mat-icon>
@@ -127,7 +131,7 @@
         <div class="guest-category">
           <div class="guest-info">
             <div class="guest-label">Pets</div>
-            
+
           </div>
           <div class="guest-controls" (click)="$event.stopPropagation()">
             <button mat-icon-button (click)="decreasePets($event)" [disabled]="pets <= 0">
