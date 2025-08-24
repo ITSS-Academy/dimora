@@ -28,8 +28,8 @@ import { MiddlewareAuthMiddleware } from './auth/auth.middleware';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule{
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MiddlewareAuthMiddleware).forRoutes('*');
-  }
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(MiddlewareAuthMiddleware).forRoutes('*');
+  // }
 }

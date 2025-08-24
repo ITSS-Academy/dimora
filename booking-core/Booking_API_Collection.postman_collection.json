@@ -1,0 +1,91 @@
+{
+  "info": {
+    "name": "Booking API Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup",
+      "item": [
+        {
+          "name": "Create User 1",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": \"8752d3f6-f361-4c1f-b701-ba0761c3003b\", \"email\": \"user1@example.com\", \"full_name\": \"Nguyễn Văn A\", \"phone\": \"0123456789\"}"
+            },
+            "url": {"raw": "{{baseUrl}}/users"}
+          }
+        },
+        {
+          "name": "Create Host",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": \"6803be8a-78a3-4c69-9eb5-9a1ae114502e\", \"email\": \"host@example.com\", \"full_name\": \"Trần Thị B\", \"phone\": \"0987654321\"}"
+            },
+            "url": {"raw": "{{baseUrl}}/users"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Booking",
+      "item": [
+        {
+          "name": "Success",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"room_id\": \"44e8f956-8c55-46e4-9c6c-1348aadda32a\", \"user_id\": \"8752d3f6-f361-4c1f-b701-ba0761c3003b\", \"host_id\": \"6803be8a-78a3-4c69-9eb5-9a1ae114502e\", \"check_in_date\": \"2024-10-10\", \"check_out_date\": \"2024-10-15\", \"guest_count\": 2, \"total_amount\": 2500000, \"status\": \"pending\"}"
+            },
+            "url": {"raw": "{{baseUrl}}/bookings"}
+          }
+        },
+        {
+          "name": "Invalid UUID",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"room_id\": \"invalid-uuid\", \"user_id\": \"8752d3f6-f361-4c1f-b701-ba0761c3003b\", \"host_id\": \"6803be8a-78a3-4c69-9eb5-9a1ae114502e\", \"check_in_date\": \"2024-10-10\", \"check_out_date\": \"2024-10-15\", \"guest_count\": 2, \"total_amount\": 2500000, \"status\": \"pending\"}"
+            },
+            "url": {"raw": "{{baseUrl}}/bookings"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Bookings",
+      "item": [
+        {
+          "name": "All Bookings",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/bookings"}
+          }
+        },
+        {
+          "name": "Host Bookings",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/bookings/host/6803be8a-78a3-4c69-9eb5-9a1ae114502e"}
+          }
+        }
+      ]
+    }
+  ]
+}

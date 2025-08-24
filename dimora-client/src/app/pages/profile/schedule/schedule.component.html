@@ -1,1 +1,21 @@
-<p>schedule works!</p>
+<div class="calendar-container">
+  <div class="calendar-main">
+    <mat-calendar #calendar
+                  [selected]="selectedDate"
+                  [startAt]="startAt"
+                  [dateClass]="dateClass"
+                  (monthSelected)="updateCalendarCells()"
+                  (yearSelected)="updateCalendarCells()">
+    </mat-calendar>
+  </div>
+  <div class="side-panel">
+    <mat-chip-set aria-label="Availability">
+      <mat-chip color="primary">còn trống <span class="green-dot"></span></mat-chip>
+    </mat-chip-set>
+    <button mat-raised-button class="black-button">Giá mới cho 6 chỗ đậu</button>
+    <div class="price-info">
+      đ606,757 <span class="strike">4757,688</span>
+    </div>
+    <button mat-button class="custom-settings">cài đặt tùy chỉnh +</button>
+  </div>
+</div>
