@@ -15,7 +15,6 @@ import {LoadingComponent} from '../../shared/components/loading/loading.componen
 export class HomeComponent implements OnInit {
   idToken: string = '';
   idToken$ !: Observable<string>
-  currentUser$ !: Observable<AuthModel>;
   constructor(
     private store: Store<{
       auth: AuthState
@@ -23,7 +22,6 @@ export class HomeComponent implements OnInit {
   ) {
 
     this.idToken$ = this.store.select('auth', 'idToken');
-    this.currentUser$ = this.store.select('auth', 'currentUser');
   }
 
   ngOnInit() {
@@ -34,11 +32,7 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    this.currentUser$.subscribe((user: AuthModel) => {
-      if (user.uid) {
-        console.log('Current User:', user);
-      }
-    })
+
   }
 
 

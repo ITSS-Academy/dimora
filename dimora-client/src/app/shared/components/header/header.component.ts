@@ -6,6 +6,10 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {map, Observable, startWith} from 'rxjs';
 import {MatDateRangePicker} from '@angular/material/datepicker';
 import {MatMenuTrigger} from '@angular/material/menu';
+import {Store} from '@ngrx/store';
+import {AuthState} from '../../../ngrx/state/auth.state';
+import {AuthModel} from '../../../models/auth.model';
+
 export interface User {
   name: string;
   image: string;
@@ -20,8 +24,19 @@ export interface User {
 
 
 export class HeaderComponent implements OnInit {
-  constructor() {
+  constructor(
+    private store: Store<{
+      auth: AuthState,
+    }>
+  ) {
+
+    this.mineProfile$ = this.store.select('auth', 'mineProfile');
+
   }
+
+  mineProfile$ !: Observable<AuthModel>;
+
+
 
   @ViewChild('picker') picker!: MatDateRangePicker<Date>;
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
@@ -29,7 +44,7 @@ export class HeaderComponent implements OnInit {
 
   onLocationInputClick() {
     console.log('locationInput clicked');
-    
+
     // Nếu picker đang mở thì đóng nó trước
     if (this.picker.opened) {
       console.log('Picker is already opened, closing it');
@@ -45,7 +60,7 @@ export class HeaderComponent implements OnInit {
 
   onGuestsInputClick() {
     console.log('guestsInput clicked');
-    
+
     // Đóng date picker nếu đang mở
     if (this.picker.opened) {
       console.log('Closing date picker');
@@ -111,6 +126,15 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.mineProfile$.subscribe(profile => {
+      if (profile) {
+        console.log('User profile loaded:', profile);
+      } else {
+        console.log('No user profile available');
+      }
+    })
+
+
     this.filteredOptions = this.range.controls.location.valueChanges.pipe(
       startWith(''),
       map(value => {
@@ -118,7 +142,7 @@ export class HeaderComponent implements OnInit {
         return name ? this._filter(name as string) : this.options.slice();
       }),
     );
-    
+
     // Initialize guests display
     this.updateGuestsDisplay();
   }
@@ -132,17 +156,17 @@ export class HeaderComponent implements OnInit {
   updateGuestsDisplay() {
     const total = this.adults + this.children + this.infants;
     let display = '';
-    
+
     if (total === 1) {
       display = '1 guest';
     } else {
       display = `${total} guests`;
     }
-    
+
     if (this.pets > 0) {
       display += `, ${this.pets} pet${this.pets > 1 ? 's' : ''}`;
     }
-    
+
     this.range.controls.guests.setValue(display);
   }
 
