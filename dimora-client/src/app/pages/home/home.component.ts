@@ -6,9 +6,10 @@ import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {AuthModel} from '../../models/auth.model';
 import {LoadingComponent} from '../../shared/components/loading/loading.component';
+import {CardComponent} from '../../shared/components/card/card.component';
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule, LoadingComponent],
+  imports: [MaterialModule, LoadingComponent, CardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -25,6 +26,7 @@ export class HomeComponent implements OnInit {
     this.idToken$ = this.store.select('auth', 'idToken');
     this.currentUser$ = this.store.select('auth', 'currentUser');
   }
+
 
   ngOnInit() {
     this.idToken$.subscribe((idToken: string) => {
