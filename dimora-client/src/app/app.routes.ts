@@ -17,10 +17,10 @@ export const routes: Routes = [
     path:'create-post',
     loadComponent: () => import('../app/pages/create-post/create-post.component').then(m => m.CreatePostComponent)
   },
-
-
-
-
+  {
+    path:'search',
+    loadComponent: () => import('../app/pages/search/search.component').then(m => m.SearchComponent)
+  },
   {
     path:'',
     redirectTo:'home',

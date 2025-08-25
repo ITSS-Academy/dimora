@@ -9,6 +9,7 @@ import {MatMenuTrigger} from '@angular/material/menu';
 import {Store} from '@ngrx/store';
 import {AuthState} from '../../../ngrx/state/auth.state';
 import {AuthModel} from '../../../models/auth.model';
+import * as AuthActions from '../../../ngrx/actions/auth.actions';
 
 export interface User {
   name: string;
@@ -225,5 +226,13 @@ export class HeaderComponent implements OnInit {
       this.pets--;
       this.updateGuestsDisplay();
     }
+  }
+
+  login() {
+    this.store.dispatch(AuthActions.login());
+  }
+
+  logout() {
+    this.store.dispatch(AuthActions.logout());
   }
 }
