@@ -37,6 +37,17 @@ export class AuthController {
     }
   }
 
+  @Get('google/:id')
+  async findOneByGoogleId(@Param('id') googleId: string) {
+    try {
+      return await this.authService.findOneByGoogleId(googleId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw new HttpException(error.message, error.getStatus());
+      }
+    }
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
