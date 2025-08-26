@@ -1,34 +1,34 @@
 <div class="container">
   <!-- Location Controls -->
-  <div class="location-controls">
-    <button
-      class="location-btn"
-      (click)="getCurrentLocation()"
-      [disabled]="isGettingLocation"
-    >
-      @if (!isGettingLocation) {
-        <span>📍 Lấy vị trí hiện tại</span>
-      } @else {
-        <span>⏳ Đang lấy vị trí...</span>
-      }
-    </button>
+<!--  <div class="location-controls">-->
+<!--    <button-->
+<!--      class="location-btn"-->
+<!--      (click)="getCurrentLocation()"-->
+<!--      [disabled]="isGettingLocation"-->
+<!--    >-->
+<!--      @if (!isGettingLocation) {-->
+<!--        <span>📍 Lấy vị trí hiện tại</span>-->
+<!--      } @else {-->
+<!--        <span>⏳ Đang lấy vị trí...</span>-->
+<!--      }-->
+<!--    </button>-->
 
-    @if (currentLocation) {
-      <button
-        class="clear-btn"
-        (click)="clearCurrentLocation()"
-      >
-        🗑️ Xóa vị trí
-      </button>
-    }
-  </div>
+<!--    @if (currentLocation) {-->
+<!--      <button-->
+<!--        class="clear-btn"-->
+<!--        (click)="clearCurrentLocation()"-->
+<!--      >-->
+<!--        🗑️ Xóa vị trí-->
+<!--      </button>-->
+<!--    }-->
+<!--  </div>-->
 
-  Error Message
-  @if (locationError) {
-    <div class="error-message">
-      {{ locationError }}
-    </div>
-  }
+<!--  Error Message-->
+<!--  @if (locationError) {-->
+<!--    <div class="error-message">-->
+<!--      {{ locationError }}-->
+<!--    </div>-->
+<!--  }-->
 
   <!-- Current Location Info -->
   @if (currentLocation) {
