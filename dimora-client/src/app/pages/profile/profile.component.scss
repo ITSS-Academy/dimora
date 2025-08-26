@@ -58,4 +58,55 @@
 
 .profile-container{
   padding: 0 5rem;
+}:root {
+   --primary: #be0035;
+   --on-primary: #ffffff;
+   --background: #fff8f7;
+   --surface: #f3eceb;
+ }
+
+.profile-container {
+  padding: 1.5rem;
+  background: var(--surface);
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: var(--surface-container-low);
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+
+    .profile-avatar img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--primary);
+    }
+
+    .profile-info {
+      .profile-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--on-surface);
+      }
+      .profile-email, .profile-phone {
+        color: var(--neutral);
+      }
+      button {
+        margin-top: .5rem;
+        color: var(--primary);
+        border-color: var(--primary);
+        &:hover {
+          background: var(--primary-container);
+        }
+      }
+    }
+  }
+
+  .navigate-container {
+    margin-top: 2rem;
+  }
 }
+
