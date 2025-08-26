@@ -3,6 +3,7 @@ import { SupabaseService } from '../common/services/supabase.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -10,9 +11,21 @@ export class AuthService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
+
+      let newUser:User = {
+        id: uuidv4(),
+        email: createUserDto.email,
+        full_name: createUserDto.full_name,
+        created_at: new Date(),
+        updated_at: new Date(),
+        google_id: createUserDto.google_id,
+        phone: createUserDto.phone,
+        avatar_url: createUserDto.avatar_url
+      }
+
       const { data, error } = await this.supabaseService.getClient()
         .from('users')
-        .insert(createUserDto)
+        .insert(newUser)
         .select()
         .single();
 
@@ -87,6 +100,39 @@ export class AuthService {
       );
     }
   }
+
+
+
+  async findOneByGoogleId(googleId: string): Promise<User> {
+    try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('users')
+        .select('*')
+        .eq('google_id', googleId)
+        .single();
+
+      if (error || !data) {
+        throw new HttpException(
+          'User not found',
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch user',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+
+
+  
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {

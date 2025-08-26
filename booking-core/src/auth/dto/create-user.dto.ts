@@ -22,4 +22,8 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   avatar_url?: string;
+
+  /** Google ID */
+  @IsString()
+  google_id: string;
 }

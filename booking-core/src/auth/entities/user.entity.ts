@@ -14,6 +14,9 @@ export class User {
   /** URL ảnh đại diện */
   avatar_url?: string;
 
+  /** Google ID */
+  google_id: string;
+
   /** Thời gian tạo */
   created_at: Date;
 

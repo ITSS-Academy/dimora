@@ -5,6 +5,7 @@ import {AuthState} from '../../ngrx/state/auth.state';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {AuthModel} from '../../models/auth.model';
+import {LoadingComponent} from '../../shared/components/loading/loading.component';
 import {CardComponent} from '../../shared/components/card/card.component';
 @Component({
   selector: 'app-home',
@@ -19,11 +20,11 @@ export class HomeComponent implements OnInit {
 
    currentPosition: number = 0;
    currentPositionSecond: number = 0;
+  currentUser$!: Observable<AuthModel>;
 
    maxPosition: number = 0;
   idToken: string = '';
   idToken$ !: Observable<string>
-  currentUser$ !: Observable<AuthModel>;
   constructor(
     private store: Store<{
       auth: AuthState
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
   ) {
 
     this.idToken$ = this.store.select('auth', 'idToken');
-    this.currentUser$ = this.store.select('auth', 'currentUser');
+    this.currentUser$ = this.store.select('auth', 'currentUser')
   }
 
 
@@ -99,7 +100,7 @@ export class HomeComponent implements OnInit {
     });
 
     this.currentUser$.subscribe((user: AuthModel) => {
-      if (user.uid) {
+      if (user.id) {
         console.log('Current User:', user);
       }
     })
@@ -164,11 +165,4 @@ export class HomeComponent implements OnInit {
     track.style.transform = `translateX(-${this.currentPositionSecond}px)`;
   }
 
-  login() {
-    this.store.dispatch(AuthActions.login());
-  }
-
-  logout() {
-    this.store.dispatch(AuthActions.logout());
-  }
 }
