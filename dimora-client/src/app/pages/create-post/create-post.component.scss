@@ -1,0 +1,127 @@
+.step-one {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+mat-stepper {
+  height: 100%;
+  background-color: var(--on-primary);
+}
+.container-step-one {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+::ng-deep .mat-horizontal-stepper-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between !important;
+}
+.outline-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+#word-one {
+  width: 600px;
+  height: 500px;
+}
+#video video {
+  width: auto;
+  height: 500px;
+}
+#word h1 {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  font-size: 48px;
+  width: 575px;
+  height: 54px;
+  margin: 0px 0px 24px 0px;
+}
+#word h4 {
+  margin-top: 0px;
+  margin-bottom: 16px;
+}
+#word p {
+  font-size: 18px;
+  width: 575px;
+  height: 84px;
+  margin: 0px;
+}
+#stepper-box {
+  display: flex;
+  justify-content: center;
+  min-width: 900px;
+  min-height: 100px;
+  padding: 0;
+}
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cột bằng nhau */
+  gap: 16px; /* khoảng cách giữa các cột */
+  justify-content: flex-start;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.option {
+  width: 202px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--on-primary);
+  border-radius: 8px;
+  border-color: var(--surface-dim);
+  border: 0.5px solid var(--surface-dim);
+  gap: 8px;
+}
+.option img {
+  width: 45px;
+  height: 45px;
+  display: block;
+  margin-bottom: 4px;
+}
+.option:hover {
+  border-color: var(--on-surface);
+}
+.container-step-two {
+  width: 100%;
+  height: 1630px;
+}
+.container-step-three {
+  width: 100%;
+  height: 100%;
+}
+#word-three {
+  width: 630px;
+  height: 36px;
+}
+.info {
+  width: 630px;
+  height: 95px;
+  text-align: left;
+  background-color: var(--on-tertiary);
+  border-radius: 10px;
+}
+.info h3 {
+  width: 512px;
+  height: 24px;
+  font-size: 18px;
+}
+.info p {
+  width: 400px;
+  height: 18px;
+  font-size: 14px;
+}
+.step-three {
+  margin: 24px;
+}
