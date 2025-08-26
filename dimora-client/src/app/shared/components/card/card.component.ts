@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {MaterialModule} from '../../material.module';
 
 @Component({
@@ -8,5 +8,7 @@ import {MaterialModule} from '../../material.module';
   styleUrl: './card.component.scss'
 })
 export class CardComponent {
+
+  @Input() hotel: any
 
 }
