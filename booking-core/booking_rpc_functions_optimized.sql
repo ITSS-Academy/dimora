@@ -266,7 +266,7 @@ BEGIN
 END;
 $$;
 
--- 7. Function để lấy room availability calendar (simplified)
+-- 7. Function để lấy room availability calendar (dùng generate_series)
 CREATE OR REPLACE FUNCTION get_room_availability_calendar(
   room_uuid UUID,
   host_uuid UUID,
@@ -279,8 +279,6 @@ SECURITY DEFINER
 AS $$
 DECLARE
   result JSON;
-  current_date_val DATE;
-  availability_array JSON[] := ARRAY[]::JSON[];
 BEGIN
   -- Kiểm tra room có thuộc host không
   IF NOT EXISTS (
@@ -290,29 +288,29 @@ BEGIN
     RAISE EXCEPTION 'Access denied: Room does not belong to this host';
   END IF;
 
-  -- Tạo calendar dates
-  current_date_val := start_date;
-  WHILE current_date_val <= end_date LOOP
-    availability_array := availability_array || json_build_object(
-      'date', current_date_val,
-      'is_available', NOT EXISTS (
-        SELECT 1 FROM bookings 
-        WHERE room_id = room_uuid 
-          AND check_in_date <= current_date_val 
-          AND check_out_date > current_date_val
-          AND status IN ('pending', 'confirmed', 'in_progress', 'completed')
-      )
-    );
-    
-    current_date_val := current_date_val + INTERVAL '1 day';
-  END LOOP;
-  
-  RETURN json_build_object(
+  -- Dùng generate_series thay vì WHILE loop
+  SELECT json_build_object(
     'room_id', room_uuid,
     'start_date', start_date,
     'end_date', end_date,
-    'availability', availability_array
-  );
+    'availability', json_agg(
+      json_build_object(
+        'date', date_series.date_val,
+        'is_available', NOT EXISTS (
+          SELECT 1 FROM bookings 
+          WHERE room_id = room_uuid 
+            AND check_in_date <= date_series.date_val 
+            AND check_out_date > date_series.date_val
+            AND status IN ('pending', 'confirmed', 'in_progress', 'completed')
+        )
+      )
+    )
+  ) INTO result
+  FROM (
+    SELECT generate_series(start_date, end_date, '1 day'::interval)::date as date_val
+  ) date_series;
+  
+  RETURN result;
 END;
 $$;
 
@@ -321,6 +319,93 @@ GRANT EXECUTE ON FUNCTION get_host_bookings(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_room_bookings(UUID, UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_host_bookings_by_date_range(UUID, DATE, DATE) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_host_booking_stats(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION check_room_availability(UUID, DATE, DATE) TO authenticated;
+GRANT EXECUTE ON FUNCTION check_room_availability_api(UUID, DATE, DATE) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_user_bookings(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_room_availability_calendar(UUID, UUID, DATE, DATE) TO authenticated;
+
+-- 8. Function để search rooms nearby (thêm vào booking RPC)
+CREATE OR REPLACE FUNCTION search_rooms_nearby(
+  lat DECIMAL(10,8),
+  lng DECIMAL(11,8),
+  radius_km INTEGER DEFAULT 10,
+  max_guests INTEGER DEFAULT NULL,
+  min_price DECIMAL(12,2) DEFAULT NULL,
+  max_price DECIMAL(12,2) DEFAULT NULL
+)
+RETURNS TABLE (
+  id UUID,
+  title TEXT,
+  description TEXT,
+  price_per_night DECIMAL(12,2),
+  location TEXT,
+  address TEXT,
+  city TEXT,
+  country TEXT,
+  latitude DECIMAL(10,8),
+  longitude DECIMAL(11,8),
+  max_guests INTEGER,
+  bedrooms INTEGER,
+  bathrooms INTEGER,
+  beds INTEGER,
+  room_type_id UUID,
+  amenities TEXT[],
+  images TEXT[],
+  host_id UUID,
+  is_available BOOLEAN,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  distance_km DECIMAL(10,2)
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    r.id,
+    r.title,
+    r.description,
+    r.price_per_night,
+    r.location,
+    r.address,
+    r.city,
+    r.country,
+    r.latitude,
+    r.longitude,
+    r.max_guests,
+    r.bedrooms,
+    r.bathrooms,
+    r.beds,
+    r.room_type_id,
+    r.amenities,
+    r.images,
+    r.host_id,
+    r.is_available,
+    r.created_at,
+    r.updated_at,
+    -- Tính khoảng cách bằng PostGIS (km)
+    ST_Distance(
+      ST_MakePoint(r.longitude, r.latitude)::geography,
+      ST_MakePoint(lng, lat)::geography
+    ) / 1000.0 as distance_km
+  FROM rooms r
+  WHERE 
+    r.is_available = true
+    AND r.latitude IS NOT NULL 
+    AND r.longitude IS NOT NULL
+    -- Filter theo khoảng cách
+    AND ST_DWithin(
+      ST_MakePoint(r.longitude, r.latitude)::geography,
+      ST_MakePoint(lng, lat)::geography,
+      radius_km * 1000  -- Convert km to meters
+    )
+    -- Filter theo số khách
+    AND (max_guests IS NULL OR r.max_guests >= max_guests)
+    -- Filter theo giá
+    AND (min_price IS NULL OR r.price_per_night >= min_price)
+    AND (max_price IS NULL OR r.price_per_night <= max_price)
+  ORDER BY distance_km ASC;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION search_rooms_nearby(DECIMAL, DECIMAL, INTEGER, INTEGER, DECIMAL, DECIMAL) TO authenticated;

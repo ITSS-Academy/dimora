@@ -52,8 +52,8 @@ export class RoomsController {
       const roomData: CreateRoomDto = {
         ...createRoomDto,
         images: [],
-        latitude: createRoomDto.latitude || '',
-        longitude: createRoomDto.longitude || ''
+        latitude: createRoomDto.latitude || 0,
+        longitude: createRoomDto.longitude || 0
       };
       return await this.roomsService.createWithGeocoding(roomData);
     } catch (error) {

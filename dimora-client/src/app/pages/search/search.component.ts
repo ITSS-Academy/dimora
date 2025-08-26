@@ -2,6 +2,8 @@ import {Component, ViewChild} from '@angular/core';
 import {MapComponent} from '../../shared/components/map/map.component';
 import {DecimalPipe} from '@angular/common';
 import {GoogleMap, MapMarker} from '@angular/google-maps';
+import {RoomModel} from '../../models/room.model';
+
 interface Location {
   lat: number;
   lng: number;
@@ -9,20 +11,6 @@ interface Location {
   timestamp?: number;
 }
 
-interface Hotel {
-  id: number;
-  name: string;
-  price: number;
-  address: string;
-  location: google.maps.LatLngLiteral;
-  image: string;
-  rating?: number;
-  distance?: number;
-  isGuestFavorite?: boolean;
-  beds?: string;
-  cancellation?: string;
-  reviewCount?: number;
-}
 @Component({
   selector: 'app-search',
   imports: [
@@ -46,20 +34,20 @@ export class SearchComponent {
   isGettingLocation = false;
   locationError = '';
 
-  // Hotels
-  hotels: Hotel[] = [];
-  selectedHotel: Hotel | null = null;
-  visibleHotels: Hotel[] = [];
+  // Rooms
+  rooms: RoomModel[] = [];
+  selectedRoom: RoomModel | null = null;
+  visibleRooms: RoomModel[] = [];
   mapCenter: google.maps.LatLngLiteral = { lat: 10.774559, lng: 106.675655 };
-  showSelectedHotelInfo: boolean = false;
+  showSelectedRoomInfo: boolean = false;
   showDialog: boolean = false;
-  dialogHotel: Hotel | null = null;
+  dialogRoom: RoomModel | null = null;
 
   constructor() {}
 
   ngOnInit() {
     console.log('🚀 App component initialized');
-    this.initializeHotels();
+    this.initializeRooms();
     this.setCurrentLocationAsDefault();
 
     // Debug map after view init
@@ -71,260 +59,243 @@ export class SearchComponent {
     }, 1000);
   }
 
-  // Initialize hotels data
-  initializeHotels(): void {
-    this.hotels = [
+  // Initialize rooms data
+  initializeRooms(): void {
+    this.rooms = [
       {
-        id: 1,
-        name: 'Grand Hotel Saigon',
-        price: 2500000,
+        id: '1',
+        title: 'Grand Hotel Saigon Room',
+        description: 'Luxury room with city view in the heart of District 1',
+        price_per_night: 2500000,
+        location: 'Quận 1, TP.HCM',
         address: '8 Đồng Khởi, Quận 1, TP.HCM',
-        location: { lat: 10.7769, lng: 106.7009 },
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-        rating: 4.5,
-        isGuestFavorite: true,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 127
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7769,
+        longitude: 106.7009,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'luxury',
+        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh'],
+        images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop'],
+        host_id: 'host1',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 2,
-        name: 'Riverside Hotel',
-        price: 1800000,
+        id: '2',
+        title: 'Riverside Hotel Room',
+        description: 'Cozy room with river view',
+        price_per_night: 1800000,
+        location: 'Quận 1, TP.HCM',
         address: '18 Tôn Đức Thắng, Quận 1, TP.HCM',
-        location: { lat: 10.7833, lng: 106.7000 },
-        image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop',
-        rating: 4.2,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 89
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7833,
+        longitude: 106.7000,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'standard',
+        amenities: ['WiFi', 'Điều hòa', 'TV'],
+        images: ['https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop'],
+        host_id: 'host2',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 3,
-        name: 'Central Plaza Hotel',
-        price: 3200000,
+        id: '3',
+        title: 'Central Plaza Hotel Suite',
+        description: 'Spacious suite with premium amenities',
+        price_per_night: 3200000,
+        location: 'Quận 1, TP.HCM',
         address: '17 Lê Duẩn, Quận 1, TP.HCM',
-        location: { lat: 10.7797, lng: 106.6992 },
-        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop',
-        rating: 4.7,
-        isGuestFavorite: true,
-        beds: '2 double beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 203
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7797,
+        longitude: 106.6992,
+        max_guests: 4,
+        bedrooms: 2,
+        bathrooms: 2,
+        beds: 2,
+        room_type_id: 'suite',
+        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Máy giặt'],
+        images: ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
+        host_id: 'host3',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 4,
-        name: 'Boutique Hotel District 3',
-        price: 1200000,
+        id: '4',
+        title: 'Boutique Hotel District 3',
+        description: 'Charming boutique hotel room',
+        price_per_night: 1200000,
+        location: 'Quận 3, TP.HCM',
         address: '123 Võ Văn Tần, Quận 3, TP.HCM',
-        location: { lat: 10.7820, lng: 106.6880 },
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-        rating: 4.0,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 56
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7820,
+        longitude: 106.6880,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'boutique',
+        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp nhỏ'],
+        images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'],
+        host_id: 'host4',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 5,
-        name: 'Business Hotel Bình Thạnh',
-        price: 1500000,
+        id: '5',
+        title: 'Business Hotel Bình Thạnh',
+        description: 'Perfect for business travelers',
+        price_per_night: 1500000,
+        location: 'Quận Bình Thạnh, TP.HCM',
         address: '456 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM',
-        location: { lat: 10.8000, lng: 106.7000 },
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-        rating: 4.3,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 94
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.8000,
+        longitude: 106.7000,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'business',
+        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bàn làm việc'],
+        images: ['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop'],
+        host_id: 'host5',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 6,
-        name: 'Luxury Resort Phú Nhuận',
-        price: 4500000,
+        id: '6',
+        title: 'Luxury Resort Phú Nhuận',
+        description: 'Luxury resort experience in the city',
+        price_per_night: 4500000,
+        location: 'Quận Phú Nhuận, TP.HCM',
         address: '789 Nguyễn Văn Trỗi, Quận Phú Nhuận, TP.HCM',
-        location: { lat: 10.7900, lng: 106.6800 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.8,
-        isGuestFavorite: true,
-        beds: '2 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 156
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7900,
+        longitude: 106.6800,
+        max_guests: 4,
+        bedrooms: 2,
+        bathrooms: 2,
+        beds: 2,
+        room_type_id: 'luxury',
+        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Hồ bơi', 'Gym'],
+        images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop'],
+        host_id: 'host6',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 7,
-        name: 'Budget Hotel Tân Bình',
-        price: 800000,
+        id: '7',
+        title: 'Budget Hotel Tân Bình',
+        description: 'Affordable accommodation option',
+        price_per_night: 800000,
+        location: 'Quận Tân Bình, TP.HCM',
         address: '321 Cộng Hòa, Quận Tân Bình, TP.HCM',
-        location: { lat: 10.8100, lng: 106.6500 },
-        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop',
-        rating: 3.8,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 42
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.8100,
+        longitude: 106.6500,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'budget',
+        amenities: ['WiFi', 'Điều hòa', 'TV'],
+        images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop'],
+        host_id: 'host7',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 8,
-        name: 'Heritage Hotel District 5',
-        price: 2200000,
+        id: '8',
+        title: 'Heritage Hotel District 5',
+        description: 'Historic hotel with modern comfort',
+        price_per_night: 2200000,
+        location: 'Quận 5, TP.HCM',
         address: '567 Trần Hưng Đạo, Quận 5, TP.HCM',
-        location: { lat: 10.7500, lng: 106.6600 },
-        image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop',
-        rating: 4.4,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 78
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7500,
+        longitude: 106.6600,
+        max_guests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'heritage',
+        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp'],
+        images: ['https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop'],
+        host_id: 'host8',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 9,
-        name: 'Modern Apartment District 2',
-        price: 2800000,
+        id: '9',
+        title: 'Modern Apartment District 7',
+        description: 'Modern apartment with full amenities',
+        price_per_night: 2800000,
+        location: 'Quận 7, TP.HCM',
         address: '234 Nguyễn Thị Thập, Quận 7, TP.HCM',
-        location: { lat: 10.7300, lng: 106.7200 },
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
-        rating: 4.6,
-        isGuestFavorite: true,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 112
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7300,
+        longitude: 106.7200,
+        max_guests: 3,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'apartment',
+        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Máy giặt'],
+        images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'],
+        host_id: 'host9',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       },
       {
-        id: 10,
-        name: 'Cozy Studio District 10',
-        price: 950000,
+        id: '10',
+        title: 'Cozy Studio District 10',
+        description: 'Cozy studio perfect for solo travelers',
+        price_per_night: 950000,
+        location: 'Quận 10, TP.HCM',
         address: '789 Sư Vạn Hạnh, Quận 10, TP.HCM',
-        location: { lat: 10.7600, lng: 106.6700 },
-        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-        rating: 4.1,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 67
-      },
-      {
-        id: 11,
-        name: 'Premium Hotel District 1',
-        price: 3800000,
-        address: '456 Nguyễn Huệ, Quận 1, TP.HCM',
-        location: { lat: 10.7750, lng: 106.7050 },
-        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-        rating: 4.9,
-        isGuestFavorite: true,
-        beds: '2 double beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 234
-      },
-      {
-        id: 12,
-        name: 'Garden Resort District 9',
-        price: 1900000,
-        address: '123 Mai Chí Thọ, Quận 2, TP.HCM',
-        location: { lat: 10.7800, lng: 106.7500 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.3,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 85
-      },
-      {
-        id: 13,
-        name: 'City View Hotel District 4',
-        price: 1600000,
-        address: '567 Võ Văn Kiệt, Quận 4, TP.HCM',
-        location: { lat: 10.7650, lng: 106.7100 },
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-        rating: 4.2,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 73
-      },
-      {
-        id: 14,
-        name: 'Art Deco Hotel District 6',
-        price: 1100000,
-        address: '890 Hậu Giang, Quận 6, TP.HCM',
-        location: { lat: 10.7450, lng: 106.6350 },
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-        rating: 3.9,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 48
-      },
-      {
-        id: 15,
-        name: 'Skyline Hotel District 8',
-        price: 1400000,
-        address: '345 Dương Bá Trạc, Quận 8, TP.HCM',
-        location: { lat: 10.7200, lng: 106.6300 },
-        image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop',
-        rating: 4.0,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 61
-      },
-      {
-        id: 16,
-        name: 'Riverside Apartment District 11',
-        price: 1700000,
-        address: '678 Lý Thường Kiệt, Quận 11, TP.HCM',
-        location: { lat: 10.7550, lng: 106.6450 },
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
-        rating: 4.4,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 92
-      },
-      {
-        id: 17,
-        name: 'Business Center Hotel District 12',
-        price: 1300000,
-        address: '901 Lê Văn Khương, Quận 12, TP.HCM',
-        location: { lat: 10.8300, lng: 106.6200 },
-        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-        rating: 3.7,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 35
-      },
-      {
-        id: 18,
-        name: 'Luxury Villa District 7',
-        price: 5200000,
-        address: '234 Nguyễn Hữu Thọ, Quận 7, TP.HCM',
-        location: { lat: 10.7400, lng: 106.7300 },
-        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-        rating: 4.8,
-        isGuestFavorite: true,
-        beds: '3 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 178
-      },
-      {
-        id: 19,
-        name: 'Budget Inn District 9',
-        price: 750000,
-        address: '567 Lê Văn Việt, Quận 9, TP.HCM',
-        location: { lat: 10.8400, lng: 106.7800 },
-        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop',
-        rating: 3.6,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 29
-      },
-      {
-        id: 20,
-        name: 'Premium Resort District 2',
-        price: 4100000,
-        address: '789 Nguyễn Duy Trinh, Quận 9, TP.HCM',
-        location: { lat: 10.8200, lng: 106.7600 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.7,
-        isGuestFavorite: true,
-        beds: '2 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 145
+        city: 'Ho Chi Minh City',
+        country: 'Vietnam',
+        latitude: 10.7600,
+        longitude: 106.6700,
+        max_guests: 1,
+        bedrooms: 1,
+        bathrooms: 1,
+        beds: 1,
+        room_type_id: 'studio',
+        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp nhỏ'],
+        images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop'],
+        host_id: 'host10',
+        is_available: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
       }
     ];
 
     this.calculateDistances();
-    this.updateVisibleHotels();
+    this.updateVisibleRooms();
   }
 
   // Set current location as default
@@ -339,12 +310,13 @@ export class SearchComponent {
   calculateDistances(): void {
     if (!this.currentLocation) return;
 
-    this.hotels.forEach(hotel => {
-      hotel.distance = this.calculateDistance(
+    this.rooms.forEach(room => {
+      // Add distance property to room (not in original model, but needed for UI)
+      (room as any).distance = this.calculateDistance(
         this.currentLocation!.lat,
         this.currentLocation!.lng,
-        hotel.location.lat,
-        hotel.location.lng
+        room.latitude,
+        room.longitude
       );
     });
   }
@@ -367,31 +339,31 @@ export class SearchComponent {
     return deg * (Math.PI/180);
   }
 
-  // Update visible hotels based on zoom level and center
-  updateVisibleHotels(): void {
-    // Show all hotels on map, but filter visible cards based on 2km radius
-    this.visibleHotels = this.hotels.filter(hotel => {
+  // Update visible rooms based on zoom level and center
+  updateVisibleRooms(): void {
+    // Show all rooms without distance filtering
+    this.visibleRooms = this.rooms.map(room => {
       const distance = this.calculateDistance(
         this.mapCenter.lat,
         this.mapCenter.lng,
-        hotel.location.lat,
-        hotel.location.lng
+        room.latitude,
+        room.longitude
       );
-      hotel.distance = distance;
-      return distance <= 2; // 2km radius for cards only
-    }).sort((a, b) => (a.distance || 0) - (b.distance || 0));
-    console.log(this.visibleHotels);
+      (room as any).distance = distance;
+      return room;
+    }).sort((a, b) => ((a as any).distance || 0) - ((b as any).distance || 0));
+    console.log(this.visibleRooms);
   }
 
-  // Get all hotels for map markers (not filtered by distance)
-  getAllHotelsForMap(): Hotel[] {
-    return this.hotels.map(hotel => ({
-      ...hotel,
+  // Get all rooms for map markers (not filtered by distance)
+  getAllRoomsForMap(): RoomModel[] {
+    return this.rooms.map(room => ({
+      ...room,
       distance: this.calculateDistance(
         this.mapCenter.lat,
         this.mapCenter.lng,
-        hotel.location.lat,
-        hotel.location.lng
+        room.latitude,
+        room.longitude
       )
     }));
   }
@@ -399,14 +371,14 @@ export class SearchComponent {
   // Handle map center change
   onMapCenterChange(): void {
     // Update map center from current map state
-    // this.updateVisibleHotels();
+    // this.updateVisibleRooms();
   }
 
   // Handle map bounds change
   onMapBoundsChange(): void {
     // This will be called when map is dragged or zoomed
-    // We'll update the center and recalculate visible hotels
-    // this.updateVisibleHotels();
+    // We'll update the center and recalculate visible rooms
+    // this.updateVisibleRooms();
   }
 
   // Handle map click
@@ -417,36 +389,25 @@ export class SearchComponent {
       const clickedLat = event.latLng.lat();
       const clickedLng = event.latLng.lng();
 
-      console.log('🔍 Checking all hotels...');
+      console.log('🔍 Checking all rooms...');
 
       console.log(clickedLat, clickedLng);
 
-
-
-      //find hotel by clicked lat and lng
-      const hotel = this.hotels.find(hotel => {
-        return hotel.location.lat === clickedLat && hotel.location.lng === clickedLng;
+      //find room by clicked lat and lng
+      const room = this.rooms.find(room => {
+        return room.latitude === clickedLat && room.longitude === clickedLng;
       });
 
-      console.log(hotel);
+      console.log(room);
 
-      if (hotel) {
-        console.log('🎯 Found nearby hotel:', hotel.name);
-        this.selectHotel(hotel);
+      if (room) {
+        console.log('🎯 Found nearby room:', room.title);
+        this.selectRoom(room);
       } else {
-        console.log('❌ No hotel found nearby');
+        console.log('❌ No room found nearby');
         // Clear selection if clicking away from markers
-        this.clearSelectedHotel();
+        this.clearSelectedRoom();
       }
-
-      // if (nearbyHotel) {
-      //   console.log('🎯 Found nearby hotel:', nearbyHotel.name);
-      //   this.selectHotel(nearbyHotel);
-      // } else {
-      //   console.log('❌ No hotel found nearby');
-      //   // Clear selection if clicking away from markers
-      //   this.clearSelectedHotel();
-      // }
     }
   }
 
@@ -487,7 +448,7 @@ export class SearchComponent {
         this.isGettingLocation = false;
 
         this.calculateDistances();
-        // this.updateVisibleHotels();
+        // this.updateVisibleRooms();
 
         console.log('📍 Vị trí hiện tại:', location);
       },
@@ -523,39 +484,40 @@ export class SearchComponent {
     this.locationError = '';
   }
 
-  // Select hotel
-  selectHotel(hotel: Hotel): void {
-    console.log('🏨 selectHotel called with:', hotel.name);
-    this.selectedHotel = hotel;
-    this.center = hotel.location;
-    this.mapCenter = hotel.location;
+  // Select room
+  selectRoom(room: RoomModel): void {
+    console.log('🏨 selectRoom called with:', room.title);
+    this.selectedRoom = room;
+    this.center = { lat: room.latitude, lng: room.longitude };
+    this.mapCenter = { lat: room.latitude, lng: room.longitude };
     this.zoom = 16;
-    this.showSelectedHotelInfo = true;
+    this.showSelectedRoomInfo = true;
     // this.showDialog = true;
-    this.dialogHotel = hotel;
-    console.log('🏨 Selected hotel:', hotel);
-    // this.updateVisibleHotels();
+    this.dialogRoom = room;
+    console.log('🏨 Selected room:', room);
+    // this.updateVisibleRooms();
   }
 
   // Close dialog
   closeDialog(): void {
     this.showDialog = false;
-    this.dialogHotel = null;
+    this.dialogRoom = null;
   }
+  
   onCurrentLocationMarkerClick(): void {
     console.log('Clicked current location marker');
     // Thêm logic nếu cần, ví dụ center map lại
     this.center = { lat: this.currentLocation!.lat, lng: this.currentLocation!.lng };
   }
 
-  // Clear selected hotel
-  clearSelectedHotel(): void {
-    this.selectedHotel = null;
-    this.showSelectedHotelInfo = false;
+  // Clear selected room
+  clearSelectedRoom(): void {
+    this.selectedRoom = null;
+    this.showSelectedRoomInfo = false;
   }
 
-  // Get marker icon URL for hotels
-  getHotelMarkerIconUrl(): string {
+  // Get marker icon URL for rooms
+  getRoomMarkerIconUrl(): string {
     // Giữ nguyên SVG, nhưng tăng size nếu cần (ví dụ width/height=32)
     const svg = `
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -567,11 +529,11 @@ export class SearchComponent {
     return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
   }
 
-  // Get marker options for hotels
-  getHotelMarkerOptions(): google.maps.MarkerOptions {
+  // Get marker options for rooms
+  getRoomMarkerOptions(): google.maps.MarkerOptions {
     return {
       icon: {
-        url: this.getHotelMarkerIconUrl(),
+        url: this.getRoomMarkerIconUrl(),
       },
       clickable: true  // Explicitly set để nhận click
     };
@@ -612,8 +574,8 @@ export class SearchComponent {
   }
 
   // Get price marker icon URL (AirBnB style)
-  getPriceMarkerIconUrl(hotel: Hotel): string {
-    const isSelected = this.selectedHotel?.id === hotel.id;
+  getPriceMarkerIconUrl(room: RoomModel): string {
+    const isSelected = this.selectedRoom?.id === room.id;
     const backgroundColor = isSelected ? '#222222' : '#ffffff';
     const textColor = isSelected ? '#ffffff' : '#222222';
     const borderColor = isSelected ? '#222222' : '#dddddd';
@@ -622,7 +584,7 @@ export class SearchComponent {
       <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="80" height="32" rx="16" fill="${backgroundColor}" stroke="${borderColor}" stroke-width="1"/>
         <text x="40" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="${textColor}">
-          ₫${(hotel.price / 1000).toFixed(0)}k
+          ₫${(room.price_per_night / 1000).toFixed(0)}k
         </text>
       </svg>
     `;
@@ -630,10 +592,10 @@ export class SearchComponent {
   }
 
   // Get price marker options
-  getPriceMarkerOptions(hotel: Hotel): google.maps.MarkerOptions {
+  getPriceMarkerOptions(room: RoomModel): google.maps.MarkerOptions {
     return {
       icon: {
-        url: this.getPriceMarkerIconUrl(hotel)
+        url: this.getPriceMarkerIconUrl(room)
       }
     };
   }
@@ -642,5 +604,16 @@ export class SearchComponent {
     this.isMapReady = true;
     console.log('🗺️ Map is fully ready!');
     // Nếu cần, add listener động hoặc recalculate gì đó
+  }
+
+  // Get room distance for template
+  getRoomDistance(room: RoomModel): number | null {
+    if (!this.currentLocation) return null;
+    return this.calculateDistance(
+      this.currentLocation.lat,
+      this.currentLocation.lng,
+      room.latitude,
+      room.longitude
+    );
   }
 }

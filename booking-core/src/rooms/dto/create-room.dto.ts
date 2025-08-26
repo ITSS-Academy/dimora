@@ -26,13 +26,13 @@ export class CreateRoomDto {
   @IsString()
   postal_code: string;
 
-  @IsString()
+  @IsNumber()
   @IsLatitude()
-  latitude: string;
+  latitude: number;
 
-  @IsString()
+  @IsNumber()
   @IsLongitude()
-  longitude: string;
+  longitude: number;
 
   @IsNumber()
   @Min(1)

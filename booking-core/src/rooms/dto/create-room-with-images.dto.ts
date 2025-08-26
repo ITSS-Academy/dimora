@@ -29,14 +29,16 @@ export class CreateRoomWithImagesDto {
   postal_code: string;
 
   @IsOptional()
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsLatitude()
-  latitude?: string;
+  latitude?: number;
 
   @IsOptional()
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsLongitude()
-  longitude?: string;
+  longitude?: number;
 
   @Type(() => Number)
   @IsNumber()

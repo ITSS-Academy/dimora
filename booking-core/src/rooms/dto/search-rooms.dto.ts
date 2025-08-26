@@ -20,27 +20,19 @@ export class SearchRoomsDto {
   @Min(1)
   guests?: number;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
+
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  @Min(0)
-  maxPrice?: number;
-
-  @IsOptional()
-  @IsString()
   @IsLatitude()
-  lat?: string;
+  lat?: number;
 
   @IsOptional()
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsLongitude()
-  lng?: string;
+  lng?: number;
 
   @IsOptional()
   @Type(() => Number)

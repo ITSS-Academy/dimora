@@ -31,9 +31,9 @@ export class RoomsService {
   /**
    * Lấy tọa độ từ địa chỉ sử dụng Google Geocoding API
    * @param address Địa chỉ cần geocode
-   * @returns Promise<{latitude: string, longitude: string}>
+   * @returns Promise<{latitude: number, longitude: number}>
    */
-  async getCoordinatesFromAddress(address: string): Promise<{latitude: string, longitude: string}> {
+  async getCoordinatesFromAddress(address: string): Promise<{latitude: number, longitude: number}> {
     try {
       // Sử dụng Google Geocoding API
       const encodedAddress = encodeURIComponent(address);
@@ -68,8 +68,8 @@ export class RoomsService {
 
       const location = data.results[0].geometry.location;
       return {
-        latitude: location.lat.toString(),
-        longitude: location.lng.toString()
+        latitude: location.lat,
+        longitude: location.lng
       };
     } catch (error) {
       if (error instanceof HttpException) {
@@ -122,8 +122,8 @@ export class RoomsService {
         ...createRoomDto, 
         amenities: this.processAmenities(createRoomDto.amenities),
         images: [],
-        latitude: createRoomDto.latitude || '',
-        longitude: createRoomDto.longitude || ''
+        latitude: createRoomDto.latitude || 0,
+        longitude: createRoomDto.longitude || 0
       };
       
       // Nếu không có tọa độ, tự động lấy từ địa chỉ
@@ -402,8 +402,8 @@ export class RoomsService {
     guests?: number;
     minPrice?: number;
     maxPrice?: number;
-    lat?: string;
-    lng?: string;
+    lat?: number;
+    lng?: number;
     radius?: number;
   }): Promise<Room[]> {
     try {
@@ -411,8 +411,8 @@ export class RoomsService {
       if (params.lat && params.lng) {
         const { data, error } = await this.supabaseService.getClient()
           .rpc('search_rooms_nearby', {
-            lat: parseFloat(params.lat),
-            lng: parseFloat(params.lng),
+            lat: params.lat,
+            lng: params.lng,
             radius_km: params.radius || 10,
             max_guests: params.guests,
             min_price: params.minPrice,
