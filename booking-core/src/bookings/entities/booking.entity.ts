@@ -2,20 +2,17 @@ export class Booking {
   /** ID duy nhất của booking */
   id: string;
   
-  /** ID của phòng được đặt */
+  /** ID của phòng được book */
   room_id: string;
   
-  /** ID của khách đặt phòng */
+  /** ID của user đã book */
   user_id: string;
   
-  /** ID của chủ phòng */
-  host_id: string;
+  /** Ngày check-in */
+  check_in_date: Date;
   
-  /** Ngày check-in (ISO string format) */
-  check_in_date: string;
-  
-  /** Ngày check-out (ISO string format) */
-  check_out_date: string;
+  /** Ngày check-out */
+  check_out_date: Date;
   
   /** Số lượng khách */
   guest_count: number;
@@ -23,33 +20,18 @@ export class Booking {
   /** Tổng tiền */
   total_amount: number;
   
-  /** Trạng thái booking (pending, confirmed, cancelled, completed) */
-  status: BookingStatus;
+  /** Trạng thái booking */
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'in_progress' | 'no_show' | 'refunded' | 'disputed';
   
-  /** Ghi chú từ khách */
-  guest_notes: string;
+  /** Ghi chú từ user */
+  user_notes?: string;
   
   /** Ghi chú từ host */
-  host_notes: string;
+  host_notes?: string;
   
   /** Thời gian tạo booking */
   created_at: Date;
   
   /** Thời gian cập nhật booking */
   updated_at: Date;
-}
-
-/** Enum định nghĩa các trạng thái booking */
-export enum BookingStatus {
-  /** Chờ xác nhận */
-  PENDING = 'pending',
-  
-  /** Đã xác nhận */
-  CONFIRMED = 'confirmed',
-  
-  /** Đã hủy */
-  CANCELLED = 'cancelled',
-  
-  /** Đã hoàn thành */
-  COMPLETED = 'completed',
 }

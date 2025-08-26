@@ -1,0 +1,152 @@
+.mat-calendar-body-cell-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  padding: 4px 0 !important;
+}
+
+.mat-calendar-body-cell-content .date-num {
+  font-size: 1em;
+  margin-bottom: 4px;
+}
+
+.mat-calendar-body-cell-content .price {
+  font-size: 0.7em;
+  color: var(--on-surface-variant);
+}
+
+.gray-bg {
+  background-color: var(--surface-container) !important;
+}
+
+.black-bg {
+  background-color: var(--neutral10) !important;
+  color: var(--inverse-on-surface) !important;
+}
+
+.black-bg .price {
+  color: var(--inverse-on-surface) !important;
+}
+
+.red-circle .date-num {
+  border: 2px solid var(--primary) !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.bordered {
+  border: 2px solid #5296f7 !important; /* Light blue for focus border, as in image; adjust if needed */
+}
+
+/* Override selected style to be outline only */
+.mat-calendar-body-selected {
+  background-color: transparent !important;
+}
+
+.mat-calendar-body-selected .date-num {
+  border: 2px solid var(--primary) !important;
+  border-radius: 50% !important;
+  color: var(--on-surface) !important;
+}
+
+/* Other overrides if needed */
+.mat-calendar {
+  background: var(--surface);
+  width: 700px !important; /* Reduced from default ~300px; adjust as needed */
+  height: auto !important;
+  font-size: 0.85em !important;
+}
+
+.mat-calendar-table {
+  width: 100% !important;
+}
+
+.mat-calendar-body tr,
+.mat-calendar-body td {
+  height: 32px !important; /* Smaller cell height; default is ~40px */
+  padding: 0 !important;
+}
+
+.mat-calendar-body-cell-content {
+  height: 100% !important;
+  padding: 2px 0 !important; /* Reduced padding */
+  font-size: 0.9em !important;
+}
+
+.mat-calendar-body-cell-content .date-num {
+  font-size: 0.95em !important; /* Slightly smaller date numbers */
+  margin-bottom: 2px !important; /* Reduced spacing */
+}
+
+.mat-calendar-body-cell-content .price {
+  font-size: 0.65em !important; /* Smaller price text to fit */
+}
+
+.mat-calendar-period-button,
+.mat-calendar-previous-button,
+.mat-calendar-next-button {
+  min-width: 24px !important; /* Smaller buttons */
+  padding: 0 4px !important;
+}
+
+.mat-calendar-weekday-table th {
+  font-size: 0.8em !important; /* Smaller weekday labels (T2, T3, etc.) */
+  padding: 0 2px !important;
+}
+
+/* Adjust red circle and borders for smaller size */
+.red-circle .date-num {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 0.9em !important;
+}
+
+.bordered {
+  border-width: 1px !important; /* Thinner border if needed */
+}
+
+.calendar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.calendar-main {
+  flex: 1;
+}
+
+.side-panel {
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.green-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: green;
+  margin-left: 4px;
+}
+
+.black-button {
+  background-color: var(--neutral10);
+  color: var(--on-primary);
+}
+
+.strike {
+  text-decoration: line-through;
+  color: var(--on-surface-variant);
+}
+
+.custom-settings {
+  color: var(--primary);
+}

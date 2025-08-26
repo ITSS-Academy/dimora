@@ -6,7 +6,7 @@ export const routes: Routes = [
     loadComponent: () => import('../app/pages/home/home.component').then(m => m.HomeComponent)
   },
   {
-    path:'profile',
+    path:'profile/:id',
     loadComponent: () => import('../app/pages/profile/profile.component').then(m => m.ProfileComponent)
   },
   {
@@ -17,10 +17,10 @@ export const routes: Routes = [
     path:'create-post',
     loadComponent: () => import('../app/pages/create-post/create-post.component').then(m => m.CreatePostComponent)
   },
-
-
-
-
+  {
+    path:'search',
+    loadComponent: () => import('../app/pages/search/search.component').then(m => m.SearchComponent)
+  },
   {
     path:'',
     redirectTo:'home',

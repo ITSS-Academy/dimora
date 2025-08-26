@@ -1,0 +1,272 @@
+<div class="container">
+  <!-- Location Controls -->
+  <div class="location-controls">
+    <button
+      class="location-btn"
+      (click)="getCurrentLocation()"
+      [disabled]="isGettingLocation"
+    >
+      @if (!isGettingLocation) {
+        <span>📍 Lấy vị trí hiện tại</span>
+      } @else {
+        <span>⏳ Đang lấy vị trí...</span>
+      }
+    </button>
+
+    @if (currentLocation) {
+      <button
+        class="clear-btn"
+        (click)="clearCurrentLocation()"
+      >
+        🗑️ Xóa vị trí
+      </button>
+    }
+  </div>
+
+  Error Message
+  @if (locationError) {
+    <div class="error-message">
+      {{ locationError }}
+    </div>
+  }
+
+  <!-- Current Location Info -->
+  @if (currentLocation) {
+    <div class="location-info">
+      <h3>📍 Vị trí hiện tại:</h3>
+      <p><strong>Vĩ độ:</strong> {{ currentLocation.lat | number:'1.6-6' }}</p>
+      <p><strong>Kinh độ:</strong> {{ currentLocation.lng | number:'1.6-6' }}</p>
+      @if (currentLocation.accuracy) {
+        <p><strong>Độ chính xác:</strong> {{ currentLocation.accuracy | number:'1.0-0' }}m</p>
+      }
+    </div>
+  }
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Hotels List -->
+    <div class="hotels-sidebar">
+      <div class="sidebar-header">
+        <h2>Over {{ hotels.length }} homes in Ho Chi Minh City</h2>
+        <p class="subtitle">Prices include all fees</p>
+        <p class="hotel-count">{{ visibleHotels.length }} homes nearby • {{ hotels.length }} total on map</p>
+      </div>
+
+      @if (visibleHotels.length === 0) {
+        <div class="no-hotels">
+          <p>Không tìm thấy khách sạn nào trong phạm vi 2km</p>
+          <p class="hint">Thử di chuyển bản đồ đến khu vực khác</p>
+        </div>
+      } @else {
+        <div class="hotels-list">
+          @for (hotel of visibleHotels; track hotel.id) {
+            <div
+              class="hotel-card"
+              [class.selected]="(selectedHotel?.id ?? 0) === hotel.id"
+              (click)="selectHotel(hotel)"
+            >
+              <div class="hotel-image">
+                <img [src]="hotel.image" [alt]="hotel.name" loading="lazy">
+                @if (hotel.isGuestFavorite) {
+                  <div class="guest-favorite">
+                    <span class="trophy">🏆</span>
+                    <span>Guest favorite</span>
+                  </div>
+                }
+                <button class="heart-btn">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="white" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="hotel-info">
+                <div class="hotel-header">
+                  <h3 class="hotel-name">{{ hotel.name }}</h3>
+                  @if (hotel.rating) {
+                    <div class="rating-info">
+                      <span class="star">⭐</span>
+                      <span class="rating-score">{{ hotel.rating }}</span>
+                      <span class="rating-count">({{ hotel.reviewCount }})</span>
+                    </div>
+                  }
+                </div>
+                <p class="hotel-address">{{ hotel.address }}</p>
+                @if (hotel.beds) {
+                  <p class="hotel-beds">{{ hotel.beds }}</p>
+                }
+                <div class="hotel-details">
+                  <div class="price-info">
+                    <span class="hotel-price">{{ formatPrice(hotel.price) }}</span>
+                    <span class="price-period">for 2 nights</span>
+                  </div>
+                  @if (hotel.distance) {
+                    <span class="hotel-distance">{{ hotel.distance | number:'1.1-1' }}km away</span>
+                  }
+                </div>
+                @if (hotel.cancellation) {
+                  <p class="cancellation">{{ hotel.cancellation }}</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Google Map -->
+    <div class="map-container">
+      <google-map
+        class="map"
+        [center]="center"
+        [zoom]="zoom"
+        (zoomChanged)="onMapBoundsChange()"
+        (centerChanged)="onMapCenterChange()"
+        (boundsChanged)="onMapBoundsChange()"
+      >
+        <!-- Current Location Marker -->
+        @if (getCurrentLocationAsLatLng()) {
+          <map-marker
+            [position]="getCurrentLocationAsLatLng()!"
+            [title]="'Vị trí hiện tại của bạn'"
+            [options]="getMarkerOptions()"
+            (click)="onCurrentLocationMarkerClick()"
+
+          ></map-marker>
+        }
+
+        <!-- Hotel Price Markers -->
+        @for (hotel of getAllHotelsForMap(); track hotel.id) {
+          <map-marker
+            [position]="hotel.location"
+            [title]="hotel.name"
+            [options]="getPriceMarkerOptions(hotel)"
+            (mapClick)="onMapClick($event)"
+
+
+
+          ></map-marker>
+        }
+      </google-map>
+
+      <!-- Selected Hotel Info Overlay -->
+      @if (showSelectedHotelInfo && selectedHotel) {
+        <div class="selected-hotel-overlay">
+          <div class="selected-hotel-card">
+            <div class="selected-hotel-image">
+              <img [src]="selectedHotel.image" [alt]="selectedHotel.name">
+              @if (selectedHotel.isGuestFavorite) {
+                <div class="guest-favorite-badge">
+                  <span class="trophy">🏆</span>
+                  <span>Guest favorite</span>
+                </div>
+              }
+              <button class="close-btn" (click)="clearSelectedHotel()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="selected-hotel-content">
+              <div class="selected-hotel-header">
+                <h3>{{ selectedHotel.name }}</h3>
+                @if (selectedHotel.rating) {
+                  <div class="rating-info">
+                    <span class="star">⭐</span>
+                    <span class="rating-score">{{ selectedHotel.rating }}</span>
+                    <span class="rating-count">({{ selectedHotel.reviewCount }})</span>
+                  </div>
+                }
+              </div>
+
+              <p class="selected-hotel-address">{{ selectedHotel.address }}</p>
+              @if (selectedHotel.beds) {
+                <p class="selected-hotel-beds">{{ selectedHotel.beds }}</p>
+              }
+
+              <div class="selected-hotel-price">
+                <span class="price">{{ formatPrice(selectedHotel.price) }}</span>
+                <span class="price-period">for 2 nights</span>
+              </div>
+
+              @if (selectedHotel.cancellation) {
+                <p class="cancellation">{{ selectedHotel.cancellation }}</p>
+              }
+
+              <div class="selected-hotel-actions">
+                <button class="reserve-btn">Reserve</button>
+                <button class="save-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Hotel Dialog -->
+  <!-- @if (showDialog && dialogHotel) {
+    <div class="dialog-overlay" (click)="closeDialog()">
+      <div class="dialog-content" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h2>{{ dialogHotel.name }}</h2>
+          <button class="dialog-close" (click)="closeDialog()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="dialog-image">
+          <img [src]="dialogHotel.image" [alt]="dialogHotel.name">
+          @if (dialogHotel.isGuestFavorite) {
+            <div class="guest-favorite-badge">
+              <span class="trophy">🏆</span>
+              <span>Guest favorite</span>
+            </div>
+          }
+        </div>
+
+        <div class="dialog-body">
+          <div class="hotel-rating">
+            @if (dialogHotel.rating) {
+              <div class="rating-info">
+                <span class="star">⭐</span>
+                <span class="rating-score">{{ dialogHotel.rating }}</span>
+                <span class="rating-count">({{ dialogHotel.reviewCount }})</span>
+              </div>
+            }
+          </div>
+
+          <p class="hotel-address">{{ dialogHotel.address }}</p>
+          @if (dialogHotel.beds) {
+            <p class="hotel-beds">{{ dialogHotel.beds }}</p>
+          }
+
+          <div class="hotel-price">
+            <span class="price">{{ formatPrice(dialogHotel.price) }}</span>
+            <span class="price-period">for 2 nights</span>
+          </div>
+
+          @if (dialogHotel.cancellation) {
+            <p class="cancellation">{{ dialogHotel.cancellation }}</p>
+          }
+
+          <div class="dialog-actions">
+            <button class="reserve-btn">Reserve</button>
+            <button class="save-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  } -->
+</div>
