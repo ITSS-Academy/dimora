@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {MaterialModule} from '../../material.module';
 import {ShareModule} from '../../share.module';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -10,6 +10,9 @@ import {Store} from '@ngrx/store';
 import {AuthState} from '../../../ngrx/state/auth.state';
 import {AuthModel} from '../../../models/auth.model';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
+import {MatDialog} from '@angular/material/dialog';
+import {Dialog} from '@angular/cdk/dialog';
+import {DialogLoginComponent} from '../dialog-login/dialog-login.component';
 
 export interface User {
   name: string;
@@ -42,6 +45,12 @@ export class HeaderComponent implements OnInit {
   @ViewChild('picker') picker!: MatDateRangePicker<Date>;
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
   @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
+
+  readonly dialog = inject(MatDialog);
+
+  openDialog() {
+    this.dialog.open(DialogLoginComponent);
+  }
 
   onLocationInputClick() {
     console.log('locationInput clicked');
