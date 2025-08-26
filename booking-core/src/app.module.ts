@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -28,8 +28,57 @@ import { MiddlewareAuthMiddleware } from './auth/auth.middleware';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MiddlewareAuthMiddleware).forRoutes('*');
+    consumer.apply(MiddlewareAuthMiddleware).forRoutes(
+      {
+      path: 'users/*',
+      method: RequestMethod.POST,
+    },
+    {
+      path: 'users/*',
+      method: RequestMethod.PATCH,
+    },
+    {
+      path: 'users/*',
+      method: RequestMethod.DELETE,
+    },
+    {
+      path: 'users/google/:id',
+      method: RequestMethod.GET,
+    },
+    {
+      path:'bookings/*',
+      method:RequestMethod.ALL
+    },
+    {
+      path:'bookings',
+      method:RequestMethod.ALL
+    },
+    {
+      path:'rooms',
+      method: RequestMethod.POST,
+    },
+    {
+      path:'rooms',
+      method: RequestMethod.PUT,
+    },
+    {
+      path:'rooms',
+      method: RequestMethod.DELETE,
+    },
+    {
+      path:'rooms/*',
+      method: RequestMethod.POST,
+    },
+    {
+      path:'rooms/*',
+      method: RequestMethod.PUT,
+    },
+    {
+      path:'rooms/*',
+      method: RequestMethod.DELETE,
+    },
+  );
   }
 }

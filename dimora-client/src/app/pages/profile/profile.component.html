@@ -1,15 +1,39 @@
-<div class="profile-container">
-  <div class="profile">
-
+@if (this.isLoading$|async){
+  <div class="loading-spinner">
+    <app-loading></app-loading>
   </div>
+} @else {
+  @if (currentProfile$ | async; as profile){
+    <div class="profile-container">
+      <div class="profile">
+        <div class="profile-avatar">
+          <img [src]="profile.avatar_url" alt="avatar" referrerpolicy="no-referrer">
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name">{{profile.full_name}}</h2>
+          <p class="profile-email">{{profile.email}}</p>
+          <p class="profile-phone">{{profile.phone}}</p>
+          <button mat-stroked-button>
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </button>
+        </div>
 
-  <div class="navigate-container">
-    <mat-tab-group class="example-stretched-tabs mat-elevation-z4" mat-stretch-tabs="false" mat-align-tabs="start" >
-      <mat-tab label="First"> Content 1 </mat-tab>
-      <mat-tab label="Second"> Content 2 </mat-tab>
-      <mat-tab label="Third"> Content 3 </mat-tab>
-    </mat-tab-group>
-  </div>
+      </div>
 
+      <div class="navigate-container">
+        <mat-tab-group class="example-stretched-tabs mat-elevation-z4" mat-stretch-tabs >
+          <mat-tab label="First"> Content 1 </mat-tab>
+          <mat-tab label="Second"> Content 2 </mat-tab>
+          <mat-tab label="Third"> Content 3 </mat-tab>
+          <mat-tab label="schedule">
+            <app-schedule></app-schedule>
+          </mat-tab>
 
-</div>
+        </mat-tab-group>
+      </div>
+    </div>
+
+  }
+
+}

@@ -3,6 +3,7 @@ import {inject} from '@angular/core';
 import * as AuthActions from '../actions/auth.actions';
 import {catchError, from, map, of, switchMap} from 'rxjs';
 import {AuthService} from '../../services/auth/auth.service';
+import {AuthModel} from '../../models/auth.model';
 
 
 export const authEffects =  createEffect(
@@ -38,3 +39,39 @@ export const logoutEffects = createEffect(
   },
   {functional: true}
 );
+
+// get user by google id effect
+export const getUserByGoogleIdEffects = createEffect(
+  (actions$ = inject(Actions), authService = inject(AuthService)) => {
+    return actions$.pipe(
+      ofType(AuthActions.getUserByGoogleId),
+      switchMap((action) =>
+        authService.getUserWithGoogleId(action.googleId, action.idToken).pipe(
+          map((currentUser: AuthModel) => {
+            return AuthActions.getUserByGoogleIdSuccess({mineProfile: currentUser});
+          }),
+          catchError((error) => of(AuthActions.getUserByGoogleIdFailure({error: error.message})))
+        )
+      )
+    );
+  },
+  {functional: true}
+)
+
+// get user by id effect
+export const getUserByIdEffects = createEffect(
+  (actions$ = inject(Actions), authService = inject(AuthService)) => {
+    return actions$.pipe(
+      ofType(AuthActions.getUserById),
+      switchMap((action) =>
+        authService.getUserById(action.id).pipe(
+          map((currentUser: AuthModel) => {
+            return AuthActions.getUserByIdSuccess({currentUser: currentUser});
+          }),
+          catchError((error) => of(AuthActions.getUserByIdFailure({error: error.message})))
+        )
+      )
+    );
+  },
+  {functional: true}
+)
