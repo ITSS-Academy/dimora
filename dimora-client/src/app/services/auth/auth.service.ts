@@ -29,6 +29,8 @@ export class AuthService {
     });
   }
 
+
+
   getUserById(userId: string) {
     return this.http.get<AuthModel>(`${environment.apiUrl}users/${userId}`);
   }

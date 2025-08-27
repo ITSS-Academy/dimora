@@ -3,6 +3,11 @@ import {MapComponent} from '../../shared/components/map/map.component';
 import {DecimalPipe} from '@angular/common';
 import {GoogleMap, MapMarker} from '@angular/google-maps';
 import {RoomModel} from '../../models/room.model';
+import { SearchState } from '../../ngrx/state/search.state';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { LoadingComponent } from "../../shared/components/loading/loading.component";
 
 interface Location {
   lat: number;
@@ -14,10 +19,11 @@ interface Location {
 @Component({
   selector: 'app-search',
   imports: [
-    DecimalPipe,
     GoogleMap,
-    MapMarker
-  ],
+    MapMarker,
+    AsyncPipe,
+    LoadingComponent
+],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -28,19 +34,21 @@ export class SearchComponent {
   center: google.maps.LatLngLiteral = { lat: 10.774559, lng: 106.675655 }; // Vị trí hiện tại
   zoom = 12;
   isMapReady = false;
+  isLoading$!:Observable<boolean>
   
   // Map options for smooth performance
   mapOptions: google.maps.MapOptions = {
     zoomControl: true,
-    mapTypeControl: true,
+    center: this.center,
+    
     scaleControl: true,
-    streetViewControl: true,
+    streetViewControl: false,
     rotateControl: true,
-    fullscreenControl: true,
+    fullscreenControl: false,
     disableDefaultUI: false,
     gestureHandling: 'greedy', // Smooth gesture handling
     isFractionalZoomEnabled: true, // Smooth zoom transitions
-    minZoom: 10,
+    minZoom: 1,
     maxZoom: 18,
     // Performance optimizations
     backgroundColor: '#f8f9fa',
@@ -70,13 +78,38 @@ export class SearchComponent {
   showSelectedRoomInfo: boolean = false;
   showDialog: boolean = false;
   dialogRoom: RoomModel | null = null;
+  searchResult$ !: Observable<RoomModel[]>;
+  subscriptions: Subscription[] = [];
 
-  constructor() {}
+  constructor(
+    private store: Store<{
+    search: SearchState,
+  }>
+) {
+  this.searchResult$ = this.store.select('search','searchRooms');
+  this.isLoading$ = this.store.select('search','isLoading');
+  }
 
   ngOnInit() {
     console.log('🚀 App component initialized');
-    this.initializeRooms();
     this.setCurrentLocationAsDefault();
+
+    // Subscribe to search results from API
+    this.subscriptions.push(
+      this.searchResult$.subscribe(result => {
+        if(result && result.length > 0){
+          this.rooms = result;
+          this.center = { lat: this.rooms[0].latitude, lng: this.rooms[0].longitude };
+          console.log('Rooms from API:', this.rooms);
+          this.updateVisibleRooms();
+          this.calculateDistances();
+        } else {
+          console.log('No search results found');
+          this.rooms = [];
+          this.visibleRooms = [];
+        }
+      })
+    );
 
     // Debug map after view init
     setTimeout(() => {
@@ -86,245 +119,7 @@ export class SearchComponent {
       }
     }, 1000);
   }
-
-  // Initialize rooms data
-  initializeRooms(): void {
-    this.rooms = [
-      {
-        id: '1',
-        title: 'Grand Hotel Saigon Room',
-        description: 'Luxury room with city view in the heart of District 1',
-        price_per_night: 2500000,
-        location: 'Quận 1, TP.HCM',
-        address: '8 Đồng Khởi, Quận 1, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7769,
-        longitude: 106.7009,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'luxury',
-        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh'],
-        images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop'],
-        host_id: 'host1',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Riverside Hotel Room',
-        description: 'Cozy room with river view',
-        price_per_night: 1800000,
-        location: 'Quận 1, TP.HCM',
-        address: '18 Tôn Đức Thắng, Quận 1, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7833,
-        longitude: 106.7000,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'standard',
-        amenities: ['WiFi', 'Điều hòa', 'TV'],
-        images: ['https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop'],
-        host_id: 'host2',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '3',
-        title: 'Central Plaza Hotel Suite',
-        description: 'Spacious suite with premium amenities',
-        price_per_night: 3200000,
-        location: 'Quận 1, TP.HCM',
-        address: '17 Lê Duẩn, Quận 1, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7797,
-        longitude: 106.6992,
-        max_guests: 4,
-        bedrooms: 2,
-        bathrooms: 2,
-        beds: 2,
-        room_type_id: 'suite',
-        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Máy giặt'],
-        images: ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
-        host_id: 'host3',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '4',
-        title: 'Boutique Hotel District 3',
-        description: 'Charming boutique hotel room',
-        price_per_night: 1200000,
-        location: 'Quận 3, TP.HCM',
-        address: '123 Võ Văn Tần, Quận 3, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7820,
-        longitude: 106.6880,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'boutique',
-        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp nhỏ'],
-        images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'],
-        host_id: 'host4',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '5',
-        title: 'Business Hotel Bình Thạnh',
-        description: 'Perfect for business travelers',
-        price_per_night: 1500000,
-        location: 'Quận Bình Thạnh, TP.HCM',
-        address: '456 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.8000,
-        longitude: 106.7000,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'business',
-        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bàn làm việc'],
-        images: ['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop'],
-        host_id: 'host5',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '6',
-        title: 'Luxury Resort Phú Nhuận',
-        description: 'Luxury resort experience in the city',
-        price_per_night: 4500000,
-        location: 'Quận Phú Nhuận, TP.HCM',
-        address: '789 Nguyễn Văn Trỗi, Quận Phú Nhuận, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7900,
-        longitude: 106.6800,
-        max_guests: 4,
-        bedrooms: 2,
-        bathrooms: 2,
-        beds: 2,
-        room_type_id: 'luxury',
-        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Hồ bơi', 'Gym'],
-        images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop'],
-        host_id: 'host6',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '7',
-        title: 'Budget Hotel Tân Bình',
-        description: 'Affordable accommodation option',
-        price_per_night: 800000,
-        location: 'Quận Tân Bình, TP.HCM',
-        address: '321 Cộng Hòa, Quận Tân Bình, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.8100,
-        longitude: 106.6500,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'budget',
-        amenities: ['WiFi', 'Điều hòa', 'TV'],
-        images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop'],
-        host_id: 'host7',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '8',
-        title: 'Heritage Hotel District 5',
-        description: 'Historic hotel with modern comfort',
-        price_per_night: 2200000,
-        location: 'Quận 5, TP.HCM',
-        address: '567 Trần Hưng Đạo, Quận 5, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7500,
-        longitude: 106.6600,
-        max_guests: 2,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'heritage',
-        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp'],
-        images: ['https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop'],
-        host_id: 'host8',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '9',
-        title: 'Modern Apartment District 7',
-        description: 'Modern apartment with full amenities',
-        price_per_night: 2800000,
-        location: 'Quận 7, TP.HCM',
-        address: '234 Nguyễn Thị Thập, Quận 7, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7300,
-        longitude: 106.7200,
-        max_guests: 3,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'apartment',
-        amenities: ['WiFi', 'Điều hòa', 'Bếp', 'TV', 'Tủ lạnh', 'Máy giặt'],
-        images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'],
-        host_id: 'host9',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '10',
-        title: 'Cozy Studio District 10',
-        description: 'Cozy studio perfect for solo travelers',
-        price_per_night: 950000,
-        location: 'Quận 10, TP.HCM',
-        address: '789 Sư Vạn Hạnh, Quận 10, TP.HCM',
-        city: 'Ho Chi Minh City',
-        country: 'Vietnam',
-        latitude: 10.7600,
-        longitude: 106.6700,
-        max_guests: 1,
-        bedrooms: 1,
-        bathrooms: 1,
-        beds: 1,
-        room_type_id: 'studio',
-        amenities: ['WiFi', 'Điều hòa', 'TV', 'Bếp nhỏ'],
-        images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop'],
-        host_id: 'host10',
-        is_available: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      }
-    ];
-
-    this.calculateDistances();
-    this.updateVisibleRooms();
-  }
+ 
 
   // Set current location as default
   setCurrentLocationAsDefault(): void {
@@ -334,19 +129,10 @@ export class SearchComponent {
     };
   }
 
-  // Calculate distances from current location
+  // Calculate distances from current location - removed
   calculateDistances(): void {
-    if (!this.currentLocation) return;
-
-    this.rooms.forEach(room => {
-      // Add distance property to room (not in original model, but needed for UI)
-      (room as any).distance = this.calculateDistance(
-        this.currentLocation!.lat,
-        this.currentLocation!.lng,
-        room.latitude,
-        room.longitude
-      );
-    });
+    // Distance calculation removed - no longer needed
+    console.log('Distance calculation disabled');
   }
 
   // Calculate distance between two points using Haversine formula
@@ -367,33 +153,16 @@ export class SearchComponent {
     return deg * (Math.PI/180);
   }
 
-  // Update visible rooms based on zoom level and center
+  // Update visible rooms - show all rooms
   updateVisibleRooms(): void {
-    // Show all rooms without distance filtering
-    this.visibleRooms = this.rooms.map(room => {
-      const distance = this.calculateDistance(
-        this.mapCenter.lat,
-        this.mapCenter.lng,
-        room.latitude,
-        room.longitude
-      );
-      (room as any).distance = distance;
-      return room;
-    }).sort((a, b) => ((a as any).distance || 0) - ((b as any).distance || 0));
-    console.log(this.visibleRooms);
+    // Show all rooms without distance calculation
+    this.visibleRooms = [...this.rooms];
+    console.log('All rooms:', this.visibleRooms);
   }
 
-  // Get all rooms for map markers (not filtered by distance)
+  // Get all rooms for map markers
   getAllRoomsForMap(): RoomModel[] {
-    return this.rooms.map(room => ({
-      ...room,
-      distance: this.calculateDistance(
-        this.mapCenter.lat,
-        this.mapCenter.lng,
-        room.latitude,
-        room.longitude
-      )
-    }));
+    return [...this.rooms];
   }
 
   // Handle map center change
@@ -505,6 +274,55 @@ export class SearchComponent {
       }
     );
   }
+
+  // Zoom to current location with smooth animation
+  zoomToMyLocation(): void {
+    if (this.currentLocation) {
+      // If we already have location, just zoom to it
+      this.mapOptions.center = { lat: this.currentLocation.lat, lng: this.currentLocation.lng };
+    } 
+  }
+
+  // Smooth zoom to specific location
+  // smoothZoomToLocation(targetLocation: Location): void {
+  //   const targetCenter = { lat: targetLocation.lat, lng: targetLocation.lng };
+  //   const targetZoom = 15;
+  //   const duration = 800;
+  //   const steps = 40;
+  //   const stepDuration = duration / steps;
+    
+  //   const startCenter = { ...this.center };
+  //   const startZoom = this.zoom;
+    
+  //   let currentStep = 0;
+    
+  //   const easeOutQuart = (t: number): number => {
+  //     return 1 - Math.pow(1 - t, 4);
+  //   };
+    
+  //   const animate = () => {
+  //     if (currentStep < steps) {
+  //       const progress = currentStep / steps;
+  //       const easedProgress = easeOutQuart(progress);
+        
+  //       this.center = {
+  //         lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+  //         lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+  //       };
+  //       this.zoom = startZoom + (targetZoom - startZoom) * easedProgress;
+  //       this.mapCenter = { ...this.center };
+        
+  //       currentStep++;
+  //       setTimeout(animate, stepDuration);
+  //     } else {
+  //       this.center = targetCenter;
+  //       this.zoom = targetZoom;
+  //       this.mapCenter = targetCenter;
+  //     }
+  //   };
+    
+  //   animate();
+  // }
 
   // Clear current location
   clearCurrentLocation(): void {
@@ -739,14 +557,15 @@ export class SearchComponent {
     // Nếu cần, add listener động hoặc recalculate gì đó
   }
 
-  // Get room distance for template
+  // Get room distance for template - removed
   getRoomDistance(room: RoomModel): number | null {
-    if (!this.currentLocation) return null;
-    return this.calculateDistance(
-      this.currentLocation.lat,
-      this.currentLocation.lng,
-      room.latitude,
-      room.longitude
-    );
+    // Distance calculation removed - no longer needed
+    return null;
+  }
+
+  // Cleanup subscriptions when component is destroyed
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    console.log('Search component destroyed, subscriptions cleaned up');
   }
 }

@@ -3,7 +3,7 @@ import {MaterialModule} from '../../material.module';
 import {ShareModule} from '../../share.module';
 import {FormControl, FormGroup} from '@angular/forms';
 import {provideNativeDateAdapter} from '@angular/material/core';
-import {map, Observable, startWith} from 'rxjs';
+import {map, Observable, startWith, Subscription} from 'rxjs';
 import {MatDateRangePicker} from '@angular/material/datepicker';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {Store} from '@ngrx/store';
@@ -11,6 +11,11 @@ import {AuthState} from '../../../ngrx/state/auth.state';
 import {AuthModel} from '../../../models/auth.model';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
 import { Router } from '@angular/router';
+import { SearchModel } from '../../../models/search.model';
+import * as SearchActions from '../../../ngrx/actions/search.actions';
+import { RoomModel } from '../../../models/room.model';
+import { SearchState } from '../../../ngrx/state/search.state';
+import { SnackbarService } from '../../../services/snackbar/snackbar.service';
 
 export interface User {
   name: string;
@@ -26,18 +31,25 @@ export interface User {
 
 
 export class HeaderComponent implements OnInit {
+
+  mineProfile$ !: Observable<AuthModel>;
+  minDate = new Date();
+  subscriptions: Subscription[] = [];
+  searchResult$ !: Observable<RoomModel[]>;
   constructor(
     private store: Store<{
       auth: AuthState,
+      search: SearchState,
     }>,
-    private router: Router
+    private router: Router,
+    private snackBar: SnackbarService
   ) {
 
     this.mineProfile$ = this.store.select('auth', 'mineProfile');
+    this.searchResult$ = this.store.select('search','searchRooms');
 
   }
 
-  mineProfile$ !: Observable<AuthModel>;
 
 
 
@@ -74,24 +86,73 @@ export class HeaderComponent implements OnInit {
   onSearch() {
     console.log('Search button clicked');
     console.log('Form values:', this.range.value);
-    console.log('Location:', this.range.controls.location.value);
-    console.log('Start date:', this.range.controls.start.value);
-    console.log('End date:', this.range.controls.end.value);
-    console.log('Guests:', this.range.controls.guests.value);
-    console.log('Guest details:', {
-      adults: this.adults,
-      children: this.children,
-      infants: this.infants,
-      pets: this.pets
-    });
+
+    let searchData: SearchModel = {} as SearchModel;
+    
+    // Format dates to yyyy-mm-dd string
+    if(this.range.value.location ){
+      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
+      
+      console.log('Formatted start date:', formattedStartDate);
+      console.log('Formatted end date:', formattedEndDate);
+      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
+      
+      // Normalize location - remove Vietnamese accents and spaces
+      const normalizedLocation = this.normalizeText(this.range.value.location);
+      
+      searchData = {
+        location: normalizedLocation,
+        checkIn: formattedStartDate,
+        checkOut: formattedEndDate,
+        guests: Number(newValueGuests),
+        minPrice: 0,
+        maxPrice: 0,
+      };
+
+    console.log('Search data with formatted dates:', searchData);
+    this.store.dispatch(SearchActions.searchRooms({searchParams:searchData}))    
+    }else{
+      this.snackBar.showAlert('Please select a location', 'error', 300000, 'right','top');
+    }
+
+    
+  }
+
+  // Normalize text - remove Vietnamese accents and spaces
+  normalizeText(text: string): string {
+    if (!text) return '';
+    
+    return text
+      .normalize('NFD') // Decompose characters with diacritics
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
+      .replace(/\s+/g, '') // Remove all spaces
+      .toLowerCase(); // Convert to lowercase
+  }
+
+ 
+
+  // Format Date to yyyy-mm-dd string
+  formatDateToString(date: Date | null): string {
+    if (!date) return '';
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   }
 
   onFormKeyDown(event: KeyboardEvent) {
     // Chặn phím Enter để ngăn form submit
-    if (event.key === 'Enter') {
+    if (!this.range.value.location && event.key === 'Enter') {
+      console.log(this.range.value.location)
       event.preventDefault();
       event.stopPropagation();
       console.log('Enter key blocked - please use Search button');
+    }else if(this.range.value.location && event.key === 'Enter'){
+      this.router.navigate(['/search']);
+
     }
   }
 
@@ -112,7 +173,7 @@ export class HeaderComponent implements OnInit {
   filteredOptions!: Observable<User[]>;
 
   range = new FormGroup({
-    location: new FormControl<User | null>(null),
+    location: new FormControl<string | null>(null),
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
     guests: new FormControl<string>(''),
@@ -129,19 +190,24 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+   this.subscriptions.push(
     this.mineProfile$.subscribe(profile => {
       if (profile) {
         console.log('User profile loaded:', profile);
       } else {
         console.log('No user profile available');
       }
-    })
+    }),
+
+   
+
+  )
 
 
     this.filteredOptions = this.range.controls.location.valueChanges.pipe(
       startWith(''),
       map(value => {
-        const name = typeof value === 'string' ? value : value?.name;
+        const name = typeof value === 'string' ? value : value;
         return name ? this._filter(name as string) : this.options.slice();
       }),
     );
@@ -169,6 +235,8 @@ export class HeaderComponent implements OnInit {
     if (this.pets > 0) {
       display += `, ${this.pets} pet${this.pets > 1 ? 's' : ''}`;
     }
+
+    //remove 'guests' or 'guest' in display
 
     this.range.controls.guests.setValue(display);
   }

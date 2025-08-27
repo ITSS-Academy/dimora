@@ -432,8 +432,7 @@ export class RoomsService {
   }
 
   async searchRooms(params: {
-    city?: string;
-    location?: string;
+    location: string;
     checkIn?: string;
     checkOut?: string;
     guests?: number;
@@ -443,7 +442,6 @@ export class RoomsService {
   }): Promise<Room[]> {
     try {
       // If location is provided, geocode it first then use RPC function
-      if (params.location) {
         // Geocode the location to get coordinates
         const coordinates = await this.getCoordinatesFromAddress(params.location);
         
@@ -453,6 +451,18 @@ export class RoomsService {
             HttpStatus.BAD_REQUEST
           );
         }
+        console.log('coordinates', coordinates);
+        const test = {
+          lat_param: coordinates.latitude,
+          lng_param: coordinates.longitude,
+          check_in_date_param: params.checkIn || null,
+          check_out_date_param: params.checkOut || null,
+          radius_km_param: params.radius || 10,
+          max_guests_param: params.guests || null,
+          min_price_param: params.minPrice || null,
+          max_price_param: params.maxPrice || null
+        }
+        console.log('test', test);
 
         const { data, error } = await this.supabaseService.getClient()
           .rpc('search_rooms_nearby', {
@@ -461,10 +471,11 @@ export class RoomsService {
             check_in_date_param: params.checkIn || null,
             check_out_date_param: params.checkOut || null,
             radius_km_param: params.radius || 10,
-            max_guests_param: params.guests || null,
-            min_price_param: params.minPrice || null,
-            max_price_param: params.maxPrice || null
+            max_guests_param: Number(params.guests) || null,
+            min_price_param: Number(params.minPrice) || null,
+            max_price_param: Number(params.maxPrice) || null
           });
+          console.log('data', error);
 
         if (error) {
           throw new HttpException(
@@ -473,59 +484,9 @@ export class RoomsService {
           );
         }
 
-        return data || [];
-      }
+        return data as Room[];
+      
 
-      // Otherwise use regular query
-      let query = this.supabaseService.getClient()
-        .from('rooms')
-        .select('*')
-        .eq('is_available', true);
-
-      if (params.city) {
-        query = query.ilike('city', `%${params.city}%`);
-      }
-
-      if (params.guests) {
-        query = query.gte('max_guests', params.guests);
-      }
-
-      if (params.minPrice) {
-        query = query.gte('price_per_night', params.minPrice);
-      }
-
-      if (params.maxPrice) {
-        query = query.lte('price_per_night', params.maxPrice);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-      // Filter by availability if check-in and check-out dates are provided
-      if (data && params.checkIn && params.checkOut) {
-        const availableRooms = data.filter(room => {
-          // Check if room has any conflicting bookings
-          return !room.bookings || room.bookings.every(booking => {
-            const bookingStart = new Date(booking.check_in_date);
-            const bookingEnd = new Date(booking.check_out_date);
-            const searchStart = new Date(params.checkIn!);
-            const searchEnd = new Date(params.checkOut!);
-            
-            // Check for overlap
-            return bookingStart >= searchEnd || bookingEnd <= searchStart;
-          });
-        });
-        
-        return availableRooms;
-      }
-
-      if (error) {
-        throw new HttpException(
-          `Failed to search rooms: ${error.message}`,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      return data;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

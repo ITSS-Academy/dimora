@@ -97,10 +97,16 @@ $header-height: 80px;
 .room-card {
   padding: 0;
   border-bottom: 1px solid #e0e0e0;
-  cursor: pointer;
   transition: all 0.2s ease;
   width: 250px;
   
+  &:hover {
+    cursor: pointer !important;
+  }
+  
+  // Cross-platform cursor support
+  cursor: -webkit-pointer !important; // Safari/Chrome on Mac
+  cursor: -moz-pointer !important; // Firefox
 
   
   // &.selected {
@@ -113,6 +119,9 @@ $header-height: 80px;
   width: 100%;
   height: 250px;
   overflow: hidden;
+  cursor: pointer;
+  cursor: -webkit-pointer; // Safari/Chrome on Mac
+  cursor: -moz-pointer; // Firefox
   
   img {
     width: 100%;
@@ -158,6 +167,9 @@ $header-height: 80px;
 
 .room-info {
   padding: 16px 0;
+  cursor: pointer;
+  cursor: -webkit-pointer; // Safari/Chrome on Mac
+  cursor: -moz-pointer; // Firefox
   
   .room-header {
     display: flex;
@@ -320,6 +332,8 @@ $header-height: 80px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   max-width: 400px;
+  cursor: pointer!important;
+
 }
 
 .selected-room-image {

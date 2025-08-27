@@ -1,252 +1,262 @@
-<div class="container">
-  <!-- Location Controls -->
-<!--  <div class="location-controls">-->
-<!--    <button-->
-<!--      class="location-btn"-->
-<!--      (click)="getCurrentLocation()"-->
-<!--      [disabled]="isGettingLocation"-->
-<!--    >-->
-<!--      @if (!isGettingLocation) {-->
-<!--        <span>📍 Lấy vị trí hiện tại</span>-->
-<!--      } @else {-->
-<!--        <span>⏳ Đang lấy vị trí...</span>-->
-<!--      }-->
-<!--    </button>-->
-
-<!--    @if (currentLocation) {-->
-<!--      <button-->
-<!--        class="clear-btn"-->
-<!--        (click)="clearCurrentLocation()"-->
-<!--      >-->
-<!--        🗑️ Xóa vị trí-->
-<!--      </button>-->
-<!--    }-->
-<!--  </div>-->
-
-<!--  Error Message-->
-<!--  @if (locationError) {-->
-<!--    <div class="error-message">-->
-<!--      {{ locationError }}-->
-<!--    </div>-->
-<!--  }-->
-
-  <!-- Current Location Info -->
-  <!-- @if (currentLocation) {
-    <div class="location-info">
-      <h3>📍 Vị trí hiện tại:</h3>
-      <p><strong>Vĩ độ:</strong> {{ currentLocation.lat | number:'1.6-6' }}</p>
-      <p><strong>Kinh độ:</strong> {{ currentLocation.lng | number:'1.6-6' }}</p>
-      @if (currentLocation.accuracy) {
-        <p><strong>Độ chính xác:</strong> {{ currentLocation.accuracy | number:'1.0-0' }}m</p>
-      }
-    </div>
-  } -->
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Rooms List -->
-    <div class="rooms-sidebar">
-      @if (visibleRooms.length === 0) {
-        <div class="no-rooms">
-          <p>Không có phòng nào được tìm thấy</p>
+@if (isLoading$ | async) {
+  <app-loading></app-loading>
+} @else {
+  <div class="container">
+    <!-- Location Controls -->
+  <!--  <div class="location-controls">-->
+  <!--    <button-->
+  <!--      class="location-btn"-->
+  <!--      (click)="getCurrentLocation()"-->
+  <!--      [disabled]="isGettingLocation"-->
+  <!--    >-->
+  <!--      @if (!isGettingLocation) {-->
+  <!--        <span>📍 Lấy vị trí hiện tại</span>-->
+  <!--      } @else {-->
+  <!--        <span>⏳ Đang lấy vị trí...</span>-->
+  <!--      }-->
+  <!--    </button>-->
+  
+  <!--    @if (currentLocation) {-->
+  <!--      <button-->
+  <!--        class="clear-btn"-->
+  <!--        (click)="clearCurrentLocation()"-->
+  <!--      >-->
+  <!--        🗑️ Xóa vị trí-->
+  <!--      </button>-->
+  <!--    }-->
+  <!--  </div>-->
+  
+  <!--  Error Message-->
+  <!--  @if (locationError) {-->
+  <!--    <div class="error-message">-->
+  <!--      {{ locationError }}-->
+  <!--    </div>-->
+  <!--  }-->
+  
+    <!-- Current Location Info -->
+    <!-- @if (currentLocation) {
+      <div class="location-info">
+        <h3>📍 Vị trí hiện tại:</h3>
+        <p><strong>Vĩ độ:</strong> {{ currentLocation.lat | number:'1.6-6' }}</p>
+        <p><strong>Kinh độ:</strong> {{ currentLocation.lng | number:'1.6-6' }}</p>
+        @if (currentLocation.accuracy) {
+          <p><strong>Độ chính xác:</strong> {{ currentLocation.accuracy | number:'1.0-0' }}m</p>
+        }
+      </div>
+    } -->
+  
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Rooms List -->
+      <div class="rooms-sidebar">
+        <div class="sidebar-header">
+          <h2>{{ rooms.length > 0 ? 'Over ' + rooms.length + ' homes found' : 'Search for homes' }}</h2>
+          <p class="subtitle">Prices include all fees</p>
+          <p class="room-count">{{ rooms.length > 0 ? (rooms.length + ' homes found') : 'Use the search bar above to find rooms' }}</p>
         </div>
-      } @else {
-        <div class="rooms-list">
-          @for (room of visibleRooms; track room.id) {
-            <div
-              class="room-card"
-              [class.selected]="(selectedRoom?.id ?? '') === room.id"
-              (click)="selectRoom(room)"
-            >
-              <div class="room-image">
-                <img [src]="room.images[0]" [alt]="room.title" loading="lazy">
-                <button class="heart-btn">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="white" stroke="currentColor" stroke-width="1.5"/>
+        
+        @if (rooms.length === 0) {
+          <div class="no-rooms">
+            <p>Chưa có kết quả tìm kiếm</p>
+            <p class="hint">Hãy sử dụng thanh tìm kiếm ở header để tìm phòng</p>
+          </div>
+        } @else {
+          <div class="rooms-list">
+            @for (room of rooms; track room.id) {
+              <div
+                class="room-card"
+                [class.selected]="(selectedRoom?.id ?? '') === room.id"
+                (click)="selectRoom(room)"
+              >
+                <div class="room-image">
+                  <img [src]="room.images[0]" [alt]="room.title" loading="lazy">
+                  <button class="heart-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="white" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </button>
+                </div>
+  
+                <div class="room-info">
+                  <div class="room-header">
+                    <h3 class="room-title">{{ room.title }}</h3>
+                  </div>
+                  <p class="room-address">{{ room.address }}</p>
+                  <p class="room-description">{{ room.description }}</p>
+                  <div class="room-details">
+                    <span class="room-beds">{{ room.beds }} bed{{ room.beds > 1 ? 's' : '' }}</span>
+                    <span class="room-bathrooms">{{ room.bathrooms }} bathroom{{ room.bathrooms > 1 ? 's' : '' }}</span>
+                    <span class="room-guests">{{ room.max_guests }} guest{{ room.max_guests > 1 ? 's' : '' }}</span>
+                  </div>
+                  <div class="room-amenities">
+                    @for (amenity of room.amenities.slice(0, 3); track amenity) {
+                      <span class="amenity-tag">{{ amenity }}</span>
+                    }
+                    @if (room.amenities.length > 3) {
+                      <span class="amenity-more">+{{ room.amenities.length - 3 }} more</span>
+                    }
+                  </div>
+                  <div class="room-price-info">
+                    <div class="price-info">
+                      <span class="room-price">{{ formatPrice(room.price_per_night) }}</span>
+                      <span class="price-period">per night</span>
+                    </div>
+  
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+  
+      <!-- Google Map -->
+      <div class="map-container">
+        <google-map
+          class="map"
+          [center]="center"
+          width="100%"
+          height="100%"
+          [zoom]="zoom"
+          [options]="mapOptions"
+          (zoomChanged)="onMapBoundsChange()"
+          (centerChanged)="onMapCenterChange()"
+          (boundsChanged)="onMapBoundsChange()"
+        >
+          <!-- Current Location Marker -->
+          @if (getCurrentLocationAsLatLng()) {
+            <map-marker
+              [position]="getCurrentLocationAsLatLng()!"
+              [title]="'Vị trí hiện tại của bạn'"
+              [options]="getMarkerOptions()"
+              (click)="onCurrentLocationMarkerClick()"
+  
+            ></map-marker>
+          }
+  
+          <!-- Room Price Markers -->
+          @for (room of getAllRoomsForMap(); track room.id) {
+            <map-marker
+              [position]="{ lat: room.latitude, lng: room.longitude }"
+              [title]="room.title"
+              [options]="getPriceMarkerOptions(room)"
+              (mapClick)="onMapClick($event)"
+  
+  
+  
+            ></map-marker>
+          }
+        </google-map>
+  
+        <!-- Selected Room Info Overlay -->
+        <!-- @if (showSelectedRoomInfo && selectedRoom) {
+          <div class="selected-room-overlay">
+            <div class="selected-room-card">
+              <div class="selected-room-image">
+                <img [src]="selectedRoom.images[0]" [alt]="selectedRoom.title">
+                <button class="close-btn" (click)="clearSelectedRoom()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
                   </svg>
                 </button>
               </div>
-
-              <div class="room-info">
-                <div class="room-header">
-                  <h3 class="room-title">{{ room.title }}</h3>
+  
+              <div class="selected-room-content">
+                <div class="selected-room-header">
+                  <h3>{{ selectedRoom.title }}</h3>
                 </div>
-                <p class="room-address">{{ room.address }}</p>
-                <p class="room-description">{{ room.description }}</p>
-                <div class="room-details">
-                  <span class="room-beds">{{ room.beds }} bed{{ room.beds > 1 ? 's' : '' }}</span>
-                  <span class="room-bathrooms">{{ room.bathrooms }} bathroom{{ room.bathrooms > 1 ? 's' : '' }}</span>
-                  <span class="room-guests">{{ room.max_guests }} guest{{ room.max_guests > 1 ? 's' : '' }}</span>
+  
+                <p class="selected-room-address">{{ selectedRoom.address }}</p>
+                <p class="selected-room-description">{{ selectedRoom.description }}</p>
+                
+                <div class="selected-room-details">
+                  <span class="room-beds">{{ selectedRoom.beds }} bed{{ selectedRoom.beds > 1 ? 's' : '' }}</span>
+                  <span class="room-bathrooms">{{ selectedRoom.bathrooms }} bathroom{{ selectedRoom.bathrooms > 1 ? 's' : '' }}</span>
+                  <span class="room-guests">{{ selectedRoom.max_guests }} guest{{ selectedRoom.max_guests > 1 ? 's' : '' }}</span>
                 </div>
-                <div class="room-amenities">
-                  @for (amenity of room.amenities.slice(0, 3); track amenity) {
+  
+                <div class="selected-room-amenities">
+                  @for (amenity of selectedRoom.amenities.slice(0, 5); track amenity) {
                     <span class="amenity-tag">{{ amenity }}</span>
                   }
-                  @if (room.amenities.length > 3) {
-                    <span class="amenity-more">+{{ room.amenities.length - 3 }} more</span>
+                  @if (selectedRoom.amenities.length > 5) {
+                    <span class="amenity-more">+{{ selectedRoom.amenities.length - 5 }} more</span>
                   }
                 </div>
-                <div class="room-price-info">
-                  <div class="price-info">
-                    <span class="room-price">{{ formatPrice(room.price_per_night) }}</span>
-                    <span class="price-period">per night</span>
-                  </div>
-                  @if (getRoomDistance(room)) {
-                    <span class="room-distance">{{ getRoomDistance(room) | number:'1.1-1' }}km away</span>
-                  }
+  
+                <div class="selected-room-price">
+                  <span class="price">{{ formatPrice(selectedRoom.price_per_night) }}</span>
+                  <span class="price-period">per night</span>
+                </div>
+  
+                <div class="selected-room-actions">
+                  <button class="reserve-btn">Reserve</button>
+                  <button class="save-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
-          }
-        </div>
-      }
+          </div>
+        } -->
+      </div>
     </div>
-
-    <!-- Google Map -->
-    <div class="map-container">
-      <google-map
-        class="map"
-        [center]="center"
-        width="100%"
-        height="100%"
-        [zoom]="zoom"
-        [options]="mapOptions"
-        (zoomChanged)="onMapBoundsChange()"
-        (centerChanged)="onMapCenterChange()"
-        (boundsChanged)="onMapBoundsChange()"
-      >
-        <!-- Current Location Marker -->
-        @if (getCurrentLocationAsLatLng()) {
-          <map-marker
-            [position]="getCurrentLocationAsLatLng()!"
-            [title]="'Vị trí hiện tại của bạn'"
-            [options]="getMarkerOptions()"
-            (click)="onCurrentLocationMarkerClick()"
-
-          ></map-marker>
-        }
-
-        <!-- Room Price Markers -->
-        @for (room of getAllRoomsForMap(); track room.id) {
-          <map-marker
-            [position]="{ lat: room.latitude, lng: room.longitude }"
-            [title]="room.title"
-            [options]="getPriceMarkerOptions(room)"
-            (mapClick)="onMapClick($event)"
-
-
-
-          ></map-marker>
-        }
-      </google-map>
-
-      <!-- Selected Room Info Overlay -->
-      <!-- @if (showSelectedRoomInfo && selectedRoom) {
-        <div class="selected-room-overlay">
-          <div class="selected-room-card">
-            <div class="selected-room-image">
-              <img [src]="selectedRoom.images[0]" [alt]="selectedRoom.title">
-              <button class="close-btn" (click)="clearSelectedRoom()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-                </svg>
-              </button>
-            </div>
-
-            <div class="selected-room-content">
-              <div class="selected-room-header">
-                <h3>{{ selectedRoom.title }}</h3>
-              </div>
-
-              <p class="selected-room-address">{{ selectedRoom.address }}</p>
-              <p class="selected-room-description">{{ selectedRoom.description }}</p>
-              
-              <div class="selected-room-details">
-                <span class="room-beds">{{ selectedRoom.beds }} bed{{ selectedRoom.beds > 1 ? 's' : '' }}</span>
-                <span class="room-bathrooms">{{ selectedRoom.bathrooms }} bathroom{{ selectedRoom.bathrooms > 1 ? 's' : '' }}</span>
-                <span class="room-guests">{{ selectedRoom.max_guests }} guest{{ selectedRoom.max_guests > 1 ? 's' : '' }}</span>
-              </div>
-
-              <div class="selected-room-amenities">
-                @for (amenity of selectedRoom.amenities.slice(0, 5); track amenity) {
-                  <span class="amenity-tag">{{ amenity }}</span>
-                }
-                @if (selectedRoom.amenities.length > 5) {
-                  <span class="amenity-more">+{{ selectedRoom.amenities.length - 5 }} more</span>
-                }
-              </div>
-
-              <div class="selected-room-price">
-                <span class="price">{{ formatPrice(selectedRoom.price_per_night) }}</span>
-                <span class="price-period">per night</span>
-              </div>
-
-              <div class="selected-room-actions">
-                <button class="reserve-btn">Reserve</button>
-                <button class="save-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      } -->
-    </div>
-  </div>
-
-  <!-- Room Dialog -->
-  <!-- @if (showDialog && dialogRoom) {
-    <div class="dialog-overlay" (click)="closeDialog()">
-      <div class="dialog-content" (click)="$event.stopPropagation()">
-        <div class="dialog-header">
-          <h2>{{ dialogRoom.title }}</h2>
-          <button class="dialog-close" (click)="closeDialog()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="dialog-image">
-          <img [src]="dialogRoom.images[0]" [alt]="dialogRoom.title">
-        </div>
-
-        <div class="dialog-body">
-          <p class="room-address">{{ dialogRoom.address }}</p>
-          <p class="room-description">{{ dialogRoom.description }}</p>
-          
-          <div class="room-details">
-            <span class="room-beds">{{ dialogRoom.beds }} bed{{ dialogRoom.beds > 1 ? 's' : '' }}</span>
-            <span class="room-bathrooms">{{ dialogRoom.bathrooms }} bathroom{{ dialogRoom.bathrooms > 1 ? 's' : '' }}</span>
-            <span class="room-guests">{{ dialogRoom.max_guests }} guest{{ dialogRoom.max_guests > 1 ? 's' : '' }}</span>
-          </div>
-
-          <div class="room-amenities">
-            @for (amenity of dialogRoom.amenities.slice(0, 5); track amenity) {
-              <span class="amenity-tag">{{ amenity }}</span>
-            }
-            @if (dialogRoom.amenities.length > 5) {
-              <span class="amenity-more">+{{ dialogRoom.amenities.length - 5 }} more</span>
-            }
-          </div>
-
-          <div class="room-price">
-            <span class="price">{{ formatPrice(dialogRoom.price_per_night) }}</span>
-            <span class="price-period">per night</span>
-          </div>
-
-          <div class="dialog-actions">
-            <button class="reserve-btn">Reserve</button>
-            <button class="save-btn">
+  
+    <!-- Room Dialog -->
+    <!-- @if (showDialog && dialogRoom) {
+      <div class="dialog-overlay" (click)="closeDialog()">
+        <div class="dialog-content" (click)="$event.stopPropagation()">
+          <div class="dialog-header">
+            <h2>{{ dialogRoom.title }}</h2>
+            <button class="dialog-close" (click)="closeDialog()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
               </svg>
             </button>
           </div>
+  
+          <div class="dialog-image">
+            <img [src]="dialogRoom.images[0]" [alt]="dialogRoom.title">
+          </div>
+  
+          <div class="dialog-body">
+            <p class="room-address">{{ dialogRoom.address }}</p>
+            <p class="room-description">{{ dialogRoom.description }}</p>
+            
+            <div class="room-details">
+              <span class="room-beds">{{ dialogRoom.beds }} bed{{ dialogRoom.beds > 1 ? 's' : '' }}</span>
+              <span class="room-bathrooms">{{ dialogRoom.bathrooms }} bathroom{{ dialogRoom.bathrooms > 1 ? 's' : '' }}</span>
+              <span class="room-guests">{{ dialogRoom.max_guests }} guest{{ dialogRoom.max_guests > 1 ? 's' : '' }}</span>
+            </div>
+  
+            <div class="room-amenities">
+              @for (amenity of dialogRoom.amenities.slice(0, 5); track amenity) {
+                <span class="amenity-tag">{{ amenity }}</span>
+              }
+              @if (dialogRoom.amenities.length > 5) {
+                <span class="amenity-more">+{{ dialogRoom.amenities.length - 5 }} more</span>
+              }
+            </div>
+  
+            <div class="room-price">
+              <span class="price">{{ formatPrice(dialogRoom.price_per_night) }}</span>
+              <span class="price-period">per night</span>
+            </div>
+  
+            <div class="dialog-actions">
+              <button class="reserve-btn">Reserve</button>
+              <button class="save-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  } -->
-</div>
+    } -->
+  </div>
+  
+}

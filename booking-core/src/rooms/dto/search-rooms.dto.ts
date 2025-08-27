@@ -1,22 +1,22 @@
-import { IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
+import { IsOptional, IsString, IsNumber, Min, Max, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchRoomsDto {
-  @IsOptional()
-  @IsString()
-  city?: string;
+
 
   @IsOptional()
   @IsString()
-  location?: string; // Địa chỉ cụ thể hoặc địa điểm
+  location: string; // Địa chỉ cụ thể hoặc địa điểm
 
   @IsOptional()
   @IsString()
-  checkIn?: string;
+  @IsDateString()
+  checkIn?: string; // Format: YYYY-MM-DD
 
   @IsOptional()
   @IsString()
-  checkOut?: string;
+  @IsDateString()
+  checkOut?: string; // Format: YYYY-MM-DD
 
   @IsOptional()
   @Type(() => Number)
