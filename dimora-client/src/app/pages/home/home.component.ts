@@ -108,28 +108,36 @@ export class HomeComponent implements OnInit {
       }
     })
     setTimeout(() => {
-      const track = this.carouselFirstTrack.nativeElement;
-      const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
-      console.log('Card:', cardWidth);
-      const gap = 20;
-      this.maxPosition = (this.dummyHotel.length - 3.4) * (cardWidth);
+      this.updateMaxPosition();
+      window.addEventListener('resize', this.updateMaxPosition.bind(this));
     }, 0);
 
   }
 
 
 
+  updateMaxPosition() {
+    const track = this.carouselFirstTrack.nativeElement;
+    const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
+    const gap = 16;
+    const containerWidth = track.offsetParent?.offsetWidth || track.parentElement.offsetWidth;
+    const visibleCards = Math.floor(containerWidth / (cardWidth + gap));
+    this.maxPosition = Math.max(0, (this.dummyHotel.length - visibleCards) * (cardWidth + gap));
+  }
+
+
+
   scroll(direction: string) {
+    this.updateMaxPosition();
     const track = this.carouselFirstTrack.nativeElement;
     const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
     const gap = 16;
     const totalWidth = cardWidth + gap;
 
     if (direction === 'left') {
-      this.currentPosition = Math.max(0, this.currentPosition - totalWidth); // Giới hạn vị trí về 0
+      this.currentPosition = Math.max(0, this.currentPosition - totalWidth);
     } else if (direction === 'right') {
-      this.currentPosition = Math.min(this.maxPosition, this.currentPosition + totalWidth); // Giới hạn vị trí tối đa
-      console.log(this.currentPosition)
+      this.currentPosition = Math.min(this.maxPosition, this.currentPosition + totalWidth);
     }
 
     track.style.transform = `translateX(-${this.currentPosition}px)`;

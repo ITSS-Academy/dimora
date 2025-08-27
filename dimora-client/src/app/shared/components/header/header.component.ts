@@ -49,7 +49,10 @@ export class HeaderComponent implements OnInit {
   readonly dialog = inject(MatDialog);
 
   openDialog() {
-    this.dialog.open(DialogLoginComponent);
+    this.dialog.open(DialogLoginComponent, {
+      minWidth: '800px',
+      maxWidth: '100%',
+    });
   }
 
   onLocationInputClick() {
