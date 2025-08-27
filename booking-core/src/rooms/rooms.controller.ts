@@ -14,8 +14,7 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RoomsService } from './rooms.service';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { CreateRoomWithImagesDto } from './dto/create-room-with-images.dto';
+import { CreateRoomDto } from './dto/create-room-with-images.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { CreateRoomLikeDto } from './dto/create-room-like.dto';
 import { SearchRoomsDto } from './dto/search-rooms.dto';
@@ -40,22 +39,19 @@ export class RoomsController {
     }
   }))
   async create(
-    @Body() createRoomDto: CreateRoomWithImagesDto,
-    @UploadedFiles() files?: Express.Multer.File[]
+    @Body() createRoomDto: CreateRoomDto,
+    @UploadedFiles() files: Express.Multer.File[]
   ) {
     try {
-      // Nếu có hình ảnh, sử dụng createWithImages
-      if (files && files.length > 0) {
-        return await this.roomsService.createWithImages(createRoomDto, files);
+      // Bắt buộc phải có hình ảnh
+      if (!files || files.length === 0) {
+        throw new HttpException(
+          'Images are required when creating a room',
+          HttpStatus.BAD_REQUEST
+        );
       }
-      // Nếu không có hình ảnh, sử dụng createWithGeocoding
-      const roomData: CreateRoomDto = {
-        ...createRoomDto,
-        images: [],
-        latitude: createRoomDto.latitude || '',
-        longitude: createRoomDto.longitude || ''
-      };
-      return await this.roomsService.createWithGeocoding(roomData);
+      
+      return await this.roomsService.create(createRoomDto, files);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -83,14 +79,8 @@ export class RoomsController {
   }
 
   @Get()
-  async findAll(@Query() searchParams: SearchRoomsDto) {
+  async findAll() {
     try {
-      // Check if any search parameters are provided
-      const hasSearchParams = Object.keys(searchParams).some(key => searchParams[key] !== undefined);
-      
-      if (hasSearchParams) {
-        return await this.roomsService.searchRooms(searchParams);
-      }
       return await this.roomsService.findAll();
     } catch (error) {
       if (error instanceof HttpException) {
@@ -98,6 +88,21 @@ export class RoomsController {
       }
       throw new HttpException(
         'Failed to fetch rooms',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('search')
+  async searchRooms(@Query() searchParams: SearchRoomsDto) {
+    try {
+      return await this.roomsService.searchRooms(searchParams);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to search rooms',
         HttpStatus.BAD_REQUEST
       );
     }
@@ -176,7 +181,10 @@ export class RoomsController {
     @UploadedFiles() files?: Express.Multer.File[]
   ) {
     try {
-      // Nếu có hình ảnh, cập nhật cả thông tin và hình ảnh
+      // Cập nhật thông tin trước
+      const updatedRoom = await this.roomsService.update(id, updateRoomDto);
+      
+      // Nếu có hình ảnh mới, thay thế hình ảnh cũ
       if (files && files.length > 0) {
         const hostId = updateRoomDto.host_id;
         if (!hostId) {
@@ -186,15 +194,12 @@ export class RoomsController {
           );
         }
         
-        // Cập nhật thông tin trước
-        const updatedRoom = await this.roomsService.update(id, updateRoomDto);
-        
-        // Sau đó cập nhật hình ảnh
+        // Thay thế hình ảnh cũ bằng hình ảnh mới
         return await this.roomsService.updateRoomImages(id, hostId, files);
       }
       
-      // Nếu không có hình ảnh, chỉ cập nhật thông tin
-      return await this.roomsService.update(id, updateRoomDto);
+      // Nếu không có hình ảnh mới, trả về room đã cập nhật thông tin
+      return updatedRoom;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -206,10 +211,13 @@ export class RoomsController {
     }
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @Delete()
+  async remove(
+    @Query('id') id: string,
+    @Query('host_id') hostId?: string
+  ) {
     try {
-      return await this.roomsService.remove(id);
+      return await this.roomsService.remove(id, hostId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

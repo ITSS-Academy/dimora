@@ -29,7 +29,6 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
       
       // Verify Firebase token
       const decodedToken = await admin.auth().verifyIdToken(token);
-      console.log('✅ [AUTH MIDDLEWARE] Firebase token verified:', decodedToken.uid);
       
       // Check if user exists in database, create if not
       let user;
@@ -47,7 +46,6 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
           avatar_url: decodedToken.picture || '',
           google_id: decodedToken.uid,
         });
-        console.log('✅ [AUTH MIDDLEWARE] New user created:', user.id);
       }
 
       next(); // Call the next middleware or route handler
