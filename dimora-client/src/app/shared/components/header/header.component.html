@@ -64,7 +64,7 @@
           <img class="avatar-img" [src]="profile.avatar_url" alt="" referrerpolicy="no-referrer">
         </button>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" (click)="login()" class="button-header" aria-label="Example icon-button with a menu">
+        <button mat-icon-button (click)="openDialog()" class="button-header" aria-label="Example icon-button with a menu">
           <mat-icon>account_circle</mat-icon>
         </button>
       }
