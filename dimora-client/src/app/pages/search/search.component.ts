@@ -28,6 +28,34 @@ export class SearchComponent {
   center: google.maps.LatLngLiteral = { lat: 10.774559, lng: 106.675655 }; // Vị trí hiện tại
   zoom = 12;
   isMapReady = false;
+  
+  // Map options for smooth performance
+  mapOptions: google.maps.MapOptions = {
+    zoomControl: true,
+    mapTypeControl: true,
+    scaleControl: true,
+    streetViewControl: true,
+    rotateControl: true,
+    fullscreenControl: true,
+    disableDefaultUI: false,
+    gestureHandling: 'greedy', // Smooth gesture handling
+    isFractionalZoomEnabled: true, // Smooth zoom transitions
+    minZoom: 10,
+    maxZoom: 18,
+    // Performance optimizations
+    backgroundColor: '#f8f9fa',
+    clickableIcons: true,
+    draggableCursor: 'grab',
+    draggingCursor: 'grabbing',
+    // Map styling for better performance
+    styles: [
+      {
+        featureType: 'poi',
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }
+    ]
+  };
 
   // Current location
   currentLocation: Location | null = null;
@@ -488,14 +516,119 @@ export class SearchComponent {
   selectRoom(room: RoomModel): void {
     console.log('🏨 selectRoom called with:', room.title);
     this.selectedRoom = room;
-    this.center = { lat: room.latitude, lng: room.longitude };
-    this.mapCenter = { lat: room.latitude, lng: room.longitude };
-    this.zoom = 16;
+    
+    // Smooth zoom animation to selected room
+    this.smoothZoomToRoom(room);
+    
     this.showSelectedRoomInfo = true;
     // this.showDialog = true;
     this.dialogRoom = room;
     console.log('🏨 Selected room:', room);
     // this.updateVisibleRooms();
+  }
+
+  // Smooth zoom animation to room
+  smoothZoomToRoom(room: RoomModel): void {
+    const targetCenter = { lat: room.latitude, lng: room.longitude };
+    const targetZoom = 16;
+    
+    // Calculate distance between current and target
+    const distance = this.calculateDistance(
+      this.center.lat,
+      this.center.lng,
+      targetCenter.lat,
+      targetCenter.lng
+    );
+    
+    // If distance is too small, just jump directly without animation
+    if (distance < 0.5) { // Less than 500 meters
+      this.center = targetCenter;
+      this.zoom = targetZoom;
+      this.mapCenter = targetCenter;
+      return;
+    }
+    
+    // If zoom level is similar, just pan without zoom animation
+    const zoomDiff = Math.abs(this.zoom - targetZoom);
+    if (zoomDiff < 2) {
+      this.smoothPanToRoom(room);
+      return;
+    }
+    
+    const duration = 800; // Shorter duration
+    const steps = 40; // Fewer steps
+    const stepDuration = duration / steps;
+    
+    const startCenter = { ...this.center };
+    const startZoom = this.zoom;
+    
+    let currentStep = 0;
+    
+    // Simpler easing function for smoother animation
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4);
+    };
+    
+    const animate = () => {
+      if (currentStep < steps) {
+        const progress = currentStep / steps;
+        const easedProgress = easeOutQuart(progress);
+        
+        this.center = {
+          lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+          lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+        };
+        this.zoom = startZoom + (targetZoom - startZoom) * easedProgress;
+        this.mapCenter = { ...this.center };
+        
+        currentStep++;
+        setTimeout(animate, stepDuration);
+      } else {
+        // Ensure final position is exact
+        this.center = targetCenter;
+        this.zoom = targetZoom;
+        this.mapCenter = targetCenter;
+      }
+    };
+    
+    animate();
+  }
+
+  // Smooth pan animation (no zoom)
+  smoothPanToRoom(room: RoomModel): void {
+    const targetCenter = { lat: room.latitude, lng: room.longitude };
+    const duration = 400; // Very short for nearby locations
+    const steps = 20;
+    const stepDuration = duration / steps;
+    
+    const startCenter = { ...this.center };
+    
+    let currentStep = 0;
+    
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4);
+    };
+    
+    const animate = () => {
+      if (currentStep < steps) {
+        const progress = currentStep / steps;
+        const easedProgress = easeOutQuart(progress);
+        
+        this.center = {
+          lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+          lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+        };
+        this.mapCenter = { ...this.center };
+        
+        currentStep++;
+        setTimeout(animate, stepDuration);
+      } else {
+        this.center = targetCenter;
+        this.mapCenter = targetCenter;
+      }
+    };
+    
+    animate();
   }
 
   // Close dialog
