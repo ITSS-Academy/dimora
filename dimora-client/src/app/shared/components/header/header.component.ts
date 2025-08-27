@@ -10,6 +10,7 @@ import {Store} from '@ngrx/store';
 import {AuthState} from '../../../ngrx/state/auth.state';
 import {AuthModel} from '../../../models/auth.model';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
+import { Router } from '@angular/router';
 
 export interface User {
   name: string;
@@ -28,7 +29,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private store: Store<{
       auth: AuthState,
-    }>
+    }>,
+    private router: Router
   ) {
 
     this.mineProfile$ = this.store.select('auth', 'mineProfile');
@@ -234,5 +236,8 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.store.dispatch(AuthActions.logout());
+  }
+  navigateToHome() {
+    this.router.navigate(['/home']);
   }
 }

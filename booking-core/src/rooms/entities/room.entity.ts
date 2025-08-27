@@ -29,6 +29,9 @@ export class Room {
   /** Kinh độ (longitude) - để hiển thị trên Google Maps */
   longitude: number;
   
+  /** Mã bưu điện */
+  postal_code: number;
+  
   /** Số lượng khách tối đa có thể ở */
   max_guests: number;
   

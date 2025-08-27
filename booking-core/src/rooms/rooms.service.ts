@@ -1,6 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { CreateRoomWithImagesDto } from './dto/create-room-with-images.dto';
+import { CreateRoomDto } from './dto/create-room-with-images.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { CreateRoomLikeDto } from './dto/create-room-like.dto';
 import { Room } from './entities/room.entity';
@@ -82,40 +81,12 @@ export class RoomsService {
     }
   }
 
-  /**
-   * Tạo phòng với tự động lấy tọa độ từ địa chỉ nếu không được cung cấp
-   */
-  async createWithGeocoding(createRoomDto: CreateRoomDto): Promise<Room> {
-    try {
-      const roomData = {
-        ...createRoomDto,
-        amenities: this.processAmenities(createRoomDto.amenities)
-      };
 
-      // Nếu không có tọa độ, tự động lấy từ địa chỉ
-      if (!roomData.latitude || !roomData.longitude) {
-        const fullAddress = `${roomData.address}, ${roomData.city}, ${roomData.country}`;
-        const coordinates = await this.getCoordinatesFromAddress(fullAddress);
-        roomData.latitude = coordinates.latitude;
-        roomData.longitude = coordinates.longitude;
-      }
-
-      return await this.create(roomData);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Internal server error while creating room with geocoding',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
 
   /**
-   * Tạo phòng với upload hình ảnh
+   * Tạo phòng với upload hình ảnh (bắt buộc)
    */
-  async createWithImages(createRoomDto: CreateRoomWithImagesDto, files: Express.Multer.File[]): Promise<Room> {
+  async create(createRoomDto: CreateRoomDto, files: Express.Multer.File[]): Promise<Room> {
     try {
       // Tạo room trước để lấy ID
       const roomData: CreateRoomDto = { 
@@ -123,7 +94,8 @@ export class RoomsService {
         amenities: this.processAmenities(createRoomDto.amenities),
         images: [],
         latitude: createRoomDto.latitude || 0,
-        longitude: createRoomDto.longitude || 0
+        longitude: createRoomDto.longitude || 0,
+        postal_code: createRoomDto.postal_code ? Number(createRoomDto.postal_code) : undefined
       };
       
       // Nếu không có tọa độ, tự động lấy từ địa chỉ
@@ -134,7 +106,19 @@ export class RoomsService {
         roomData.longitude = coordinates.longitude;
       }
 
-      const createdRoom = await this.create(roomData);
+      // Tạo room trực tiếp trong database
+      const { data: createdRoom, error: createError } = await this.supabaseService.getClient()
+        .from('rooms')
+        .insert([roomData])
+        .select()
+        .single();
+
+      if (createError) {
+        throw new HttpException(
+          `Failed to create room: ${createError.message}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
 
       // Upload hình ảnh nếu có
       if (files && files.length > 0) {
@@ -173,32 +157,7 @@ export class RoomsService {
     }
   }
 
-  async create(createRoomDto: CreateRoomDto): Promise<Room> {
-    try {
-      const { data, error } = await this.supabaseService.getClient()
-        .from('rooms')
-        .insert([createRoomDto])
-        .select()
-        .single();
 
-      if (error) {
-        throw new HttpException(
-          `Failed to create room: ${error.message}`,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      return data;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to create room',
-        HttpStatus.BAD_REQUEST
-      );
-    }
-  }
 
   async findAll(): Promise<Room[]> {
     try {
@@ -275,21 +234,87 @@ export class RoomsService {
     }
   }
 
+  /**
+   * Kiểm tra xem host có quyền update room không
+   */
+  async checkRoomOwnership(roomId: string, hostId: string): Promise<boolean> {
+    try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('rooms')
+        .select('host_id')
+        .eq('id', roomId)
+        .single();
+
+      if (error) {
+        throw new HttpException(
+          'Room not found',
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return data.host_id === hostId;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to check room ownership',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
   async update(id: string, updateRoomDto: UpdateRoomDto): Promise<Room> {
     try {
-      // Xử lý amenities array trước khi gửi đến database
-      let amenities = updateRoomDto.amenities;
-      if (amenities && typeof amenities === 'string') {
-        try {
-          amenities = JSON.parse(amenities);
-        } catch {
-          amenities = [];
+      // Kiểm tra ownership nếu có host_id trong request
+      if (updateRoomDto.host_id) {
+        const isOwner = await this.checkRoomOwnership(id, updateRoomDto.host_id);
+        if (!isOwner) {
+          throw new HttpException(
+            'You can only update your own rooms',
+            HttpStatus.FORBIDDEN
+          );
         }
       }
 
+      // Xử lý amenities array trước khi gửi đến database
+      let amenities = updateRoomDto.amenities;
+      if (amenities && typeof amenities === 'string') {
+        if ((amenities as string).trim() === '') {
+          // Nếu amenities là string rỗng, bỏ qua field này
+          amenities = undefined;
+        } else if ((amenities as string).trim() === '[]') {
+          // Nếu amenities là string "[]", bỏ qua field này (giữ nguyên amenities cũ)
+
+          amenities = [];
+        } else {
+          try {
+            amenities = JSON.parse(amenities as string);
+            // Nếu parse thành mảng rỗng, bỏ qua field này
+            if (Array.isArray(amenities) && amenities.length === 0) {
+              amenities = [];
+            }
+          } catch {
+            amenities = [];
+          }
+        }
+      } else if (Array.isArray(amenities) && amenities.length === 0) {
+        // Nếu amenities là mảng rỗng, bỏ qua field này (giữ nguyên amenities cũ)
+        amenities = [];
+      }
+
+      // Lọc bỏ các trường rỗng để tránh lỗi database
+      const filteredData = Object.fromEntries(
+        Object.entries(updateRoomDto).filter(([key, value]) => {
+          if (value === undefined || value === null) return false;
+          if (typeof value === 'string' && value.trim() === '') return false;
+          return true;
+        })
+      ) as Partial<UpdateRoomDto>;
+
       const roomData = {
-        ...updateRoomDto,
-        ...(amenities && { amenities: amenities as string[] })
+        ...filteredData,
+        ...(amenities !== undefined && { amenities: amenities as string[] })
       };
 
       // Kiểm tra xem có cần cập nhật tọa độ không
@@ -344,8 +369,19 @@ export class RoomsService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, hostId?: string): Promise<void> {
     try {
+      // Kiểm tra ownership nếu có hostId
+      if (hostId) {
+        const isOwner = await this.checkRoomOwnership(id, hostId);
+        if (!isOwner) {
+          throw new HttpException(
+            'You can only delete your own rooms',
+            HttpStatus.FORBIDDEN
+          );
+        }
+      }
+
       const { error } = await this.supabaseService.getClient()
         .from('rooms')
         .delete()
@@ -397,26 +433,37 @@ export class RoomsService {
 
   async searchRooms(params: {
     city?: string;
+    location?: string;
     checkIn?: string;
     checkOut?: string;
     guests?: number;
     minPrice?: number;
     maxPrice?: number;
-    lat?: number;
-    lng?: number;
     radius?: number;
   }): Promise<Room[]> {
     try {
-      // If coordinates are provided, use the RPC function
-      if (params.lat && params.lng) {
+      // If location is provided, geocode it first then use RPC function
+      if (params.location) {
+        // Geocode the location to get coordinates
+        const coordinates = await this.getCoordinatesFromAddress(params.location);
+        
+        if (!coordinates) {
+          throw new HttpException(
+            'Could not find coordinates for the provided location',
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
         const { data, error } = await this.supabaseService.getClient()
           .rpc('search_rooms_nearby', {
-            lat: params.lat,
-            lng: params.lng,
-            radius_km: params.radius || 10,
-            max_guests: params.guests,
-            min_price: params.minPrice,
-            max_price: params.maxPrice
+            lat_param: coordinates.latitude,
+            lng_param: coordinates.longitude,
+            check_in_date_param: params.checkIn || null,
+            check_out_date_param: params.checkOut || null,
+            radius_km_param: params.radius || 10,
+            max_guests_param: params.guests || null,
+            min_price_param: params.minPrice || null,
+            max_price_param: params.maxPrice || null
           });
 
         if (error) {
@@ -426,7 +473,7 @@ export class RoomsService {
           );
         }
 
-        return data;
+        return data || [];
       }
 
       // Otherwise use regular query
@@ -452,6 +499,24 @@ export class RoomsService {
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
+
+      // Filter by availability if check-in and check-out dates are provided
+      if (data && params.checkIn && params.checkOut) {
+        const availableRooms = data.filter(room => {
+          // Check if room has any conflicting bookings
+          return !room.bookings || room.bookings.every(booking => {
+            const bookingStart = new Date(booking.check_in_date);
+            const bookingEnd = new Date(booking.check_out_date);
+            const searchStart = new Date(params.checkIn!);
+            const searchEnd = new Date(params.checkOut!);
+            
+            // Check for overlap
+            return bookingStart >= searchEnd || bookingEnd <= searchStart;
+          });
+        });
+        
+        return availableRooms;
+      }
 
       if (error) {
         throw new HttpException(
@@ -507,6 +572,15 @@ export class RoomsService {
    */
   async updateRoomImages(roomId: string, hostId: string, files: Express.Multer.File[]): Promise<Room> {
     try {
+      // Kiểm tra ownership trước khi update hình ảnh
+      const isOwner = await this.checkRoomOwnership(roomId, hostId);
+      if (!isOwner) {
+        throw new HttpException(
+          'You can only update images of your own rooms',
+          HttpStatus.FORBIDDEN
+        );
+      }
+
       // Xóa hình ảnh cũ
       await this.supabaseService.deleteRoomImages(hostId, roomId);
 

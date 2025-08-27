@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {ShareModule} from './shared/share.module';
 import {MaterialModule} from './shared/material.module';
-import {MapComponent} from './shared/components/map/map.component';
+
 import * as AuthActions from './ngrx/actions/auth.actions';
 import {Store} from '@ngrx/store';
 import {AuthState} from './ngrx/state/auth.state';
@@ -13,7 +13,7 @@ import {Observable, Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [ShareModule, MaterialModule, MapComponent, RouterOutlet, HeaderComponent],
+  imports: [ShareModule, MaterialModule, RouterOutlet, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
     this.auth.onAuthStateChanged(async (auth:any) =>{
       if (auth) {
         let idToken = await auth.getIdToken();
+        console.log(idToken)
         this.store.dispatch(AuthActions.getUserByGoogleId({googleId: auth.uid, idToken: idToken}))
         this.store.dispatch(AuthActions.storeIdToken({idToken: idToken}))
       } else {

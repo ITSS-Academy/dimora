@@ -1,6 +1,9 @@
 -- RPC Functions tối ưu cho Booking APIs
 -- Sử dụng JSON return thay vì TABLE để linh hoạt hơn
 
+-- Enable PostGIS extension (cần thiết cho geospatial functions)
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 -- 1. Function để lấy host bookings với room và user info
 CREATE OR REPLACE FUNCTION get_host_bookings(host_uuid UUID)
 RETURNS JSON
@@ -323,71 +326,53 @@ GRANT EXECUTE ON FUNCTION check_room_availability_api(UUID, DATE, DATE) TO authe
 GRANT EXECUTE ON FUNCTION get_user_bookings(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_room_availability_calendar(UUID, UUID, DATE, DATE) TO authenticated;
 
--- 8. Function để search rooms nearby (thêm vào booking RPC)
+-- 8. Function để search rooms nearby với availability check (JSON return)
 CREATE OR REPLACE FUNCTION search_rooms_nearby(
-  lat DECIMAL(10,8),
-  lng DECIMAL(11,8),
+  lat NUMERIC,
+  lng NUMERIC,
+  check_in_date DATE DEFAULT NULL,
+  check_out_date DATE DEFAULT NULL,
   radius_km INTEGER DEFAULT 10,
   max_guests INTEGER DEFAULT NULL,
-  min_price DECIMAL(12,2) DEFAULT NULL,
-  max_price DECIMAL(12,2) DEFAULT NULL
+  min_price NUMERIC(10,2) DEFAULT NULL,
+  max_price NUMERIC(10,2) DEFAULT NULL
 )
-RETURNS TABLE (
-  id UUID,
-  title TEXT,
-  description TEXT,
-  price_per_night DECIMAL(12,2),
-  location TEXT,
-  address TEXT,
-  city TEXT,
-  country TEXT,
-  latitude DECIMAL(10,8),
-  longitude DECIMAL(11,8),
-  max_guests INTEGER,
-  bedrooms INTEGER,
-  bathrooms INTEGER,
-  beds INTEGER,
-  room_type_id UUID,
-  amenities TEXT[],
-  images TEXT[],
-  host_id UUID,
-  is_available BOOLEAN,
-  created_at TIMESTAMP WITH TIME ZONE,
-  updated_at TIMESTAMP WITH TIME ZONE,
-  distance_km DECIMAL(10,2)
-)
+RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
+DECLARE
+  result JSON;
 BEGIN
-  RETURN QUERY
-  SELECT 
-    r.id,
-    r.title,
-    r.description,
-    r.price_per_night,
-    r.location,
-    r.address,
-    r.city,
-    r.country,
-    r.latitude,
-    r.longitude,
-    r.max_guests,
-    r.bedrooms,
-    r.bathrooms,
-    r.beds,
-    r.room_type_id,
-    r.amenities,
-    r.images,
-    r.host_id,
-    r.is_available,
-    r.created_at,
-    r.updated_at,
-    -- Tính khoảng cách bằng PostGIS (km)
-    ST_Distance(
-      ST_MakePoint(r.longitude, r.latitude)::geography,
-      ST_MakePoint(lng, lat)::geography
-    ) / 1000.0 as distance_km
+  SELECT json_agg(
+    json_build_object(
+      'id', r.id,
+      'title', r.title,
+      'description', r.description,
+      'price_per_night', r.price_per_night,
+      'location', r.location,
+      'address', r.address,
+      'city', r.city,
+      'country', r.country,
+      'latitude', r.latitude,
+      'longitude', r.longitude,
+      'max_guests', r.max_guests,
+      'bedrooms', r.bedrooms,
+      'bathrooms', r.bathrooms,
+      'beds', r.beds,
+      'room_type_id', r.room_type_id,
+      'amenities', r.amenities,
+      'images', r.images,
+      'host_id', r.host_id,
+      'is_available', r.is_available,
+      'created_at', r.created_at,
+      'updated_at', r.updated_at,
+      'distance_km', ST_Distance(
+        ST_MakePoint(r.longitude::NUMERIC, r.latitude::NUMERIC)::geography,
+        ST_MakePoint(lng::NUMERIC, lat::NUMERIC)::geography
+      ) / 1000.0
+    )
+  ) INTO result
   FROM rooms r
   WHERE 
     r.is_available = true
@@ -395,17 +380,34 @@ BEGIN
     AND r.longitude IS NOT NULL
     -- Filter theo khoảng cách
     AND ST_DWithin(
-      ST_MakePoint(r.longitude, r.latitude)::geography,
-      ST_MakePoint(lng, lat)::geography,
+      ST_MakePoint(r.longitude::NUMERIC, r.latitude::NUMERIC)::geography,
+      ST_MakePoint(lng::NUMERIC, lat::NUMERIC)::geography,
       radius_km * 1000  -- Convert km to meters
     )
-    -- Filter theo số khách
+    -- Filter theo số khách (optional)
     AND (max_guests IS NULL OR r.max_guests >= max_guests)
     -- Filter theo giá
     AND (min_price IS NULL OR r.price_per_night >= min_price)
     AND (max_price IS NULL OR r.price_per_night <= max_price)
-  ORDER BY distance_km ASC;
+    -- Filter theo availability (chỉ khi có check_in_date và check_out_date)
+    AND (
+      check_in_date IS NULL 
+      OR check_out_date IS NULL
+      OR NOT EXISTS (
+        SELECT 1 FROM bookings b
+        WHERE b.room_id = r.id
+          AND b.check_in_date < check_out_date
+          AND b.check_out_date > check_in_date
+          AND b.status IN ('pending', 'confirmed', 'in_progress', 'completed')
+      )
+    )
+  ORDER BY ST_Distance(
+    ST_MakePoint(r.longitude::NUMERIC, r.latitude::NUMERIC)::geography,
+    ST_MakePoint(lng::NUMERIC, lat::NUMERIC)::geography
+  ) ASC;
+  
+  RETURN COALESCE(result, '[]'::json);
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION search_rooms_nearby(DECIMAL, DECIMAL, INTEGER, INTEGER, DECIMAL, DECIMAL) TO authenticated;
+GRANT EXECUTE ON FUNCTION search_rooms_nearby(NUMERIC, NUMERIC, DATE, DATE, INTEGER, INTEGER, NUMERIC, NUMERIC) TO authenticated;
