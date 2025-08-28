@@ -22,6 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('../app/pages/search/search.component').then(m => m.SearchComponent)
   },
   {
+    path:'booking',
+    loadComponent: () => import('../app/pages/booking/booking.component').then(m => m.BookingComponent)
+  },
+  {
     path:'',
     redirectTo:'home',
     pathMatch:'full'
