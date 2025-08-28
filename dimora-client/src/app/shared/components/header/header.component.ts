@@ -1,4 +1,4 @@
-import {Component, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MaterialModule} from '../../material.module';
 import {ShareModule} from '../../share.module';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -19,6 +19,7 @@ import * as SearchActions from '../../../ngrx/actions/search.actions';
 import { RoomModel } from '../../../models/room.model';
 import { SearchState } from '../../../ngrx/state/search.state';
 import { SnackbarService } from '../../../services/snackbar/snackbar.service';
+import {FilterDialogComponent} from '../filter-dialog/filter-dialog.component';
 
 export interface User {
   name: string;
@@ -33,12 +34,31 @@ export interface User {
 })
 
 
-export class HeaderComponent implements OnInit {
-
+export class HeaderComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  @ViewChild('picker') picker!: MatDateRangePicker<Date>;
+  @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
   mineProfile$ !: Observable<AuthModel>;
   minDate = new Date();
   subscriptions: Subscription[] = [];
   searchResult$ !: Observable<RoomModel[]>;
+  isSearchPage: boolean = false;
+  options: User[] = [
+    {
+      name: 'Mary',
+      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
+    },
+    {
+      name: 'Shelley',
+      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+    },
+    {
+      name: 'Igor',
+      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
+    }
+  ];
+  filteredOptions!: Observable<User[]>;
   constructor(
     private store: Store<{
       auth: AuthState,
@@ -55,12 +75,6 @@ export class HeaderComponent implements OnInit {
 
 
 
-
-  @ViewChild('picker') picker!: MatDateRangePicker<Date>;
-  @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
-
-  readonly dialog = inject(MatDialog);
 
   openDialog() {
     this.dialog.open(DialogLoginComponent, {
@@ -100,19 +114,19 @@ export class HeaderComponent implements OnInit {
     console.log('Form values:', this.range.value);
 
     let searchData: SearchModel = {} as SearchModel;
-    
+
     // Format dates to yyyy-mm-dd string
     if(this.range.value.location ){
       const formattedStartDate = this.formatDateToString(this.range.value.start || null);
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
-      
+
       console.log('Formatted start date:', formattedStartDate);
       console.log('Formatted end date:', formattedEndDate);
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
-      
+
       // Normalize location - remove Vietnamese accents and spaces
       const normalizedLocation = this.normalizeText(this.range.value.location);
-      
+
       searchData = {
         location: normalizedLocation,
         checkIn: formattedStartDate,
@@ -123,18 +137,29 @@ export class HeaderComponent implements OnInit {
       };
 
     console.log('Search data with formatted dates:', searchData);
-    this.store.dispatch(SearchActions.searchRooms({searchParams:searchData}))    
+    this.store.dispatch(SearchActions.searchRooms({searchParams:searchData}));
+
+    // Navigate to search page with query parameters
+    this.router.navigate(['/search'], {
+      queryParams: {
+        location: searchData.location,
+        checkIn: searchData.checkIn,
+        checkOut: searchData.checkOut,
+        guests: searchData.guests
+      }
+    });
+
     }else{
       this.snackBar.showAlert('Please select a location', 'error', 300000, 'right','top');
     }
 
-    
+
   }
 
   // Normalize text - remove Vietnamese accents and spaces
   normalizeText(text: string): string {
     if (!text) return '';
-    
+
     return text
       .normalize('NFD') // Decompose characters with diacritics
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
@@ -142,16 +167,16 @@ export class HeaderComponent implements OnInit {
       .toLowerCase(); // Convert to lowercase
   }
 
- 
+
 
   // Format Date to yyyy-mm-dd string
   formatDateToString(date: Date | null): string {
     if (!date) return '';
-    
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
     const day = String(date.getDate()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day}`;
   }
 
@@ -163,26 +188,24 @@ export class HeaderComponent implements OnInit {
       event.stopPropagation();
       console.log('Enter key blocked - please use Search button');
     }else if(this.range.value.location && event.key === 'Enter'){
-      this.router.navigate(['/search']);
+      // Navigate to search page with query parameters
+      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
+      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
+      const normalizedLocation = this.normalizeText(this.range.value.location);
 
+      this.router.navigate(['/search'], {
+        queryParams: {
+          location: normalizedLocation,
+          checkIn: formattedStartDate,
+          checkOut: formattedEndDate,
+          guests: Number(newValueGuests)
+        }
+      });
     }
   }
 
-  options: User[] = [
-    {
-      name: 'Mary',
-      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
-    },
-    {
-      name: 'Shelley',
-      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
-    },
-    {
-      name: 'Igor',
-      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
-    }
-  ];
-  filteredOptions!: Observable<User[]>;
+
 
   range = new FormGroup({
     location: new FormControl<string | null>(null),
@@ -210,11 +233,17 @@ export class HeaderComponent implements OnInit {
         console.log('No user profile available');
       }
     }),
-
-   
-
   )
 
+    // Check current route to show/hide filter button
+    this.checkCurrentRoute();
+
+    // Subscribe to route changes
+    this.subscriptions.push(
+      this.router.events.subscribe(() => {
+        this.checkCurrentRoute();
+      })
+    );
 
     this.filteredOptions = this.range.controls.location.valueChanges.pipe(
       startWith(''),
@@ -226,6 +255,21 @@ export class HeaderComponent implements OnInit {
 
     // Initialize guests display
     this.updateGuestsDisplay();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+
+  }
+
+  // Check if current route is search page
+  checkCurrentRoute(): void {
+    this.isSearchPage = this.router.url.includes('/search');
+  }
+
+  // Open filter dialog
+  openFilterDialog(): void {
+    this.dialog.open(FilterDialogComponent);
   }
 
   private _filter(name: string): User[] {
@@ -310,14 +354,15 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  login() {
-    this.store.dispatch(AuthActions.login());
-  }
+
 
   logout() {
     this.store.dispatch(AuthActions.logout());
   }
   navigateToHome() {
     this.router.navigate(['/home']);
+  }
+  navigateToProfile(id: string) {
+    this.router.navigate(['/profile', id]);
   }
 }

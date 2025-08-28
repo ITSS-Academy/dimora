@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { SearchGuard } from './guards/search.guard';
 
 export const routes: Routes = [
   {
@@ -19,7 +20,8 @@ export const routes: Routes = [
   },
   {
     path:'search',
-    loadComponent: () => import('../app/pages/search/search.component').then(m => m.SearchComponent)
+    loadComponent: () => import('../app/pages/search/search.component').then(m => m.SearchComponent),
+    canActivate: [SearchGuard]
   },
   {
     path:'booking',
