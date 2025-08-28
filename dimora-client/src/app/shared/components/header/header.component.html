@@ -28,8 +28,8 @@
 
 
       <mat-form-field appearance="outline" class="search-field" (click)="picker.open()">
-        <mat-date-range-input  [rangePicker]="picker" >
-          <input matStartDate formControlName="start" readonly placeholder="Start date"  >
+        <mat-date-range-input  [rangePicker]="picker" [min]="minDate" >
+          <input matStartDate formControlName="start"  readonly placeholder="Start date"  >
           <input matEndDate formControlName="end" readonly placeholder="End date"  >
         </mat-date-range-input>
         <mat-icon matSuffix>calendar_month</mat-icon>
@@ -64,7 +64,7 @@
           <img class="avatar-img" [src]="profile.avatar_url" alt="" referrerpolicy="no-referrer">
         </button>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" (click)="login()" class="button-header" aria-label="Example icon-button with a menu">
+        <button mat-icon-button (click)="openDialog()" class="button-header" aria-label="Example icon-button with a menu">
           <mat-icon>account_circle</mat-icon>
         </button>
       }
@@ -134,23 +134,8 @@
           </div>
         </div>
 
-        <mat-divider></mat-divider>
 
-        <div class="guest-category">
-          <div class="guest-info">
-            <div class="guest-label">Pets</div>
 
-          </div>
-          <div class="guest-controls" (click)="$event.stopPropagation()">
-            <button mat-icon-button (click)="decreasePets($event)" [disabled]="pets <= 0">
-              <mat-icon>remove</mat-icon>
-            </button>
-            <span class="guest-count">{{pets}}</span>
-            <button mat-icon-button (click)="increasePets($event)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
-        </div>
       </div>
     </mat-menu>
   </div>

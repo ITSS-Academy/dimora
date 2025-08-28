@@ -1,0 +1,506 @@
+-- Insert 10 test rooms để test search functionality
+-- Chạy script này trong Supabase SQL Editor
+
+-- Đảm bảo có room_type_id trước
+INSERT INTO room_types (id, name, description, icon) 
+VALUES 
+  (gen_random_uuid(), 'Căn hộ', 'Căn hộ riêng biệt', '🏠'),
+  (gen_random_uuid(), 'Phòng riêng', 'Phòng riêng trong nhà', '🛏️'),
+  (gen_random_uuid(), 'Nhà nguyên căn', 'Nhà riêng nguyên căn', '🏡')
+ON CONFLICT (id) DO NOTHING;
+
+-- Insert 10 test rooms
+INSERT INTO rooms (
+  title, 
+  description, 
+  price_per_night, 
+  location, 
+  address, 
+  city, 
+  country, 
+  max_guests, 
+  bedrooms, 
+  bathrooms, 
+  beds, 
+  room_type_id, 
+  amenities, 
+  images, 
+  host_id, 
+  is_available, 
+  latitude, 
+  longitude, 
+  postal_code
+) VALUES 
+-- Room 1: Phòng đẹp ở trung tâm Q1
+(
+  'Phòng đẹp ở trung tâm Q1',
+  'Phòng rộng rãi, view đẹp, gần trung tâm thành phố, thuận tiện di chuyển',
+  500000,
+  'Quận 1',
+  '123 Nguyễn Huệ',
+  'TP.HCM',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV'],
+  ARRAY['https://example.com/image1.jpg', 'https://example.com/image2.jpg'],
+  '5a85c72c-b0ab-469a-adad-831697744fb0',
+  true,
+  10.762622,
+  106.660172,
+  700000
+),
+
+-- Room 2: Căn hộ cao cấp Q2
+(
+  'Căn hộ cao cấp Q2',
+  'Căn hộ sang trọng, view sông, tiện nghi đầy đủ',
+  800000,
+  'Quận 2',
+  '456 Võ Văn Ngân',
+  'TP.HCM',
+  'Việt Nam',
+  4,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Hồ bơi'],
+  ARRAY['https://example.com/image3.jpg', 'https://example.com/image4.jpg'],
+  '75a14554-547f-4819-963a-23e6fab37b20',
+  true,
+  10.7879,
+  106.7498,
+  700000
+),
+
+-- Room 3: Phòng giá rẻ Q3
+(
+  'Phòng giá rẻ Q3',
+  'Phòng sạch sẽ, giá tốt, phù hợp sinh viên',
+  300000,
+  'Quận 3',
+  '789 Võ Văn Tần',
+  'TP.HCM',
+  'Việt Nam',
+  1,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa'],
+  ARRAY['https://example.com/image5.jpg'],
+  '81ba0ad1-74c0-4bad-b557-2f4b970fcad2',
+  true,
+  10.7829,
+  106.6872,
+  700000
+),
+
+-- Room 4: Nhà nguyên căn Q7
+(
+  'Nhà nguyên căn Q7',
+  'Nhà riêng 3 tầng, sân vườn, phù hợp gia đình',
+  1200000,
+  'Quận 7',
+  '321 Nguyễn Thị Thập',
+  'TP.HCM',
+  'Việt Nam',
+  6,
+  3,
+  3,
+  4,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Sân vườn', 'Chỗ đậu xe'],
+  ARRAY['https://example.com/image6.jpg', 'https://example.com/image7.jpg', 'https://example.com/image8.jpg'],
+  '8752d3f6-f361-4c1f-b701-ba0761c3003b',
+  true,
+  10.7328,
+  106.7227,
+  700000
+),
+
+-- Room 5: Phòng view đẹp Q1
+(
+  'Phòng view đẹp Q1',
+  'Phòng view thành phố, ban công rộng, ánh sáng tự nhiên',
+  600000,
+  'Quận 1',
+  '555 Lê Lợi',
+  'TP.HCM',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Ban công'],
+  ARRAY['https://example.com/image9.jpg', 'https://example.com/image10.jpg'],
+  '5a85c72c-b0ab-469a-adad-831697744fb0',
+  true,
+  10.7769,
+  106.7009,
+  700000
+),
+
+-- Room 6: Căn hộ Q4
+(
+  'Căn hộ Q4',
+  'Căn hộ mới, nội thất cao cấp, an ninh 24/7',
+  900000,
+  'Quận 4',
+  '888 Vĩnh Khánh',
+  'TP.HCM',
+  'Việt Nam',
+  3,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Phòng gym'],
+  ARRAY['https://example.com/image11.jpg', 'https://example.com/image12.jpg'],
+  '75a14554-547f-4819-963a-23e6fab37b20',
+  true,
+  10.7605,
+  106.7089,
+  700000
+),
+
+-- Room 7: Phòng gần sân bay Q10
+(
+  'Phòng gần sân bay Q10',
+  'Phòng gần sân bay Tân Sơn Nhất, thuận tiện cho khách du lịch',
+  400000,
+  'Quận 10',
+  '999 Sư Vạn Hạnh',
+  'TP.HCM',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp'],
+  ARRAY['https://example.com/image13.jpg'],
+  '81ba0ad1-74c0-4bad-b557-2f4b970fcad2',
+  true,
+  10.7481,
+  106.6664,
+  700000
+),
+
+-- Room 8: Căn hộ Q9
+(
+  'Căn hộ Q9',
+  'Căn hộ yên tĩnh, gần công viên, phù hợp gia đình',
+  700000,
+  'Quận 9',
+  '777 Mai Chí Thọ',
+  'TP.HCM',
+  'Việt Nam',
+  4,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Công viên gần nhà'],
+  ARRAY['https://example.com/image14.jpg', 'https://example.com/image15.jpg'],
+  '8752d3f6-f361-4c1f-b701-ba0761c3003b',
+  true,
+  10.8428,
+  106.8291,
+  700000
+),
+
+-- Room 9: Phòng gần trường đại học Q5
+(
+  'Phòng gần trường đại học Q5',
+  'Phòng gần các trường đại học, phù hợp sinh viên',
+  350000,
+  'Quận 5',
+  '666 Nguyễn Tri Phương',
+  'TP.HCM',
+  'Việt Nam',
+  1,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp'],
+  ARRAY['https://example.com/image16.jpg'],
+  '5a85c72c-b0ab-469a-adad-831697744fb0',
+  true,
+  10.7540,
+  106.6624,
+  700000
+),
+
+-- Room 10: Nhà biệt thự Q2
+(
+  'Nhà biệt thự Q2',
+  'Biệt thự sang trọng, hồ bơi riêng, view sông đẹp',
+  2000000,
+  'Quận 2',
+  '111 Đường số 1',
+  'TP.HCM',
+  'Việt Nam',
+  8,
+  4,
+  4,
+  5,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Hồ bơi', 'Sân vườn', 'Chỗ đậu xe', 'Bảo vệ 24/7'],
+  ARRAY['https://example.com/image17.jpg', 'https://example.com/image18.jpg', 'https://example.com/image19.jpg', 'https://example.com/image20.jpg'],
+  '75a14554-547f-4819-963a-23e6fab37b20',
+  true,
+  10.7879,
+  106.7498,
+  700000
+),
+
+-- Room 11: Phòng view Hồ Hoàn Kiếm - Hà Nội
+(
+  'Phòng view Hồ Hoàn Kiếm',
+  'Phòng đẹp view hồ, gần phố cổ, thuận tiện tham quan',
+  450000,
+  'Hoàn Kiếm',
+  '15 Hàng Gai',
+  'Hà Nội',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Ban công'],
+  ARRAY['https://example.com/image21.jpg', 'https://example.com/image22.jpg'],
+  '81ba0ad1-74c0-4bad-b557-2f4b970fcad2',
+  true,
+  21.0285,
+  105.8542,
+  100000
+),
+
+-- Room 12: Căn hộ cao cấp Ba Đình - Hà Nội
+(
+  'Căn hộ cao cấp Ba Đình',
+  'Căn hộ sang trọng, gần Lăng Bác, view thành phố đẹp',
+  1200000,
+  'Ba Đình',
+  '25 Nguyễn Chí Thanh',
+  'Hà Nội',
+  'Việt Nam',
+  4,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Phòng gym', 'Hồ bơi'],
+  ARRAY['https://example.com/image23.jpg', 'https://example.com/image24.jpg', 'https://example.com/image25.jpg'],
+  '8752d3f6-f361-4c1f-b701-ba0761c3003b',
+  true,
+  21.0352,
+  105.8342,
+  100000
+),
+
+-- Room 13: Homestay Đà Nẵng - Bãi biển Mỹ Khê
+(
+  'Homestay Đà Nẵng - Mỹ Khê',
+  'Homestay gần biển, view biển đẹp, phù hợp gia đình',
+  800000,
+  'Sơn Trà',
+  '123 Võ Nguyên Giáp',
+  'Đà Nẵng',
+  'Việt Nam',
+  6,
+  3,
+  2,
+  3,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Ban công', 'Gần biển'],
+  ARRAY['https://example.com/image26.jpg', 'https://example.com/image27.jpg'],
+  '5a85c72c-b0ab-469a-adad-831697744fb0',
+  true,
+  16.0544,
+  108.2022,
+  550000
+),
+
+-- Room 14: Phòng khách sạn Huế - Gần Đại Nội
+(
+  'Phòng khách sạn Huế - Gần Đại Nội',
+  'Phòng khách sạn 3 sao, gần Đại Nội, thuận tiện tham quan',
+  600000,
+  'Phú Nhuận',
+  '45 Lê Lợi',
+  'Huế',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Tủ lạnh', 'TV', 'Dịch vụ phòng'],
+  ARRAY['https://example.com/image28.jpg'],
+  '75a14554-547f-4819-963a-23e6fab37b20',
+  true,
+  16.4637,
+  107.5909,
+  530000
+),
+
+-- Room 15: Villa Hội An - Gần phố cổ
+(
+  'Villa Hội An - Gần phố cổ',
+  'Villa đẹp, gần phố cổ Hội An, kiến trúc cổ điển',
+  1500000,
+  'Cẩm Châu',
+  '78 Nguyễn Thái Học',
+  'Hội An',
+  'Việt Nam',
+  8,
+  4,
+  3,
+  4,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Sân vườn', 'Hồ bơi', 'Xe đạp miễn phí'],
+  ARRAY['https://example.com/image29.jpg', 'https://example.com/image30.jpg', 'https://example.com/image31.jpg'],
+  '81ba0ad1-74c0-4bad-b557-2f4b970fcad2',
+  true,
+  15.8801,
+  108.3380,
+  560000
+),
+
+-- Room 16: Căn hộ Nha Trang - View biển
+(
+  'Căn hộ Nha Trang - View biển',
+  'Căn hộ cao cấp, view biển Nha Trang tuyệt đẹp',
+  1000000,
+  'Lộc Thọ',
+  '234 Trần Phú',
+  'Nha Trang',
+  'Việt Nam',
+  4,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Hồ bơi', 'Phòng gym', 'View biển'],
+  ARRAY['https://example.com/image32.jpg', 'https://example.com/image33.jpg'],
+  '8752d3f6-f361-4c1f-b701-ba0761c3003b',
+  true,
+  12.2388,
+  109.1967,
+  650000
+),
+
+-- Room 17: Phòng giá rẻ Đà Lạt - Gần chợ Đà Lạt
+(
+  'Phòng giá rẻ Đà Lạt - Gần chợ',
+  'Phòng sạch sẽ, giá tốt, gần chợ Đà Lạt, phù hợp du lịch bụi',
+  350000,
+  'Phường 1',
+  '67 Nguyễn Văn Trỗi',
+  'Đà Lạt',
+  'Việt Nam',
+  2,
+  1,
+  1,
+  1,
+  (SELECT id FROM room_types WHERE name = 'Phòng riêng' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp'],
+  ARRAY['https://example.com/image34.jpg'],
+  '5a85c72c-b0ab-469a-adad-831697744fb0',
+  true,
+  11.9416,
+  108.4423,
+  670000
+),
+
+-- Room 18: Resort Phú Quốc - Bãi Dài
+(
+  'Resort Phú Quốc - Bãi Dài',
+  'Resort cao cấp, bãi biển riêng, view biển tuyệt đẹp',
+  2500000,
+  'Dương Tơ',
+  'Bãi Dài, Phú Quốc',
+  'Phú Quốc',
+  'Việt Nam',
+  6,
+  3,
+  3,
+  3,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Hồ bơi', 'Spa', 'Nhà hàng', 'Bãi biển riêng'],
+  ARRAY['https://example.com/image35.jpg', 'https://example.com/image36.jpg', 'https://example.com/image37.jpg', 'https://example.com/image38.jpg'],
+  '75a14554-547f-4819-963a-23e6fab37b20',
+  true,
+  10.2233,
+  103.9608,
+  920000
+),
+
+-- Room 19: Căn hộ Vũng Tàu - Gần Bãi Sau
+(
+  'Căn hộ Vũng Tàu - Gần Bãi Sau',
+  'Căn hộ view biển, gần Bãi Sau, thuận tiện tắm biển',
+  900000,
+  'Phường 2',
+  '89 Thùy Vân',
+  'Vũng Tàu',
+  'Việt Nam',
+  4,
+  2,
+  2,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Căn hộ' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Máy giặt', 'Ban công', 'Gần biển'],
+  ARRAY['https://example.com/image39.jpg', 'https://example.com/image40.jpg'],
+  '81ba0ad1-74c0-4bad-b557-2f4b970fcad2',
+  true,
+  10.3459,
+  107.0843,
+  780000
+),
+
+-- Room 20: Homestay Sapa - View núi
+(
+  'Homestay Sapa - View núi',
+  'Homestay đẹp, view núi Fansipan, trải nghiệm văn hóa dân tộc',
+  500000,
+  'Sa Pa',
+  '123 Fansipan',
+  'Sapa',
+  'Việt Nam',
+  4,
+  2,
+  1,
+  2,
+  (SELECT id FROM room_types WHERE name = 'Nhà nguyên căn' LIMIT 1),
+  ARRAY['WiFi', 'Điều hòa', 'Bếp', 'Tủ lạnh', 'TV', 'Ban công', 'View núi', 'Tour guide'],
+  ARRAY['https://example.com/image41.jpg', 'https://example.com/image42.jpg'],
+  '8752d3f6-f361-4c1f-b701-ba0761c3003b',
+  true,
+  22.3366,
+  103.8440,
+  330000
+);
+
+-- Hiển thị kết quả
+SELECT 
+  id,
+  title,
+  price_per_night,
+  city,
+  max_guests,
+  latitude,
+  longitude,
+  is_available
+FROM rooms 
+ORDER BY created_at DESC 
+LIMIT 10;

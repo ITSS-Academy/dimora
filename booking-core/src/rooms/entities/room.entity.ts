@@ -24,10 +24,13 @@ export class Room {
   country: string;
   
   /** Vĩ độ (latitude) - để hiển thị trên Google Maps */
-  latitude: string;
+  latitude: number;
   
   /** Kinh độ (longitude) - để hiển thị trên Google Maps */
-  longitude: string;
+  longitude: number;
+  
+  /** Mã bưu điện */
+  postal_code: number;
   
   /** Số lượng khách tối đa có thể ở */
   max_guests: number;
@@ -62,5 +65,8 @@ export class Room {
   /** Thời gian cập nhật thông tin phòng lần cuối */
   updated_at: Date;
 }
+
+
+
 
 

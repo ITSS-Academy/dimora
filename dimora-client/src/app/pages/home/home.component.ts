@@ -16,10 +16,13 @@ import {CardComponent} from '../../shared/components/card/card.component';
 export class HomeComponent implements OnInit {
   @ViewChild('carouselFirstTrack') carouselFirstTrack!: ElementRef;
   @ViewChild('carouselSecondTrack') carouselSecondTrack!: ElementRef;
-  @ViewChild('carouselSecondTrack') carouselThirdTrack!: ElementRef;
+  @ViewChild('carouselThirdTrack') carouselThirdTrack!: ElementRef;
+  @ViewChild('carouselFourthTrack') carouselFourthTrack!: ElementRef;
 
    currentPosition: number = 0;
    currentPositionSecond: number = 0;
+   currentPositionThird: number = 0;
+  currentPositionFourth: number = 0;
   currentUser$!: Observable<AuthModel>;
 
    maxPosition: number = 0;
@@ -105,28 +108,36 @@ export class HomeComponent implements OnInit {
       }
     })
     setTimeout(() => {
-      const track = this.carouselFirstTrack.nativeElement;
-      const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
-      console.log('Card:', cardWidth);
-      const gap = 20;
-      this.maxPosition = (this.dummyHotel.length - 3.4) * (cardWidth);
+      this.updateMaxPosition();
+      window.addEventListener('resize', this.updateMaxPosition.bind(this));
     }, 0);
 
   }
 
 
 
+  updateMaxPosition() {
+    const track = this.carouselFirstTrack.nativeElement;
+    const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
+    const gap = 16;
+    const containerWidth = track.offsetParent?.offsetWidth || track.parentElement.offsetWidth;
+    const visibleCards = Math.floor(containerWidth / (cardWidth + gap));
+    this.maxPosition = Math.max(0, (this.dummyHotel.length - visibleCards) * (cardWidth + gap));
+  }
+
+
+
   scroll(direction: string) {
+    this.updateMaxPosition();
     const track = this.carouselFirstTrack.nativeElement;
     const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
     const gap = 16;
     const totalWidth = cardWidth + gap;
 
     if (direction === 'left') {
-      this.currentPosition = Math.max(0, this.currentPosition - totalWidth); // Giới hạn vị trí về 0
+      this.currentPosition = Math.max(0, this.currentPosition - totalWidth);
     } else if (direction === 'right') {
-      this.currentPosition = Math.min(this.maxPosition, this.currentPosition + totalWidth); // Giới hạn vị trí tối đa
-      console.log(this.currentPosition)
+      this.currentPosition = Math.min(this.maxPosition, this.currentPosition + totalWidth);
     }
 
     track.style.transform = `translateX(-${this.currentPosition}px)`;
@@ -150,19 +161,35 @@ export class HomeComponent implements OnInit {
   }
 
   scrollThird(direction: string) {
-    const track = this.carouselSecondTrack.nativeElement;
+    const track = this.carouselThirdTrack.nativeElement;
     const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
     const gap = 16;
     const totalWidth = cardWidth + gap;
 
     if (direction === 'left') {
-      this.currentPositionSecond = Math.max(0, this.currentPositionSecond - totalWidth); // Giới hạn vị trí về 0
+      this.currentPositionThird = Math.max(0, this.currentPositionThird - totalWidth); // Giới hạn vị trí về 0
     } else if (direction === 'right') {
-      this.currentPositionSecond = Math.min(this.maxPosition, this.currentPositionSecond + totalWidth); // Giới hạn vị trí tối đa
-      console.log(this.currentPositionSecond)
+      this.currentPositionThird = Math.min(this.maxPosition, this.currentPositionThird + totalWidth); // Giới hạn vị trí tối đa
+      console.log(this.currentPositionThird)
     }
 
-    track.style.transform = `translateX(-${this.currentPositionSecond}px)`;
+    track.style.transform = `translateX(-${this.currentPositionThird}px)`;
+  }
+
+  scrollFourth(direction: string) {
+    const track = this.carouselFourthTrack.nativeElement;
+    const cardWidth = track.querySelector('app-card')?.offsetWidth || 250;
+    const gap = 16;
+    const totalWidth = cardWidth + gap;
+
+    if (direction === 'left') {
+      this.currentPositionFourth = Math.max(0, this.currentPositionFourth - totalWidth); // Giới hạn vị trí về 0
+    } else if (direction === 'right') {
+      this.currentPositionFourth = Math.min(this.maxPosition, this.currentPositionFourth + totalWidth); // Giới hạn vị trí tối đa
+      console.log(this.currentPositionFourth)
+    }
+
+    track.style.transform = `translateX(-${this.currentPositionFourth}px)`;
   }
 
 }
