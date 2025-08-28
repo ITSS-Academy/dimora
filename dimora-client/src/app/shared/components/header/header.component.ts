@@ -1,4 +1,4 @@
-import {Component, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MaterialModule} from '../../material.module';
 import {ShareModule} from '../../share.module';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -34,13 +34,31 @@ export interface User {
 })
 
 
-export class HeaderComponent implements OnInit {
-
+export class HeaderComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  @ViewChild('picker') picker!: MatDateRangePicker<Date>;
+  @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
   mineProfile$ !: Observable<AuthModel>;
   minDate = new Date();
   subscriptions: Subscription[] = [];
   searchResult$ !: Observable<RoomModel[]>;
   isSearchPage: boolean = false;
+  options: User[] = [
+    {
+      name: 'Mary',
+      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
+    },
+    {
+      name: 'Shelley',
+      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+    },
+    {
+      name: 'Igor',
+      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
+    }
+  ];
+  filteredOptions!: Observable<User[]>;
   constructor(
     private store: Store<{
       auth: AuthState,
@@ -57,12 +75,6 @@ export class HeaderComponent implements OnInit {
 
 
 
-
-  @ViewChild('picker') picker!: MatDateRangePicker<Date>;
-  @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
-
-  readonly dialog = inject(MatDialog);
 
   openDialog() {
     this.dialog.open(DialogLoginComponent, {
@@ -193,21 +205,7 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  options: User[] = [
-    {
-      name: 'Mary',
-      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
-    },
-    {
-      name: 'Shelley',
-      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
-    },
-    {
-      name: 'Igor',
-      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
-    }
-  ];
-  filteredOptions!: Observable<User[]>;
+
 
   range = new FormGroup({
     location: new FormControl<string | null>(null),
@@ -235,9 +233,6 @@ export class HeaderComponent implements OnInit {
         console.log('No user profile available');
       }
     }),
-
-
-
   )
 
     // Check current route to show/hide filter button
@@ -260,6 +255,11 @@ export class HeaderComponent implements OnInit {
 
     // Initialize guests display
     this.updateGuestsDisplay();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+
   }
 
   // Check if current route is search page
@@ -361,5 +361,8 @@ export class HeaderComponent implements OnInit {
   }
   navigateToHome() {
     this.router.navigate(['/home']);
+  }
+  navigateToProfile(id: string) {
+    this.router.navigate(['/profile', id]);
   }
 }

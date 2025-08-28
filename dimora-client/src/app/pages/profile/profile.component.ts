@@ -66,7 +66,7 @@ export class ProfileComponent {
     this.activatedRoute.params.subscribe(params => {
       const userId = params['id'];
 
-      // this.store.dispatch(AuthActions.getUserById({id: userId}))
+      this.store.dispatch(AuthActions.getUserById({id: userId}))
       // You can use the userId to fetch user-specific data if needed
     })
 
