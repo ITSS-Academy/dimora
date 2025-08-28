@@ -18,7 +18,6 @@
     height: 80px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid var(--outline-variant);
     flex-shrink: 0;
 
     img {
@@ -58,16 +57,10 @@
 
 .profile-container{
   padding: 0 5rem;
-}:root {
-   --primary: #be0035;
-   --on-primary: #ffffff;
-   --background: #fff8f7;
-   --surface: #f3eceb;
- }
+}
 
 .profile-container {
   padding: 1.5rem;
-  background: var(--surface);
 
   .profile {
     display: flex;
@@ -79,10 +72,9 @@
     box-shadow: 0 2px 6px rgba(0,0,0,.1);
 
     .profile-avatar img {
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      border: 3px solid var(--primary);
     }
 
     .profile-info {

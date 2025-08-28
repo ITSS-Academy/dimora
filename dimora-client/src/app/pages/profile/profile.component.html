@@ -1,8 +1,8 @@
-<!--@if (this.isLoading$|async){-->
-<!--  <div class="loading-spinner">-->
-<!--    <app-loading></app-loading>-->
-<!--  </div>-->
-<!--} @else {-->
+@if (this.isLoading$|async){
+  <div class="loading-spinner">
+    <app-loading></app-loading>
+  </div>
+} @else {
   @if (currentProfile$ | async; as profile){
     <div class="profile-container">
       <div class="profile">
@@ -37,4 +37,4 @@
 
   }
 
-<!--}-->
+}

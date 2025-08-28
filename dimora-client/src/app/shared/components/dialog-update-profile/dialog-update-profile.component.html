@@ -2,7 +2,7 @@
   <!-- Avatar -->
   <div class="avatar-wrapper">
     <div class="avatar-ring">
-      <img [src]="previewUrl || 'assets/avatar.png'" alt="avatar" class="avatar" />
+      <img [src]="previewUrl || this.data.profile.avatar_url" alt="avatar" class="avatar" referrerpolicy="no-referrer" />
     </div>
 
     <!-- Label + input để trigger khi click vào camera -->
@@ -20,20 +20,20 @@
   </div>
 
   <!-- Info -->
-  <form class="form-section">
+  <form class="form-section" [formGroup]="profileForm">
     <mat-form-field appearance="fill">
       <mat-label>Full Name</mat-label>
-      <input matInput [(ngModel)]="this.data.profile.fullName" name="fullName"/>
+      <input matInput formControlName="full_name"  >
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="data.profile.email" name="email"/>
+      <input matInput formControlName="email"/>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Phone</mat-label>
-      <input matInput [(ngModel)]="data.profile.phone" name="phone"/>
+      <input matInput formControlName="phone"/>
     </mat-form-field>
   </form>
 </mat-dialog-content>
