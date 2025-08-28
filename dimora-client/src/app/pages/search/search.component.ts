@@ -8,6 +8,9 @@ import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { LoadingComponent } from "../../shared/components/loading/loading.component";
+import { ActivatedRoute, Router } from '@angular/router';
+import { SearchModel } from '../../models/search.model';
+import * as SearchActions from '../../ngrx/actions/search.actions';
 
 interface Location {
   lat: number;
@@ -84,7 +87,9 @@ export class SearchComponent {
   constructor(
     private store: Store<{
     search: SearchState,
-  }>
+  }>,
+  private route: ActivatedRoute,
+  private router: Router
 ) {
   this.searchResult$ = this.store.select('search','searchRooms');
   this.isLoading$ = this.store.select('search','isLoading');
@@ -93,6 +98,9 @@ export class SearchComponent {
   ngOnInit() {
     console.log('🚀 App component initialized');
     this.setCurrentLocationAsDefault();
+
+    // Handle query parameters
+    this.handleQueryParameters();
 
     // Subscribe to search results from API
     this.subscriptions.push(
@@ -561,6 +569,62 @@ export class SearchComponent {
   getRoomDistance(room: RoomModel): number | null {
     // Distance calculation removed - no longer needed
     return null;
+  }
+
+  // Handle query parameters from URL
+  handleQueryParameters(): void {
+    this.subscriptions.push(
+      this.route.queryParams.subscribe(params => {
+        console.log('Query parameters:', params);
+        
+        if (Object.keys(params).length > 0) {
+          // Create search model from query parameters
+          const searchData: SearchModel = {
+            location: params['location'] || '',
+            checkIn: params['checkIn'] || '',
+            checkOut: params['checkOut'] || '',
+            guests: Number(params['guests']) || 1,
+            minPrice: Number(params['minPrice']) || 0,
+            maxPrice: Number(params['maxPrice']) || 0,
+            radius: Number(params['radius']) || 0
+          };
+
+          console.log('Search data from query params:', searchData);
+          
+          // Dispatch search action if we have location
+          if (searchData.location) {
+            this.store.dispatch(SearchActions.searchRooms({ searchParams: searchData }));
+          }
+        }
+      })
+    );
+  }
+
+  // Update URL with current search parameters
+  updateUrlWithSearchParams(searchParams: SearchModel): void {
+    const queryParams = {
+      location: searchParams.location,
+      checkIn: searchParams.checkIn,
+      checkOut: searchParams.checkOut,
+      guests: searchParams.guests,
+      minPrice: searchParams.minPrice,
+      maxPrice: searchParams.maxPrice,
+      radius: searchParams.radius
+    };
+
+    // Remove empty values
+    Object.keys(queryParams).forEach(key => {
+      if (queryParams[key as keyof typeof queryParams] === '' || 
+          queryParams[key as keyof typeof queryParams] === 0) {
+        delete queryParams[key as keyof typeof queryParams];
+      }
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge'
+    });
   }
 
   // Cleanup subscriptions when component is destroyed

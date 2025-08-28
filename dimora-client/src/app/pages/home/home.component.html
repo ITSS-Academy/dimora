@@ -41,7 +41,7 @@
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollSecond('left')" [disabled]="currentPositionSecond === 0">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollSecond('right')" [disabled]="currentPositionSecond >= maxPosition">
+      <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollSecond('right')" [disabled]="currentPositionSecond >= maxPositionSecond">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
@@ -61,9 +61,9 @@
     <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollThird('left')" [disabled]="currentPositionThird === 0">
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollThird('right')" [disabled]="currentPositionThird >= maxPosition">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
+          <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollThird('right')" [disabled]="currentPositionThird >= maxPositionThird">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
   </div>
 
 </div>
@@ -80,7 +80,7 @@
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollFourth('left')" [disabled]="currentPositionFourth === 0">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollFourth('right')" [disabled]="currentPositionFourth >= maxPosition">
+      <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollFourth('right')" [disabled]="currentPositionFourth >= maxPositionFourth">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>

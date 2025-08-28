@@ -7,7 +7,7 @@
 
 
   <!-- Search Bar -->
-  <div class="search-bar">
+  <div class="search-bar" [ngClass]="{'search-page': isSearchPage}">
     <form class="search-container" [formGroup]="range" (keydown)="onFormKeyDown($event)">
       <mat-form-field appearance="outline" class="search-field" (click)="onLocationInputClick()">
       <input #locationInput type="text" matInput formControlName="location" [matAutocomplete]="auto" placeholder="Where are you going?"  >
@@ -49,8 +49,15 @@
         </button>
       </div>
 
+      <!-- Filter Button - Only show on search page -->
+     
 
     </form>
+    <div class="filter-button-container" *ngIf="isSearchPage">
+      <button mat-icon-button class="filter-button" (click)="openFilterDialog()" matTooltip="Filters">
+        <mat-icon>tune</mat-icon>
+      </button>
+    </div>
 
 
   </div>
