@@ -1,0 +1,679 @@
+{
+  "info": {
+    "name": "Booking API Comprehensive Test",
+    "description": "Complete test collection for all booking APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "userId1",
+      "value": "8752d3f6-f361-4c1f-b701-ba0761c3003b",
+      "type": "string"
+    },
+    {
+      "key": "userId2",
+      "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "type": "string"
+    },
+    {
+      "key": "hostId",
+      "value": "6803be8a-78a3-4c69-9eb5-9a1ae114502e",
+      "type": "string"
+    },
+    {
+      "key": "roomId1",
+      "value": "44e8f956-8c55-46e4-9c6c-1348aadda32a",
+      "type": "string"
+    },
+    {
+      "key": "roomId2",
+      "value": "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup Database",
+      "item": [
+        {
+          "name": "1. Create User 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId1}}\",\n  \"email\": \"user1@example.com\",\n  \"full_name\": \"Nguyễn Văn A\",\n  \"phone\": \"0123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "2. Create User 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId2}}\",\n  \"email\": \"user2@example.com\",\n  \"full_name\": \"Lê Văn C\",\n  \"phone\": \"0111222333\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "3. Create Host",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{hostId}}\",\n  \"email\": \"host1@example.com\",\n  \"full_name\": \"Trần Thị B\",\n  \"phone\": \"0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CREATE BOOKING",
+      "item": [
+        {
+          "name": "1.1 Create Booking Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId1}}\",\n  \"user_id\": \"{{userId1}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-10\",\n  \"check_out_date\": \"2024-10-15\",\n  \"guest_count\": 2,\n  \"total_amount\": 2500000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Create Booking with Notes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId2}}\",\n  \"user_id\": \"{{userId2}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-20\",\n  \"check_out_date\": \"2024-10-25\",\n  \"guest_count\": 3,\n  \"total_amount\": 4000000,\n  \"status\": \"pending\",\n  \"guest_notes\": \"Cần phòng yên tĩnh, view đẹp, có thể check-in sớm không?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Invalid UUID Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"invalid-uuid\",\n  \"user_id\": \"{{userId1}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-10\",\n  \"check_out_date\": \"2024-10-15\",\n  \"guest_count\": 2,\n  \"total_amount\": 2500000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.4 Invalid Date Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId1}}\",\n  \"user_id\": \"{{userId1}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-15\",\n  \"check_out_date\": \"2024-10-10\",\n  \"guest_count\": 2,\n  \"total_amount\": 2500000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.5 Guest Count Zero Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId1}}\",\n  \"user_id\": \"{{userId1}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-10\",\n  \"check_out_date\": \"2024-10-15\",\n  \"guest_count\": 0,\n  \"total_amount\": 2500000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.6 Invalid Status Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId1}}\",\n  \"user_id\": \"{{userId1}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-10\",\n  \"check_out_date\": \"2024-10-15\",\n  \"guest_count\": 2,\n  \"total_amount\": 2500000,\n  \"status\": \"invalid_status\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "1.7 Booking Conflict Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId1}}\",\n  \"user_id\": \"{{userId2}}\",\n  \"host_id\": \"{{hostId}}\",\n  \"check_in_date\": \"2024-10-12\",\n  \"check_out_date\": \"2024-10-17\",\n  \"guest_count\": 2,\n  \"total_amount\": 2500000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET BOOKINGS",
+      "item": [
+        {
+          "name": "2.1 Get All Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Get Booking Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/non-existent-uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "non-existent-uuid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "UPDATE BOOKING",
+      "item": [
+        {
+          "name": "3.1 Update Booking Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\",\n  \"host_notes\": \"Đã xác nhận, phòng sẵn sàng. Check-in từ 14:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Update Guest Notes",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guest_notes\": \"Cần thêm gối và chăn ấm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Update to Cancelled",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\",\n  \"host_notes\": \"Khách hủy booking\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "3.4 Invalid Status Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"invalid_status\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "3.5 Negative Guest Count",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guest_count\": -1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELETE BOOKING",
+      "item": [
+        {
+          "name": "4.1 Delete Booking Success",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Delete Booking Not Found",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/non-existent-uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "non-existent-uuid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "USER BOOKINGS",
+      "item": [
+        {
+          "name": "5.1 Get User Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/user/{{userId1}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "user", "{{userId1}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HOST BOOKINGS",
+      "item": [
+        {
+          "name": "6.1 Get Host Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}"]
+            }
+          }
+        },
+        {
+          "name": "6.2 Get Room Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/room/{{roomId1}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "room", "{{roomId1}}"]
+            }
+          }
+        },
+        {
+          "name": "6.3 Get Host Bookings by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/date-range?startDate=2024-10-01&endDate=2024-10-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "date-range"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.4 Missing Start Date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/date-range?endDate=2024-10-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "date-range"],
+              "query": [
+                {
+                  "key": "endDate",
+                  "value": "2024-10-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.5 Missing End Date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/date-range?startDate=2024-10-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "date-range"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-01"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.6 Get Host Booking Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ROOM AVAILABILITY",
+      "item": [
+        {
+          "name": "7.1 Check Room Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/room/{{roomId1}}/check-availability?checkInDate=2024-10-16&checkOutDate=2024-10-20",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "room", "{{roomId1}}", "check-availability"],
+              "query": [
+                {
+                  "key": "checkInDate",
+                  "value": "2024-10-16"
+                },
+                {
+                  "key": "checkOutDate",
+                  "value": "2024-10-20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2 Check Room Availability Conflict",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/room/{{roomId1}}/check-availability?checkInDate=2024-10-12&checkOutDate=2024-10-17",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "room", "{{roomId1}}", "check-availability"],
+              "query": [
+                {
+                  "key": "checkInDate",
+                  "value": "2024-10-12"
+                },
+                {
+                  "key": "checkOutDate",
+                  "value": "2024-10-17"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.3 Get Room Availability Calendar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/room/{{roomId1}}/availability?startDate=2024-10-01&endDate=2024-10-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "room", "{{roomId1}}", "availability"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.4 Get All Rooms Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/host/{{hostId}}/availability?startDate=2024-10-01&endDate=2024-10-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "host", "{{hostId}}", "availability"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-31"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CANCEL BOOKING",
+      "item": [
+        {
+          "name": "8.1 Cancel Booking Success",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{$randomUUID}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{$randomUUID}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "8.2 Cancel Booking Not Found",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/non-existent-uuid/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "non-existent-uuid", "cancel"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

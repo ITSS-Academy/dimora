@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   HttpException,
   HttpStatus,
   Request,
@@ -19,12 +20,18 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Post()
-  async create(@Body() createBookingDto: CreateBookingDto, @Request() req) {
+  async create(@Body() createBookingDto: CreateBookingDto) {
     try {
-      // TODO: Lấy userId từ JWT token
-      const userId = req.user?.id || 'temp-user-id';
+      
+      // Validate DTO
+      
+      // Use user_id from DTO if provided, otherwise use default
+      const userId = createBookingDto.user_id || '';
+      console.log('👤 [BOOKING CONTROLLER] Using user ID:', userId);
+      
       return await this.bookingsService.create(createBookingDto, userId);
     } catch (error) {
+      console.log('💥 [BOOKING CONTROLLER] Exception caught:', error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -68,14 +75,14 @@ export class BookingsController {
   @Get('host/:hostId')
   async findByHost(@Param('hostId') hostId: string) {
     try {
-      return await this.bookingsService.findByHost(hostId);
+      return await this.bookingsService.getHostBookings(hostId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       throw new HttpException(
-        'Internal server error while fetching host bookings',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        'Failed to fetch host bookings',
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -106,8 +113,148 @@ export class BookingsController {
         throw error;
       }
       throw new HttpException(
-        'Internal server error while fetching booking',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        'Failed to fetch booking',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('host/:hostId/room/:roomId')
+  async getRoomBookings(
+    @Param('hostId') hostId: string,
+    @Param('roomId') roomId: string
+  ) {
+    try {
+      return await this.bookingsService.getRoomBookings(roomId, hostId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch room bookings',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('host/:hostId/date-range')
+  async getHostBookingsByDateRange(
+    @Param('hostId') hostId: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string
+  ) {
+    try {
+      if (!startDate || !endDate) {
+        throw new HttpException(
+          'startDate and endDate are required',
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return await this.bookingsService.getHostBookingsByDateRange(hostId, startDate, endDate);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch host bookings by date range',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('host/:hostId/stats')
+  async getHostBookingStats(@Param('hostId') hostId: string) {
+    try {
+      return await this.bookingsService.getHostBookingStats(hostId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get host booking stats',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('host/:hostId/room/:roomId/availability')
+  async getRoomAvailability(
+    @Param('hostId') hostId: string,
+    @Param('roomId') roomId: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string
+  ) {
+    try {
+      if (!startDate || !endDate) {
+        throw new HttpException(
+          'startDate and endDate are required',
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return await this.bookingsService.getRoomAvailability(roomId, hostId, startDate, endDate);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get room availability',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('host/:hostId/availability')
+  async getHostRoomsAvailability(
+    @Param('hostId') hostId: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string
+  ) {
+    try {
+      if (!startDate || !endDate) {
+        throw new HttpException(
+          'startDate and endDate are required',
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return await this.bookingsService.getHostRoomsAvailability(hostId, startDate, endDate);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get host rooms availability',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('room/:roomId/check-availability')
+  async checkRoomAvailability(
+    @Param('roomId') roomId: string,
+    @Query('checkInDate') checkInDate: string,
+    @Query('checkOutDate') checkOutDate: string
+  ) {
+    try {
+      if (!checkInDate || !checkOutDate) {
+        throw new HttpException(
+          'checkInDate and checkOutDate are required',
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const isAvailable = await this.bookingsService.checkRoomAvailability(roomId, checkInDate, checkOutDate);
+      return { 
+        room_id: roomId, 
+        check_in_date: checkInDate, 
+        check_out_date: checkOutDate, 
+        is_available: isAvailable 
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to check room availability',
+        HttpStatus.BAD_REQUEST
       );
     }
   }

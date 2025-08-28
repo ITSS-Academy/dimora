@@ -9,6 +9,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import {environment} from '../environments/environment';
 import {authReducer} from './ngrx/reducer/auth.reducer';
 import * as authEffects from './ngrx/effects/auth.effects';
+import {provideHttpClient} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,8 +20,9 @@ export const appConfig: ApplicationConfig = {
     }),
     provideEffects(
       authEffects
-
     ),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideAuth(() => getAuth())]
+    provideAuth(() => getAuth()),
+    provideHttpClient()
+  ],
 };

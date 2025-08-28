@@ -58,18 +58,26 @@
   <!-- Right Side -->
   <div class="right-section">
 
-    <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">
-      <mat-icon>menu</mat-icon>
-      <mat-icon>account_circle</mat-icon>
-    </button>
-    <mat-menu #profileMenu="matMenu">
-      <button mat-menu-item>Sign up</button>
-      <button mat-menu-item>Log in</button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item>Gift cards</button>
-      <button mat-menu-item>Airbnb your home</button>
-      <button mat-menu-item>Help Center</button>
+    @if (mineProfile$|async; as profile){
+      @if (profile.id) {
+        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" class="button-header" aria-label="Example icon-button with a menu">
+          <img class="avatar-img" [src]="profile.avatar_url" alt="" referrerpolicy="no-referrer">
+        </button>
+      } @else {
+        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" (click)="login()" class="button-header" aria-label="Example icon-button with a menu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      }
+    }
+    <mat-menu #profileMenuLogined="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Log out</span>
+      </button>
     </mat-menu>
+
+
+
 
     <!-- Guests Menu -->
     <mat-menu #guestsMenu="matMenu" class="guests-menu">

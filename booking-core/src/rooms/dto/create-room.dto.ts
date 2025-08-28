@@ -26,13 +26,13 @@ export class CreateRoomDto {
   @IsString()
   postal_code: string;
 
-  @IsNumber()
+  @IsString()
   @IsLatitude()
-  latitude: number;
+  latitude: string;
 
-  @IsNumber()
+  @IsString()
   @IsLongitude()
-  longitude: number;
+  longitude: string;
 
   @IsNumber()
   @Min(1)
@@ -63,12 +63,4 @@ export class CreateRoomDto {
 
   @IsString()
   host_id: string;
-
-  @IsOptional()
-  @IsBoolean()
-  is_available?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  is_verified?: boolean;
 }

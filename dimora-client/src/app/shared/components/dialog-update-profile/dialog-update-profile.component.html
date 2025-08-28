@@ -2,9 +2,19 @@
   <!-- Avatar -->
   <div class="avatar-wrapper">
     <div class="avatar-ring">
-      <img src="assets/avatar.png" alt="avatar" class="avatar" />
+      <img [src]="previewUrl || 'assets/avatar.png'" alt="avatar" class="avatar" />
     </div>
-    <button mat-mini-fab color="primary" class="edit-avatar">
+
+    <!-- Label + input để trigger khi click vào camera -->
+    <input
+      type="file"
+      #fileInput
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+
+    <button mat-mini-fab color="primary" type="button" (click)="fileInput.click()">
       <mat-icon>camera_alt</mat-icon>
     </button>
   </div>
@@ -13,17 +23,17 @@
   <form class="form-section">
     <mat-form-field appearance="fill">
       <mat-label>Full Name</mat-label>
-      <input matInput [(ngModel)]="profile.fullName" />
+      <input matInput [(ngModel)]="this.data.profile.fullName" name="fullName"/>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="profile.email" />
+      <input matInput [(ngModel)]="data.profile.email" name="email"/>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Phone</mat-label>
-      <input matInput [(ngModel)]="profile.phone" />
+      <input matInput [(ngModel)]="data.profile.phone" name="phone"/>
     </mat-form-field>
   </form>
 </mat-dialog-content>
@@ -36,5 +46,3 @@
     Save Changes
   </button>
 </mat-dialog-actions>
-
-

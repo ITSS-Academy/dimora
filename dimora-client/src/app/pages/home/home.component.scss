@@ -1,0 +1,40 @@
+.carousel-container {
+  position: relative;
+  width: 100vw; /* Toàn bộ chiều rộng viewport */
+  margin: 0 auto;
+  overflow: hidden; /* Ẩn các phần tử tràn ra ngoài */
+  padding: 20px;
+
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.carousel-track {
+  display: flex;
+  width: 100%; /* Đảm bảo chiều rộng đầy đủ */
+  transform: translateX(0); /* Khởi tạo vị trí */
+  transition: transform 0.6s ease-in-out; /* Hiệu ứng trượt mượt */
+  gap: 30px;
+}
+
+.scroll-btn {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-btn:hover {
+  opacity: 0.8;
+}
+
+.scroll-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

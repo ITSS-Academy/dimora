@@ -1,21 +1,24 @@
-
-
-
+<!--@if (this.isLoading$|async){-->
+<!--  <div class="loading-spinner">-->
+<!--    <app-loading></app-loading>-->
+<!--  </div>-->
+<!--} @else {-->
+  @if (currentProfile$ | async; as profile){
     <div class="profile-container">
       <div class="profile">
         <div class="profile-avatar">
-          <img src="assets/avatar.png" alt="avatar">
+          <img [src]="profile.avatar_url" alt="avatar" referrerpolicy="no-referrer">
         </div>
         <div class="profile-info">
-          <h2 class="profile-name">{{ profile.name }}</h2>
-          <p class="profile-email">{{ profile.email }}</p>
-          <p class="profile-phone">Sđt: {{ profile.phone }}</p>
-
-          <button mat-stroked-button color="primary" (click)="openDialog()" >
+          <h2 class="profile-name">{{profile.full_name}}</h2>
+          <p class="profile-email">{{profile.email}}</p>
+          <p class="profile-phone">{{profile.phone}}</p>
+          <button mat-stroked-button (click)="openDialog()">
             <mat-icon>edit</mat-icon>
             Edit Profile
           </button>
         </div>
+
       </div>
 
       <div class="navigate-container">
@@ -32,8 +35,6 @@
       </div>
     </div>
 
+  }
 
-
-
-
-
+<!--}-->

@@ -1,1 +1,177 @@
-<p>create-post works!</p>
+<mat-stepper headerPosition="top" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <div class="container-step-one">
+      <div class="step-one">
+        <div id="word-one">
+          <h4>Step 1</h4>
+          <h1>Tell us about your place</h1>
+          <p>
+            In this step, we'll ask you which type of property you have and if
+            <br />
+            guests will book the entire place or just a room. Then let us know
+            the
+            <br />
+            location and how many guests can stay.
+          </p>
+        </div>
+        <div id="video">
+          <video
+            data-testid="video-player"
+            class="video-player"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+          >
+            <source
+              src="https://stream.media.muscache.com/zFaydEaihX6LP01x8TSCl76WHblb01Z01RrFELxyCXoNek.mp4?v_q=high"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+      </div>
+      <div class="outline-button">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+    <div class="container-step-two">
+      <div class="step-one">
+        <div id="word-two">
+          <div class="container">
+            <h2 class="title">
+              Which of the following best describes your place?
+            </h2>
+            <div class="options-grid">
+              <button class="option">
+                <img src="/home.png" alt="" />House
+              </button>
+              <button class="option">
+                <img src="/apartment.png" alt="" />Apartment
+              </button>
+              <button class="option"><img src="/barn.png" alt="" />Barn</button>
+              <button class="option">
+                <img src="/bed-and-breakfast.png" alt="" />Bed and Breakfast
+              </button>
+              <button class="option"><img src="/boat.png" alt="" />Boat</button>
+              <button class="option">
+                <img src="/cabin.png" alt="" />Cabin
+              </button>
+              <button class="option">
+                <img src="/camper-RV.png" alt="" />Camper/RV
+              </button>
+              <button class="option">
+                <img src="/casa-particular.png" alt="" />Casa particular
+              </button>
+              <button class="option">
+                <img src="/castle.png" alt="" />Castle
+              </button>
+              <button class="option"><img src="/cave.png" alt="" />Cave</button>
+              <button class="option">
+                <img src="/container.png" alt="" />Container
+              </button>
+              <button class="option">
+                <img src="/cycladic-home.png" alt="" />Cycladic home
+              </button>
+              <button class="option">
+                <img src="/dammuso.png" alt="" />Dammuso
+              </button>
+              <button class="option"><img src="/dome.png" alt="" />Dome</button>
+              <button class="option">
+                <img src="/earth-home.png" alt="" />Earth home
+              </button>
+              <button class="option"><img src="/farm.png" alt="" />Farm</button>
+              <button class="option">
+                <img src="/guesthouse.png" alt="" />Guesthouse
+              </button>
+              <button class="option">
+                <img src="/hotel.png" alt="" />Hotel
+              </button>
+              <button class="option">
+                <img src="/houseboat.png" alt="" />Houseboat
+              </button>
+              <button class="option">
+                <img src="/kezhan.png" alt="" />Kezhan
+              </button>
+              <button class="option">
+                <img src="/minsu.png" alt="" />Minsu
+              </button>
+              <button class="option"><img src="/riad.png" alt="" />Riad</button>
+              <button class="option">
+                <img src="/ryokan.png" alt="" />Ryokan
+              </button>
+              <button class="option">
+                <img src="/shepherds-hut.png" alt="" />Shepherd’s hut
+              </button>
+              <button class="option"><img src="/tent.png" alt="" />Tent</button>
+              <button class="option">
+                <img src="/tiny-home.png" alt="" />Tiny home
+              </button>
+              <button class="option">
+                <img src="/tower.png" alt="" />Tower
+              </button>
+              <button class="option">
+                <img src="/treehouse.png" alt="" />Treehouse
+              </button>
+              <button class="option">
+                <img src="/noname.png" alt="" />Trullo
+              </button>
+              <button class="option">
+                <img src="/windmill.png" alt="" />Windmill
+              </button>
+              <button class="option"><img src="/yurt.png" alt="" />Yurt</button>
+            </div>
+            <div class="actions">
+              <button mat-stroked-button matStepperPrevious>Back</button>
+              <button mat-flat-button matStepperNext>Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="thirdFormGroup">
+    <div class="container-step-three">
+      <div class="step-three">
+        <div id="word-three">
+          <h1>What type of place will guests have?</h1>
+        </div>
+        <button class="info">
+          <h3>An entire place</h3>
+          <p>Guests have the whole place to themselves.</p>
+        </button>
+      </div>
+      <div class="outline-button">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="thirdFormGroup" optional>
+    <mat-step [formGroup]="thirdFormGroup">
+      <ng-template matStepLabel></ng-template>
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Address"
+          formControlName="secondCtrl"
+          required
+        />
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    You are now done.
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+</mat-stepper>

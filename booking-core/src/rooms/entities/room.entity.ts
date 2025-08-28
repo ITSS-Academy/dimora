@@ -23,6 +23,11 @@ export class Room {
   /** Tên quốc gia */
   country: string;
   
+  /** Vĩ độ (latitude) - để hiển thị trên Google Maps */
+  latitude: string;
+  
+  /** Kinh độ (longitude) - để hiển thị trên Google Maps */
+  longitude: string;
   
   /** Số lượng khách tối đa có thể ở */
   max_guests: number;
@@ -50,7 +55,6 @@ export class Room {
   
   /** Trạng thái có sẵn để đặt phòng hay không */
   is_available: boolean;
-  
   
   /** Thời gian tạo phòng */
   created_at: Date;

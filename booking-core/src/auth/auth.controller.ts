@@ -1,34 +1,95 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('auth')
+@Controller('users')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.authService.create(createUserDto);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to create user',
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 
   @Get()
-  findAll() {
-    return this.authService.findAll();
+  async findAll() {
+    try {
+      return await this.authService.findAll();
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch users',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('google/:id')
+  async findOneByGoogleId(@Param('id') googleId: string) {
+    try {
+      return await this.authService.findOneByGoogleId(googleId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw new HttpException(error.message, error.getStatus());
+      }
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.authService.findOne(id);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch user',
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      return await this.authService.update(id, updateUserDto);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to update user',
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.authService.remove(id);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to delete user',
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 }
