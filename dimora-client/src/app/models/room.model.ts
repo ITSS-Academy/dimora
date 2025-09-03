@@ -1,3 +1,5 @@
+import { AmenitiesModel } from "./amenities.model";
+
 export interface RoomModel {
   /** ID duy nhất của phòng */
   id: string;
@@ -45,7 +47,7 @@ export interface RoomModel {
   room_type_id: string;
 
   /** Danh sách tiện nghi có sẵn (ví dụ: ["WiFi", "Điều hòa", "Bếp"]) */
-  amenities: string[];
+  amenities: AmenitiesModel[];
 
   /** Danh sách URL hình ảnh của phòng */
   images: string[];
@@ -62,5 +64,7 @@ export interface RoomModel {
   /** Thời gian cập nhật thông tin phòng lần cuối */
   updated_at: string;
 }
+
+
 
 

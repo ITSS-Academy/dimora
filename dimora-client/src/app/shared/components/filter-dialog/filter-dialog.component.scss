@@ -44,9 +44,49 @@
   flex-direction: column;
   gap: 16px;
 
+  .price-label-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .price-label {
+      font-weight: 500;
+      color: var(--on-surface);
+      font-size: 14px;
+    }
+    
+    .price-values {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .price-min {
+        color: var(--primary);
+        background-color: var(--primary-container);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      
+      .price-separator {
+        color: var(--neutral);
+        font-weight: 500;
+      }
+      
+      .price-max {
+        color: var(--secondary);
+        background-color: var(--secondary-container);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
+
   .price-range-slider {
     width: 100%;
-    margin: 20px 0;
     
     ::ng-deep .mat-mdc-slider {
       width: 100%;
@@ -83,41 +123,17 @@
       }
     }
   }
-
-  .price-values {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 500;
-    color: var(--on-surface);
-    margin-top: 8px;
-    
-    .price-min {
-      color: var(--primary);
-      background-color: var(--primary-container);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    
-    .price-max {
-      color: var(--secondary);
-      background-color: var(--secondary-container);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-  }
 }
 
 .property-types {
   .chip-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    
     
     ::ng-deep .mdc-evolution-chip {
       margin: 0;
+      gap: 10px;
     }
   }
 }
@@ -128,10 +144,8 @@
       min-width: 60px;
       height: 40px;
       
-      &.mat-button-toggle-checked {
-        background-color: var(--primary);
-        color: var(--on-primary);
-      }
+      
+      
     }
   }
 }
@@ -143,6 +157,7 @@
 
   .amenity-checkbox {
     display: flex;
+
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
@@ -155,17 +170,18 @@
       background-color: var(--surface-container-low);
     }
     
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      color: var(--neutral);
-    }
+   
     
     ::ng-deep .mat-mdc-checkbox {
       margin-right: 8px;
     }
   }
+}
+
+.amenity-checkbox-content{
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .rating-options {
@@ -177,7 +193,7 @@
       
       &.mat-button-toggle-checked {
         background-color: var(--tertiary);
-        color: var(--on-tertiary);
+        color: var(--on-primary);
       }
     }
   }
@@ -252,3 +268,12 @@
     }
   }
 }
+
+
+::ng-deep .mat-mdc-chip-set .mdc-evolution-chip-set__chips {
+  margin: 0;
+  gap: 10px;
+}
+
+
+

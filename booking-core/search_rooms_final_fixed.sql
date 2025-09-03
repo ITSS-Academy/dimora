@@ -63,7 +63,8 @@ CREATE OR REPLACE FUNCTION search_rooms_nearby(
   max_guests_param INTEGER DEFAULT NULL,
   min_price_param NUMERIC(10,2) DEFAULT NULL,
   max_price_param NUMERIC(10,2) DEFAULT NULL,
-  search_term TEXT DEFAULT NULL
+  search_term TEXT DEFAULT NULL,
+  amenities_param INTEGER[] DEFAULT NULL
 )
 RETURNS JSON
 LANGUAGE plpgsql
@@ -102,7 +103,17 @@ BEGIN
       'bathrooms', r.bathrooms,
       'beds', r.beds,
       'room_type_id', r.room_type_id,
-      'amenities', r.amenities,
+      'amenities', (
+        SELECT json_agg(
+          json_build_object(
+            'id', a.id,
+            'name', a.name,
+            'icon_name', a.icon_name
+          )
+        )
+        FROM amenities a
+        WHERE a.id::text = ANY(r.amenities)
+      ),
       'images', r.images,
       'host_id', r.host_id,
       'is_available', r.is_available,
@@ -366,6 +377,17 @@ BEGIN
     -- Filter theo giá
     AND (min_price_param IS NULL OR r.price_per_night >= min_price_param)
     AND (max_price_param IS NULL OR r.price_per_night <= max_price_param)
+    -- Filter theo amenities (room phải có TẤT CẢ amenities được yêu cầu)
+    AND (
+      amenities_param IS NULL OR 
+      amenities_param = '{}' OR
+      array_length(amenities_param, 1) IS NULL OR
+      (
+        SELECT COUNT(*)
+        FROM unnest(amenities_param) AS required_amenity
+        WHERE required_amenity::text = ANY(r.amenities)
+      ) = array_length(amenities_param, 1)
+    )
     -- Filter theo availability
     AND (
       check_in_date_param IS NULL 
@@ -386,7 +408,7 @@ $$;
 -- Grant permissions
 GRANT EXECUTE ON FUNCTION normalize_vietnamese_text(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION calculate_string_similarity(TEXT, TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION search_rooms_nearby(NUMERIC, NUMERIC, DATE, DATE, INTEGER, INTEGER, NUMERIC, NUMERIC, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION search_rooms_nearby(NUMERIC, NUMERIC, DATE, DATE, INTEGER, INTEGER, NUMERIC, NUMERIC, TEXT, INTEGER[]) TO authenticated;
 
 -- Test function - Fuzzy search với lỗi chính tả
 SELECT * FROM search_rooms_nearby(
@@ -416,4 +438,21 @@ SELECT * FROM search_rooms_nearby(
 
 SELECT * FROM search_rooms_nearby(
   search_term := 'Hồ Chí Minh'
+);
+
+-- Test function - Search với amenities filter
+SELECT * FROM search_rooms_nearby(
+  search_term := 'Hồ Chí Minh',
+  amenities_param := ARRAY[1, 2, 3]  -- Tìm rooms có WiFi (1), Điều hòa (2), Tủ lạnh (3)
+);
+
+-- Test function - Search với tất cả filters
+SELECT * FROM search_rooms_nearby(
+  search_term := 'Đà Lạt',
+  check_in_date_param := '2025-01-15',
+  check_out_date_param := '2025-01-20',
+  max_guests_param := 2,
+  min_price_param := 300000,
+  max_price_param := 800000,
+  amenities_param := ARRAY[1, 4]  -- WiFi và Ti vi
 );

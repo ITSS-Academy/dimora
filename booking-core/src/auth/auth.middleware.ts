@@ -22,7 +22,6 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
         );
       }
 
-      console.log('🔐 [AUTH MIDDLEWARE] Token received:', token);
       
       // Remove Bearer from token
       token = token.replace('Bearer ', '');
@@ -34,10 +33,8 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
       let user;
       try {
         user = await this.authService.findOneByGoogleId(decodedToken.uid);
-        console.log('👤 [AUTH MIDDLEWARE] User found in database:', user.id);
       } catch (error) {
         // User not found, create new user
-        console.log('🆕 [AUTH MIDDLEWARE] User not found, creating new user...');
         user = await this.authService.create({
           id: decodedToken.uid,
           email: decodedToken.email || '',

@@ -4,6 +4,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { CreateRoomLikeDto } from './dto/create-room-like.dto';
 import { Room } from './entities/room.entity';
 import { RoomLike } from './entities/room-like.entity';
+import { Amenity } from './entities/amenity.entity';
 import { SupabaseService } from '../common/services/supabase.service';
 
 @Injectable()
@@ -166,18 +167,9 @@ export class RoomsService {
 
   async findAll(): Promise<Room[]> {
     try {
+      // Sử dụng RPC để lấy rooms với amenities đã được join
       const { data, error } = await this.supabaseService.getClient()
-        .from('rooms')
-        .select(`
-          *,
-          room_types (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .order('created_at', { ascending: false });
+        .rpc('get_all_rooms_with_amenities');
 
       if (error) {
         throw new HttpException(
@@ -186,7 +178,7 @@ export class RoomsService {
         );
       }
 
-      return data;
+      return data || [];
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -200,34 +192,25 @@ export class RoomsService {
 
   async findOne(id: string): Promise<Room> {
     try {
+      // Sử dụng RPC để lấy room với amenities đã được join
       const { data, error } = await this.supabaseService.getClient()
-        .from('rooms')
-        .select(`
-          *,
-          room_types (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .eq('id', id)
-        .single();
+        .rpc('get_room_by_id_with_amenities', { room_id: id });
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          throw new HttpException(
-            'Room not found',
-            HttpStatus.NOT_FOUND
-          );
-        }
         throw new HttpException(
           `Failed to fetch room: ${error.message}`,
           HttpStatus.BAD_REQUEST
         );
       }
 
-      return data;
+      if (!data || data.length === 0) {
+        throw new HttpException(
+          'Room not found',
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return data[0];
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -444,6 +427,7 @@ export class RoomsService {
     minPrice?: number;
     maxPrice?: number;
     radius?: number;
+    amenities?: number[];
   }): Promise<Room[]> {
     try {
       // If location is provided, geocode it first then use RPC function
@@ -471,7 +455,8 @@ export class RoomsService {
             max_guests_param: Number(params.guests) || null,
             min_price_param: Number(params.minPrice) || null,
             max_price_param: Number(params.maxPrice) || null,
-            search_term: params.location  // Thêm search term để xử lý tiếng Việt
+            search_term: params.location,  // Thêm search term để xử lý tiếng Việt
+            amenities_param: params.amenities || null
           });
           console.log('data', error);
 
@@ -796,4 +781,59 @@ export class RoomsService {
       );
     }
   }
+
+
+ async findAllAmenities(): Promise<Amenity[]> {
+  try {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('amenities')
+      .select('*');
+
+    console.log('data', data);
+    if (error) {
+      throw new HttpException(
+        `Failed to fetch amenities: ${error.message}`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return data || [];
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw new HttpException(
+      'Failed to fetch amenities',
+      HttpStatus.BAD_REQUEST
+    );
+  }
+}
+
+async findOneAmenity(id: string): Promise<Amenity> {
+  try {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('amenities')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+      if (error) {
+        throw new HttpException(
+          `Failed to fetch amenity: ${error.message}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return data;
+  }catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw new HttpException(
+      'Failed to fetch amenity',
+      HttpStatus.BAD_REQUEST
+    );
+  }
+}
+ 
+
+  
 }

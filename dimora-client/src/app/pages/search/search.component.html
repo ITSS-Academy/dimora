@@ -90,7 +90,7 @@
                   </div>
                   <div class="room-amenities">
                     @for (amenity of room.amenities.slice(0, 3); track amenity) {
-                      <span class="amenity-tag">{{ amenity }}</span>
+                      <span class="amenity-tag">{{ amenity.name }}</span>
                     }
                     @if (room.amenities.length > 3) {
                       <span class="amenity-more">+{{ room.amenities.length - 3 }} more</span>

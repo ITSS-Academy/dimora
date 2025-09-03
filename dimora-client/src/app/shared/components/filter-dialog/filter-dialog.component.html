@@ -11,23 +11,24 @@
     <div class="filter-section">
       <h3>Khoảng giá</h3>
       <div class="price-range">
-        <mat-slider 
-          [(ngModel)]="priceRangeControl.value" 
-          (ngModelChange)="onPriceRangeChange($event)"
-          min="0" 
-          max="15000000" 
-          step="100000" 
-          class="price-range-slider"
-          range
-          thumbLabel
-          [displayWith]="formatPrice">
-          <input matSliderStartThumb>
-          <input matSliderEndThumb>
-        </mat-slider>
-        <div class="price-values">
-          <span class="price-min">{{formatPrice(currentMinPrice)}} VNĐ</span>
-          <span class="price-max">{{formatPrice(currentMaxPrice)}} VNĐ</span>
+        <div class="price-label-container">
+          <label class="price-label">Khoảng giá</label>
+          <div class="price-values">
+            <span class="price-min">{{formatPrice(minPrice.value || 0)}} VNĐ</span>
+            <span class="price-separator">-</span>
+            <span class="price-max">{{formatPrice(maxPrice.value || 1000000)}} VNĐ</span>
+          </div>
         </div>
+        <mat-slider
+          class="price-range-slider"
+          [min]="0"
+          [max]="15000000"
+          [step]="100000"
+          range
+          >
+          <input matSliderStartThumb [(ngModel)]="minPrice.value" [ngModelOptions]="{standalone: true}">
+          <input matSliderEndThumb [(ngModel)]="maxPrice.value" [ngModelOptions]="{standalone: true}">
+        </mat-slider>
       </div>
     </div>
 
@@ -63,35 +64,22 @@
     <div class="filter-section">
       <h3>Tiện ích</h3>
       <div class="amenities-grid" formGroupName="amenities">
-        <mat-checkbox formControlName="wifi" class="amenity-checkbox">
-          <mat-icon>wifi</mat-icon>
-          WiFi
-        </mat-checkbox>
-        <mat-checkbox formControlName="parking" class="amenity-checkbox">
-          <mat-icon>local_parking</mat-icon>
-          Bãi đỗ xe
-        </mat-checkbox>
-        <mat-checkbox formControlName="pool" class="amenity-checkbox">
-          <mat-icon>pool</mat-icon>
-          Hồ bơi
-        </mat-checkbox>
-        <mat-checkbox formControlName="kitchen" class="amenity-checkbox">
-          <mat-icon>kitchen</mat-icon>
-          Nhà bếp
-        </mat-checkbox>
-        <mat-checkbox formControlName="ac" class="amenity-checkbox">
-          <mat-icon>ac_unit</mat-icon>
-          Điều hòa
-        </mat-checkbox>
-        <mat-checkbox formControlName="tv" class="amenity-checkbox">
-          <mat-icon>tv</mat-icon>
-          TV
-        </mat-checkbox>
+        <ng-container *ngIf="amenities$ | async as amenities">
+          <mat-checkbox 
+            *ngFor="let amenity of amenities" 
+            [formControlName]="amenity.id.toString()" 
+            class="amenity-checkbox">
+            <div class="amenity-checkbox-content">
+              <mat-icon>{{amenity.icon_name}}</mat-icon>
+              <span>{{amenity.name}}</span>
+            </div>
+          </mat-checkbox>
+        </ng-container>
       </div>
     </div>
 
     <!-- Đánh giá -->
-    <div class="filter-section">
+    <!-- <div class="filter-section">
       <h3>Đánh giá tối thiểu</h3>
       <div class="rating-options">
         <mat-button-toggle-group formControlName="selectedRating" class="rating-group">
@@ -101,7 +89,7 @@
           <mat-button-toggle value="3.0">3.0+ ⭐</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
-    </div>
+    </div> -->
   </mat-dialog-content>
 
   <mat-dialog-actions class="filter-actions">
