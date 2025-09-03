@@ -108,24 +108,15 @@ export class SearchComponent {
         if(result && result.length > 0){
           this.rooms = result;
           this.center = { lat: this.rooms[0].latitude, lng: this.rooms[0].longitude };
-          console.log('Rooms from API:', this.rooms);
           this.updateVisibleRooms();
-          this.calculateDistances();
         } else {
-          console.log('No search results found');
           this.rooms = [];
           this.visibleRooms = [];
         }
       })
     );
 
-    // Debug map after view init
-    setTimeout(() => {
-      console.log('🗺️ Map instance:', this.map);
-      if (this.map) {
-        console.log('🗺️ Map is ready');
-      }
-    }, 1000);
+
   }
  
 
@@ -138,10 +129,7 @@ export class SearchComponent {
   }
 
   // Calculate distances from current location - removed
-  calculateDistances(): void {
-    // Distance calculation removed - no longer needed
-    console.log('Distance calculation disabled');
-  }
+
 
   // Calculate distance between two points using Haversine formula
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -165,7 +153,6 @@ export class SearchComponent {
   updateVisibleRooms(): void {
     // Show all rooms without distance calculation
     this.visibleRooms = [...this.rooms];
-    console.log('All rooms:', this.visibleRooms);
   }
 
   // Get all rooms for map markers
@@ -252,7 +239,6 @@ export class SearchComponent {
         this.zoom = 15;
         this.isGettingLocation = false;
 
-        this.calculateDistances();
         // this.updateVisibleRooms();
 
         console.log('📍 Vị trí hiện tại:', location);

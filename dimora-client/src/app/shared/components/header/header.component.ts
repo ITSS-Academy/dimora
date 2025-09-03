@@ -117,7 +117,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Format dates to yyyy-mm-dd string
     if(this.range.value.location ){
-      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
 
       console.log('Formatted start date:', formattedStartDate);
@@ -125,10 +125,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
 
       // Normalize location - remove Vietnamese accents and spaces
-      const normalizedLocation = this.normalizeText(this.range.value.location);
 
       searchData = {
-        location: normalizedLocation,
+        location: this.range.value.location,
         checkIn: formattedStartDate,
         checkOut: formattedEndDate,
         guests: Number(newValueGuests),
@@ -156,16 +155,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  // Normalize text - remove Vietnamese accents and spaces
   normalizeText(text: string): string {
     if (!text) return '';
-
     return text
       .normalize('NFD') // Decompose characters with diacritics
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
+      .replace(/[đĐ]/g, 'd') // Replace đ/Đ with d
       .replace(/\s+/g, '') // Remove all spaces
       .toLowerCase(); // Convert to lowercase
   }
+
 
 
 
@@ -189,7 +188,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       console.log('Enter key blocked - please use Search button');
     }else if(this.range.value.location && event.key === 'Enter'){
       // Navigate to search page with query parameters
-      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      let today = new Date();
+      const formattedStartDate = this.formatDateToString(this.range.value.start || today);
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
       const normalizedLocation = this.normalizeText(this.range.value.location);
@@ -269,7 +269,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Open filter dialog
   openFilterDialog(): void {
-    this.dialog.open(FilterDialogComponent);
+    this.dialog.open(FilterDialogComponent,{
+      minHeight: '500px',
+      height: 'fit-content',
+      maxWidth: '600px',
+    });
   }
 
   private _filter(name: string): User[] {

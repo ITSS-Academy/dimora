@@ -68,7 +68,11 @@ export class AppModule implements NestModule {
       method: RequestMethod.DELETE,
     },
     {
-      path:'rooms/*',
+      path:'rooms/geocode',
+      method: RequestMethod.POST,
+    },
+    {
+      path:'rooms/like',
       method: RequestMethod.POST,
     },
     {

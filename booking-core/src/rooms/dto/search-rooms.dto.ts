@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, Min, Max, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchRoomsDto {
@@ -10,13 +10,11 @@ export class SearchRoomsDto {
 
   @IsOptional()
   @IsString()
-  @IsDateString()
-  checkIn?: string; // Format: YYYY-MM-DD
+  checkIn?: string;
 
   @IsOptional()
   @IsString()
-  @IsDateString()
-  checkOut?: string; // Format: YYYY-MM-DD
+  checkOut?: string;
 
   @IsOptional()
   @Type(() => Number)

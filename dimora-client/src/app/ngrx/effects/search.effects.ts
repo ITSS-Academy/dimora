@@ -13,6 +13,7 @@ export const searchEffects = createEffect(
       switchMap((action) =>
         searchService.searchRooms(action.searchParams).pipe(
           map((searchResult) => {
+            console.log('Search result:', searchResult);
             return SearchActions.searchRoomsSuccess({rooms: searchResult});
           }),
           catchError((error) => of(SearchActions.searchRoomsFailure({error: error.message})))

@@ -93,8 +93,8 @@ export class RoomsController {
     }
   }
 
-  @Get('search')
-  async searchRooms(@Query() searchParams: SearchRoomsDto) {
+  @Post('search')
+  async searchRooms(@Body() searchParams: SearchRoomsDto) {
     try {
       return await this.roomsService.searchRooms(searchParams);
     } catch (error) {

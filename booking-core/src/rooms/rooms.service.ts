@@ -56,7 +56,12 @@ export class RoomsService {
         );
       }
 
+    
+
       const data = await response.json();
+      data.results.forEach(result => {
+        console.log('result', result.geometry.location);
+      })
 
       if (data.status !== 'OK' || !data.results || data.results.length === 0) {
         throw new HttpException(
@@ -443,6 +448,7 @@ export class RoomsService {
     try {
       // If location is provided, geocode it first then use RPC function
         // Geocode the location to get coordinates
+
         const coordinates = await this.getCoordinatesFromAddress(params.location);
         
         if (!coordinates) {
@@ -451,18 +457,9 @@ export class RoomsService {
             HttpStatus.BAD_REQUEST
           );
         }
-        console.log('coordinates', coordinates);
-        const test = {
-          lat_param: coordinates.latitude,
-          lng_param: coordinates.longitude,
-          check_in_date_param: params.checkIn || null,
-          check_out_date_param: params.checkOut || null,
-          radius_km_param: params.radius || 10,
-          max_guests_param: params.guests || null,
-          min_price_param: params.minPrice || null,
-          max_price_param: params.maxPrice || null
-        }
-        console.log('test', test);
+
+        console.log('params', params);
+   
 
         const { data, error } = await this.supabaseService.getClient()
           .rpc('search_rooms_nearby', {
@@ -470,10 +467,11 @@ export class RoomsService {
             lng_param: coordinates.longitude,
             check_in_date_param: params.checkIn || null,
             check_out_date_param: params.checkOut || null,
-            radius_km_param: params.radius || 10,
+            radius_km_param: params.radius || 50,
             max_guests_param: Number(params.guests) || null,
             min_price_param: Number(params.minPrice) || null,
-            max_price_param: Number(params.maxPrice) || null
+            max_price_param: Number(params.maxPrice) || null,
+            search_term: params.location  // Thêm search term để xử lý tiếng Việt
           });
           console.log('data', error);
 
