@@ -28,6 +28,10 @@ export const routes: Routes = [
     loadComponent: () => import('../app/pages/booking/booking.component').then(m => m.BookingComponent)
   },
   {
+    path:'update-post',
+    loadComponent: () => import('../app/pages/update-post/update-post.component').then(m => m.UpdatePostComponent)
+  },
+  {
     path:'',
     redirectTo:'home',
     pathMatch:'full'

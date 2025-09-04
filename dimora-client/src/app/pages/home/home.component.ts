@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit {
   updateMaxPosition(carouselType: 'first' | 'second' | 'third' | 'fourth') {
     let track: ElementRef;
     let maxPosition: number;
-    
+
     switch(carouselType) {
       case 'first':
         track = this.carouselFirstTrack;
@@ -153,23 +153,23 @@ export class HomeComponent implements OnInit {
 
     const trackElement = track.nativeElement;
     const cards = trackElement.querySelectorAll('app-card');
-    
+
     if (cards.length === 0) return;
 
     // Get actual card width and gap
     const cardWidth = cards[0].offsetWidth;
     const gap = 30; // From CSS gap: 30px
-    
+
     // Get container width (parent of track)
     const containerWidth = trackElement.parentElement?.offsetWidth || window.innerWidth;
-    
+
     // Calculate how many cards can fit in the container
     const cardsPerView = Math.floor(containerWidth / (cardWidth + gap));
-    
+
     // Calculate total scrollable width
     const totalCardsWidth = cards.length * (cardWidth + gap);
     const maxScrollWidth = Math.max(0, totalCardsWidth - containerWidth + gap);
-    
+
     // Update the corresponding maxPosition
     switch(carouselType) {
       case 'first':
@@ -192,7 +192,7 @@ export class HomeComponent implements OnInit {
     let track: ElementRef;
     let currentPos: number;
     let maxPos: number;
-    
+
     switch(carouselType) {
       case 'first':
         track = this.carouselFirstTrack;
@@ -220,7 +220,7 @@ export class HomeComponent implements OnInit {
 
     const trackElement = track.nativeElement;
     const cards = trackElement.querySelectorAll('app-card');
-    
+
     if (cards.length === 0) return;
 
     const cardWidth = cards[0].offsetWidth;
@@ -228,7 +228,7 @@ export class HomeComponent implements OnInit {
     const scrollDistance = cardWidth + gap;
 
     let newPosition: number;
-    
+
     if (direction === 'left') {
       newPosition = Math.max(0, currentPos - scrollDistance);
     } else {
