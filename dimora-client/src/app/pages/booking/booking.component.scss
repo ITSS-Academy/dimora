@@ -4,62 +4,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   background-color: #ffffff;
 }
 
 
 .total-outline{
-  width: 1050px;
-  height: 100vh;
+  width: 80%;
+  height: 100%;
   background-color: #ffffff;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 50px;
 }
 
 .left-outline{
-  height: 100vh;
+  height: 100%;
   width: 500px;
-  background-color: #ffffff;
 
 
   .user-information{
     display: flex;
     flex-direction: column;
-    height: 520px;
+    height: fit-content;
     background-color: #ffffff;
     margin-top: 50px;
     border-radius: 20px;
     border: 0.5px solid var(--outline);
+    padding: 20px;
 
 
     .header{
       font-size: 30px;
       font-weight: 600;
-      margin-top: 20px;
-      margin-left: 20px;
     }
     .title{
       font-size: 14px;
       font-weight: 500;
-      margin-left: 24px;
     }
 
     .name-box{
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 30px;
-      margin-left: 20px;
-      margin-right: 20px;
-      width: 460px;
+      width: 100%;
       height: 56px;
+      margin-top: 20px;
     }
     .note{
       font-size: 12px;
       font-weight: 400;
-      margin-left: 27px;
       margin-top: 6px;
     }
 
@@ -68,11 +62,9 @@
       display: flex;
       flex-direction: column;
       gap: 0px;
-      width: 460px;
+      width: 100%;
       height: 56px;
-      margin-left: 20px;
       margin-top: 20px;
-      margin-bottom: 20px;
     }
     .email-note{
       font-size: 12px;
@@ -84,16 +76,14 @@
       display: flex;
       flex-direction: column;
       gap: 0px;
-      width: 460px;
+      width: 100%;
       height: 56px;
-      margin-left: 20px;
       margin-top: 20px;
     }
 
       .phone-number-note{
         font-size: 12px;
         font-weight: 400;
-        margin-left: 27px;
         margin-top: 6px;
       }
     }
@@ -104,7 +94,7 @@
       justify-content: center;
       margin-top: 29px;
         .continue-button{
-          width: 400px;
+          width: 100%;
           height: 56px;
           font-size: 19.67px;
         }
@@ -114,7 +104,7 @@
 
 
 .right-outline{
-  height: 100vh;
+  height: 100%;
   width: 500px;
   background-color: white;
   .booking-confirm{
@@ -197,6 +187,7 @@
   height: 100px;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   .left-time-container{
     width: 160px;
     height: 100%;
@@ -208,14 +199,7 @@
       margin-top: 0px;
     }
   }
-  .center-time-container{
-    width: 80px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    margin-top: 51px;
 
-  }
   .right-time-container{
     width: 160px;
     height: 100%;

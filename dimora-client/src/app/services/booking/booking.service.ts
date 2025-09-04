@@ -1,9 +1,21 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BookingModel } from '../../models/booking.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
+
+  getBooking(hostId: string, idToken: string) {
+    console.log(hostId, idToken)
+    return this.http.get<BookingModel[]>(`${environment.apiUrl}bookings/host/${hostId}`, {
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+  }
 }
