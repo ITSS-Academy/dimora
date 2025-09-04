@@ -189,7 +189,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Get actual card width and gap
     const cardWidth = cards[0].offsetWidth;
-    const gap = 30; // From CSS gap: 30px
+    const gap = 29; // From CSS gap: 30px
     
     // Get container width (parent of track)
     const containerWidth = trackElement.parentElement?.offsetWidth || window.innerWidth;
@@ -257,7 +257,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (cards.length === 0) return;
 
     const cardWidth = cards[0].offsetWidth;
-    const gap = 30;
+    const gap = 29;
     const scrollDistance = cardWidth + gap;
 
     let newPosition: number;

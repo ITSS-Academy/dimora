@@ -1,6 +1,8 @@
 .card-container{
   width: 250px;
   max-height:400px;
+  cursor: pointer;
+
 }
 
 .image{
@@ -61,13 +63,12 @@
 .card-container-two{
   width: 250px;
   max-height:400px;
-  background-color: red;
+
 }
 
 .image-two{
   width: 250px;
   height: 250px;
-  background-color: green;
   border-radius: 25px;
 }
 
