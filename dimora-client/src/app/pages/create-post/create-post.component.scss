@@ -25,6 +25,7 @@ mat-stepper {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+
 }
 #word-one {
   width: 600px;
@@ -93,13 +94,12 @@ mat-stepper {
   margin-bottom: 4px;
 }
 .option:hover {
-  border-color: 1px solid var(--on-surface);
   cursor: pointer;
-  background-color: var(--primary-container);
+  background-color: var(--surface);
 }
 .option.active {
-  border: 2px solid var(--primary);
-  background-color: var(--primary-container);
+  // border: 2px solid var(--primary);
+  background-color: var(--secondary-fixed);
 }
 .container-step-two {
   width: 1400px;
