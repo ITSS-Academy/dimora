@@ -18,4 +18,8 @@ export class RoomsService {
   getRoomById(id: string) {
     return this.http.get<RoomModel>(`${environment.apiUrl}rooms/${id}`);
   }
+
+  getRoomByHostId(hostId: string) {
+    return this.http.get<RoomModel[]>(`${environment.apiUrl}rooms/host/${hostId}`);
+  }
 }

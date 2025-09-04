@@ -6,6 +6,7 @@ import * as RoomActions from '../actions/room.actions';
 export const initialState: RoomState = {
     roomList: <RoomModel[]>[],
     roomDetail: <RoomModel>{},
+    roomListByHostId: <RoomModel[]>[],
     isLoading: false,
     error: null
 }
@@ -71,5 +72,34 @@ export const roomReducer = createReducer(
         }
     }),
 
+    on(RoomActions.getRoomByHostId, (state,{type}) =>{
+        console.log(type)
+        return{
+            ...state,
+            isLoading: true,
+            error: null
+        }
+    }),
+
+
+    on(RoomActions.getRoomByHostIdSuccess, (state,{type,roomList}) =>{
+        console.log(type)
+        return{
+            ...state,
+            roomListByHostId: roomList,
+            isLoading: false,
+            error: null
+        }
+    }),
+
+
+    on(RoomActions.getRoomByHostIdFailure, (state,{type,error}) =>{
+        console.log(type)
+        return{
+            ...state,
+            isLoading: false,
+            error: error
+        }
+    }),
 
 )

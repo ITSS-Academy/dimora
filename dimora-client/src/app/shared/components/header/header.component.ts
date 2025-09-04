@@ -27,7 +27,7 @@ export interface User {
 }
 @Component({
   selector: 'app-header',
-  imports: [MaterialModule, ShareModule, FilterDialogComponent],
+  imports: [MaterialModule, ShareModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   providers: [provideNativeDateAdapter()],
@@ -86,11 +86,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLocationInputClick() {
-    console.log('locationInput clicked');
 
     // Nếu picker đang mở thì đóng nó trước
     if (this.picker.opened) {
-      console.log('Picker is already opened, closing it');
+      
       this.picker.close();
       // Đợi một chút để overlay biến mất hoàn toàn
       setTimeout(() => {
@@ -102,28 +101,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onGuestsInputClick() {
-    console.log('guestsInput clicked');
+    
 
     // Đóng date picker nếu đang mở
     if (this.picker.opened) {
-      console.log('Closing date picker');
+      
       this.picker.close();
     }
   }
 
   onSearch() {
-    console.log('Search button clicked');
-    console.log('Form values:', this.range.value);
+    
 
     let searchData: SearchModel = {} as SearchModel;
 
     // Format dates to yyyy-mm-dd string
-    if(this.range.value.location ){
+    if(this.range.value.location){
       const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
 
-      console.log('Formatted start date:', formattedStartDate);
-      console.log('Formatted end date:', formattedEndDate);
+      
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
 
       // Normalize location - remove Vietnamese accents and spaces
@@ -137,7 +134,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         maxPrice: 0,
       };
 
-    console.log('Search data with formatted dates:', searchData);
+    
     this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
     // Navigate to search page with query parameters
     this.router.navigate(['/search'], {
@@ -183,10 +180,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onFormKeyDown(event: KeyboardEvent) {
     // Chặn phím Enter để ngăn form submit
     if (!this.range.value.location && event.key === 'Enter') {
-      console.log(this.range.value.location)
+      
       event.preventDefault();
       event.stopPropagation();
-      console.log('Enter key blocked - please use Search button');
     }else if(this.range.value.location && event.key === 'Enter'){
       // Navigate to search page with query parameters
       let today = new Date();
@@ -230,17 +226,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
    this.subscriptions.push(
-    this.mineProfile$.subscribe(profile => {
-      if (profile) {
-        console.log('User profile loaded:', profile);
-      } else {
-        console.log('No user profile available');
-      }
-    }),
+    
   )
 
     // Check current route to show/hide filter button
     this.checkCurrentRoute();
+
+
 
     // Subscribe to route changes
     this.subscriptions.push(
@@ -278,13 +270,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.loadSearchParamsFromURL();
       
       // Debug: Check form values after loading
-      console.log('Form values after loading:', {
-        location: this.range.controls.location.value,
-        start: this.range.controls.start.value,
-        end: this.range.controls.end.value,
-        guests: this.range.controls.guests.value
-      });
-      console.log('searchData after loading:', this.searchData);
+    
     }, 100);
   }
 
@@ -296,21 +282,52 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Check if current route is search page
   checkCurrentRoute(): void {
     this.isSearchPage = this.router.url.includes('/search');
+    
+    // Clear form values if not on search page
+    if (!this.isSearchPage) {
+      this.clearSearchForm();
+    }
+  }
+
+  // Clear all search form values
+  private clearSearchForm(): void {
+    if (this.range) {
+      this.range.patchValue({
+        location: '',
+        start: null,
+        end: null,
+        guests: '1 guest'
+      });
+      
+      // Reset guests display
+      this.adults = 1;
+      this.children = 0;
+      this.infants = 0;
+      this.pets = 0;
+      this.updateGuestsDisplay();
+      
+      // Clear searchData
+      this.searchData = null;
+      
+    }
   }
 
   // Load search parameters from URL query params
   loadSearchParamsFromURL(): void {
+    // Only load params if on search page
+    if (!this.isSearchPage) {
+      return;
+    }
+    
     const queryParams = this.route.snapshot.queryParams;
     
     // Check if form is ready
     if (!this.range || !this.range.controls.location) {
-      console.log('Form not ready yet, skipping loadSearchParamsFromURL');
       return;
     }
     
     if (queryParams['location']) {
       // Set location to form control
-      console.log('Location from URL:', queryParams['location']);
       
       // Set value as string directly to avoid autocomplete issues
       this.range.controls.location.setValue(queryParams['location']);
@@ -321,8 +338,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
       this.searchData = { ...this.searchData, location: queryParams['location'] };
       
-      console.log('Form location value after setValue:', this.range.controls.location.value);
-      console.log('searchData location:', this.searchData.location);
+      
     }
     
     if (queryParams['checkIn']) {
@@ -395,7 +411,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
           ...result.filters
         };
         this.searchData = updatedSearchData;
-        console.log('Updated search data:', updatedSearchData);
 
         // Dispatch search action
         this.store.dispatch(SearchActions.searchRooms({searchParams: updatedSearchData}));
@@ -507,5 +522,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   navigateToProfile(id: string) {
     this.router.navigate(['/profile', id]);
+  }
+
+  clearSearch() {
+    if(!this.isSearchPage) {
+      this.range.controls.location.setValue('');
+      this.range.controls.start.setValue(null);
+      this.range.controls.end.setValue(null);
+      this.range.controls.guests.setValue('');
+      this.searchData = null;
+    }
   }
 }

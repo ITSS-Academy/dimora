@@ -46,7 +46,7 @@ export class SearchComponent {
     
     scaleControl: true,
     streetViewControl: false,
-    rotateControl: true,
+    rotateControl: false,
     fullscreenControl: false,
     disableDefaultUI: false,
     gestureHandling: 'greedy', // Smooth gesture handling

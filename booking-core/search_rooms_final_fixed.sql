@@ -129,65 +129,71 @@ BEGIN
         CASE 
           WHEN search_term IS NULL THEN 0
           
-          -- Perfect matches (100-90) - Chính xác hoàn toàn + Bonus khoảng cách
+          -- Perfect matches - Ưu tiên City và Location (100-95)
           WHEN lower(r.city) = lower(search_term) THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(100 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 10), 90)
+              THEN GREATEST(100 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 8), 95)
               ELSE 100
             END
           WHEN lower(r.location) = lower(search_term) THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(98 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 10), 88)
-              ELSE 98
+              THEN GREATEST(99 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 8), 94)
+              ELSE 99
+            END
+          
+          -- Other perfect matches (90-85)
+          WHEN lower(r.address) = lower(search_term) THEN 
+            CASE 
+              WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
+              THEN GREATEST(90 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 80)
+              ELSE 90
             END
           WHEN lower(r.title) = lower(search_term) THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(95 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 85)
-              ELSE 95
+              THEN GREATEST(88 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 78)
+              ELSE 88
             END
-          WHEN lower(r.address) = lower(search_term) THEN 
-            CASE 
-              WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(92 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 82)
-              ELSE 92
-            END
-          WHEN lower(r.description) = lower(search_term) THEN 90
+          WHEN lower(r.description) = lower(search_term) THEN 85
           
-          -- Starts with matches (85-75) - Bắt đầu bằng search term + Distance bonus
+          -- Starts with matches - Ưu tiên City và Location (84-80)
           WHEN lower(r.city) LIKE lower(search_term) || '%' THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(85 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 20), 75)
-              ELSE 85
+              THEN GREATEST(84 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 79)
+              ELSE 84
             END
           WHEN lower(r.location) LIKE lower(search_term) || '%' THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(82 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 20), 72)
-              ELSE 82
+              THEN GREATEST(83 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 15), 78)
+              ELSE 83
             END
-          WHEN lower(r.title) LIKE lower(search_term) || '%' THEN 80
-          WHEN lower(r.address) LIKE lower(search_term) || '%' THEN 78
-          WHEN lower(r.description) LIKE lower(search_term) || '%' THEN 75
           
-          -- Contains matches (70-60) - Chứa search term + Distance bonus cho location fields
+          -- Other starts with matches (77-73)
+          WHEN lower(r.address) LIKE lower(search_term) || '%' THEN 77
+          WHEN lower(r.title) LIKE lower(search_term) || '%' THEN 75
+          WHEN lower(r.description) LIKE lower(search_term) || '%' THEN 73
+          
+          -- Contains matches - Ưu tiên City và Location (72-67)
           WHEN lower(r.city) LIKE '%' || lower(search_term) || '%' THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(70 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 25), 60)
-              ELSE 70
+              THEN GREATEST(72 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 20), 67)
+              ELSE 72
             END
           WHEN lower(r.location) LIKE '%' || lower(search_term) || '%' THEN 
             CASE 
               WHEN lat_param IS NOT NULL AND lng_param IS NOT NULL AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL 
-              THEN GREATEST(68 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 25), 58)
-              ELSE 68
+              THEN GREATEST(71 - (calculate_distance_km(lat_param, lng_param, r.latitude, r.longitude) / 20), 66)
+              ELSE 71
             END
-          WHEN lower(r.title) LIKE '%' || lower(search_term) || '%' THEN 65
-          WHEN lower(r.address) LIKE '%' || lower(search_term) || '%' THEN 63
+          
+          -- Other contains matches (65-60)
+          WHEN lower(r.address) LIKE '%' || lower(search_term) || '%' THEN 65
+          WHEN lower(r.title) LIKE '%' || lower(search_term) || '%' THEN 63
           WHEN lower(r.description) LIKE '%' || lower(search_term) || '%' THEN 60
           
           -- Word-based matches (58-50) - Match từng từ riêng biệt
@@ -215,17 +221,17 @@ BEGIN
             lower(r.description) LIKE '%' || search_words[3] || '%'
           ) THEN 50
           
-          -- Normalized matches (48-45) - Bỏ dấu + lowercase
-          WHEN lower(normalize_vietnamese_text(r.city)) LIKE '%' || lower(normalized_search) || '%' THEN 48
-          WHEN lower(normalize_vietnamese_text(r.location)) LIKE '%' || lower(normalized_search) || '%' THEN 47
-          WHEN lower(normalize_vietnamese_text(r.title)) LIKE '%' || lower(normalized_search) || '%' THEN 46
-          WHEN lower(normalize_vietnamese_text(r.address)) LIKE '%' || lower(normalized_search) || '%' THEN 45
+          -- Normalized matches - Ưu tiên City và Location (50-47)
+          WHEN lower(normalize_vietnamese_text(r.city)) LIKE '%' || lower(normalized_search) || '%' THEN 50
+          WHEN lower(normalize_vietnamese_text(r.location)) LIKE '%' || lower(normalized_search) || '%' THEN 49
+          WHEN lower(normalize_vietnamese_text(r.address)) LIKE '%' || lower(normalized_search) || '%' THEN 48
+          WHEN lower(normalize_vietnamese_text(r.title)) LIKE '%' || lower(normalized_search) || '%' THEN 47
           
-          -- No-space matches (44-41) - Bỏ dấu + khoảng cách + lowercase
-          WHEN lower(replace(normalize_vietnamese_text(r.city), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 44
-          WHEN lower(replace(normalize_vietnamese_text(r.location), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 43
-          WHEN lower(replace(normalize_vietnamese_text(r.title), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 42
-          WHEN lower(replace(normalize_vietnamese_text(r.address), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 41
+          -- No-space matches - Ưu tiên City và Location (46-43)
+          WHEN lower(replace(normalize_vietnamese_text(r.city), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 46
+          WHEN lower(replace(normalize_vietnamese_text(r.location), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 45
+          WHEN lower(replace(normalize_vietnamese_text(r.address), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 44
+          WHEN lower(replace(normalize_vietnamese_text(r.title), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 43
           
           ELSE 0
         END
@@ -234,25 +240,25 @@ BEGIN
       CASE 
         WHEN search_term IS NOT NULL THEN
           CASE 
-            -- Perfect matches (100-90)
+            -- Perfect matches - Ưu tiên City và Location (100-95)
             WHEN lower(r.city) = lower(search_term) THEN 100
-            WHEN lower(r.location) = lower(search_term) THEN 98
-            WHEN lower(r.title) = lower(search_term) THEN 95
-            WHEN lower(r.address) = lower(search_term) THEN 92
-            WHEN lower(r.description) = lower(search_term) THEN 90
+            WHEN lower(r.location) = lower(search_term) THEN 99
+            WHEN lower(r.address) = lower(search_term) THEN 90
+            WHEN lower(r.title) = lower(search_term) THEN 88
+            WHEN lower(r.description) = lower(search_term) THEN 85
             
-            -- Starts with (85-75)
-            WHEN lower(r.city) LIKE lower(search_term) || '%' THEN 85
-            WHEN lower(r.location) LIKE lower(search_term) || '%' THEN 82
-            WHEN lower(r.title) LIKE lower(search_term) || '%' THEN 80
-            WHEN lower(r.address) LIKE lower(search_term) || '%' THEN 78
-            WHEN lower(r.description) LIKE lower(search_term) || '%' THEN 75
+            -- Starts with - Ưu tiên City và Location (84-80)
+            WHEN lower(r.city) LIKE lower(search_term) || '%' THEN 84
+            WHEN lower(r.location) LIKE lower(search_term) || '%' THEN 83
+            WHEN lower(r.address) LIKE lower(search_term) || '%' THEN 77
+            WHEN lower(r.title) LIKE lower(search_term) || '%' THEN 75
+            WHEN lower(r.description) LIKE lower(search_term) || '%' THEN 73
             
-            -- Contains (70-60)
-            WHEN lower(r.city) LIKE '%' || lower(search_term) || '%' THEN 70
-            WHEN lower(r.location) LIKE '%' || lower(search_term) || '%' THEN 68
-            WHEN lower(r.title) LIKE '%' || lower(search_term) || '%' THEN 65
-            WHEN lower(r.address) LIKE '%' || lower(search_term) || '%' THEN 63
+            -- Contains - Ưu tiên City và Location (72-67)
+            WHEN lower(r.city) LIKE '%' || lower(search_term) || '%' THEN 72
+            WHEN lower(r.location) LIKE '%' || lower(search_term) || '%' THEN 71
+            WHEN lower(r.address) LIKE '%' || lower(search_term) || '%' THEN 65
+            WHEN lower(r.title) LIKE '%' || lower(search_term) || '%' THEN 63
             WHEN lower(r.description) LIKE '%' || lower(search_term) || '%' THEN 60
             
             -- Word-based (58-50)
@@ -280,17 +286,17 @@ BEGIN
               lower(r.description) LIKE '%' || search_words[3] || '%'
             ) THEN 50
             
-            -- Normalized (48-45) - lowercase
-            WHEN lower(normalize_vietnamese_text(r.city)) LIKE '%' || lower(normalized_search) || '%' THEN 48
-            WHEN lower(normalize_vietnamese_text(r.location)) LIKE '%' || lower(normalized_search) || '%' THEN 47
-            WHEN lower(normalize_vietnamese_text(r.title)) LIKE '%' || lower(normalized_search) || '%' THEN 46
-            WHEN lower(normalize_vietnamese_text(r.address)) LIKE '%' || lower(normalized_search) || '%' THEN 45
+            -- Normalized - Ưu tiên City và Location (50-47)
+            WHEN lower(normalize_vietnamese_text(r.city)) LIKE '%' || lower(normalized_search) || '%' THEN 50
+            WHEN lower(normalize_vietnamese_text(r.location)) LIKE '%' || lower(normalized_search) || '%' THEN 49
+            WHEN lower(normalize_vietnamese_text(r.address)) LIKE '%' || lower(normalized_search) || '%' THEN 48
+            WHEN lower(normalize_vietnamese_text(r.title)) LIKE '%' || lower(normalized_search) || '%' THEN 47
             
-            -- No-space (44-41) - lowercase
-            WHEN lower(replace(normalize_vietnamese_text(r.city), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 44
-            WHEN lower(replace(normalize_vietnamese_text(r.location), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 43
-            WHEN lower(replace(normalize_vietnamese_text(r.title), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 42
-            WHEN lower(replace(normalize_vietnamese_text(r.address), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 41
+            -- No-space - Ưu tiên City và Location (46-43)
+            WHEN lower(replace(normalize_vietnamese_text(r.city), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 46
+            WHEN lower(replace(normalize_vietnamese_text(r.location), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 45
+            WHEN lower(replace(normalize_vietnamese_text(r.address), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 44
+            WHEN lower(replace(normalize_vietnamese_text(r.title), ' ', '')) LIKE '%' || lower(normalized_search_no_space) || '%' THEN 43
             
             ELSE 0
           END

@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {MaterialModule} from '../../material.module';
+import { RoomModel } from '../../../models/room.model';
 
 @Component({
   selector: 'app-card',
@@ -9,6 +10,6 @@ import {MaterialModule} from '../../material.module';
 })
 export class CardComponent {
 
-  @Input() hotel: any
+  @Input() hotel: RoomModel = {} as RoomModel
 
 }
