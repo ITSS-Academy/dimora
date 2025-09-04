@@ -93,8 +93,8 @@ export class RoomsController {
     }
   }
 
-  @Get('search')
-  async searchRooms(@Query() searchParams: SearchRoomsDto) {
+  @Post('search')
+  async searchRooms(@Body() searchParams: SearchRoomsDto) {
     try {
       return await this.roomsService.searchRooms(searchParams);
     } catch (error) {
@@ -293,4 +293,35 @@ export class RoomsController {
       );
     }
   }
+
+  @Get('convience/amenities')
+  async finALlAmenities() {
+    try{
+      return await this.roomsService.findAllAmenities();
+    }catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get all amenities',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @Get('convience/amenities/:id')
+  async findOneAmenity(@Param('id') id: string) {
+    try {
+      return await this.roomsService.findOneAmenity(id);
+    }catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get one amenity',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+  
 }

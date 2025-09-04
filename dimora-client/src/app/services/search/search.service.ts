@@ -12,6 +12,6 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   searchRooms(searchParams: SearchModel) {
-      return this.http.get<RoomModel[]>(`${environment.apiUrl}rooms/search?location=${searchParams.location}&checkIn=${searchParams.checkIn}&checkOut=${searchParams.checkOut}&guests=${searchParams.guests}&minPrice=${searchParams.minPrice}&maxPrice=${searchParams.maxPrice}`);
+      return this.http.post<RoomModel[]>(`${environment.apiUrl}rooms/search`,searchParams);
   }
 }

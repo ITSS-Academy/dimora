@@ -1,0 +1,279 @@
+
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--outline-variant);
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    color: var(--on-surface);
+    font-weight: 600;
+  }
+
+  .close-button {
+    color: var(--neutral);
+    
+    &:hover {
+      background-color: var(--surface-container-high);
+    }
+  }
+}
+
+.filter-content {
+  padding: 0 24px;
+}
+
+.filter-section {
+  margin-bottom: 32px;
+
+  h3 {
+    margin: 0 0 16px 0;
+    color: var(--on-surface);
+    font-weight: 500;
+    font-size: 16px;
+    border-left: 3px solid var(--primary);
+    padding-left: 12px;
+  }
+}
+
+.price-range {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .price-label-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .price-label {
+      font-weight: 500;
+      color: var(--on-surface);
+      font-size: 14px;
+    }
+    
+    .price-values {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .price-min {
+        color: var(--primary);
+        background-color: var(--primary-container);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      
+      .price-separator {
+        color: var(--neutral);
+        font-weight: 500;
+      }
+      
+      .price-max {
+        color: var(--secondary);
+        background-color: var(--secondary-container);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .price-range-slider {
+    width: 100%;
+    
+    ::ng-deep .mat-mdc-slider {
+      width: 100%;
+      
+      .mdc-slider__thumb {
+        background-color: var(--primary);
+        border: 2px solid var(--primary);
+        
+        &:hover {
+          background-color: var(--primary-fixed-dim);
+        }
+      }
+      
+      .mdc-slider__track {
+        background-color: var(--outline-variant);
+      }
+      
+      .mdc-slider__track--active {
+        background-color: var(--primary);
+      }
+      
+      .mdc-slider__thumb-label {
+        background-color: var(--primary);
+        color: var(--on-primary);
+        font-weight: 500;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transform: translateY(-8px);
+        
+        &::before {
+          border-top-color: var(--primary);
+        }
+      }
+    }
+  }
+}
+
+.property-types {
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    
+    
+    ::ng-deep .mdc-evolution-chip {
+      margin: 0;
+      gap: 10px;
+    }
+  }
+}
+
+.bedroom-options {
+  .bedroom-group {
+    ::ng-deep .mat-button-toggle {
+      min-width: 60px;
+      height: 40px;
+      
+      
+      
+    }
+  }
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+
+  .amenity-checkbox {
+    display: flex;
+
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--outline-variant);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      border-color: var(--primary);
+      background-color: var(--surface-container-low);
+    }
+    
+   
+    
+    ::ng-deep .mat-mdc-checkbox {
+      margin-right: 8px;
+    }
+  }
+}
+
+.amenity-checkbox-content{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-options {
+  .rating-group {
+    ::ng-deep .mat-button-toggle {
+      min-width: 80px;
+      height: 40px;
+      font-size: 14px;
+      
+      &.mat-button-toggle-checked {
+        background-color: var(--tertiary);
+        color: var(--on-primary);
+      }
+    }
+  }
+}
+
+
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--outline-variant);
+  margin-top: 16px;
+
+  .clear-button {
+    color: var(--neutral);
+    
+    &:hover {
+      background-color: var(--surface-container-high);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .apply-button {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    padding: 8px 24px;
+    
+    &:hover {
+      background-color: var(--primary-fixed-dim);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .filter-dialog-container {
+    min-width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+  }
+  
+  .filter-content {
+    padding: 0 16px;
+  }
+  
+  .filter-actions {
+    padding: 16px 16px 24px;
+  }
+  
+  .price-range {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .amenities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .bedroom-options .bedroom-group,
+  .rating-options .rating-group {
+    ::ng-deep .mat-button-toggle {
+      min-width: 50px;
+      font-size: 12px;
+    }
+  }
+}
+
+
+::ng-deep .mat-mdc-chip-set .mdc-evolution-chip-set__chips {
+  margin: 0;
+  gap: 10px;
+}
+
+
+

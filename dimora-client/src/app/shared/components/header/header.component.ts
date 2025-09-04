@@ -13,7 +13,7 @@ import * as AuthActions from '../../../ngrx/actions/auth.actions';
 import {MatDialog} from '@angular/material/dialog';
 import {Dialog} from '@angular/cdk/dialog';
 import {DialogLoginComponent} from '../dialog-login/dialog-login.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SearchModel } from '../../../models/search.model';
 import * as SearchActions from '../../../ngrx/actions/search.actions';
 import { RoomModel } from '../../../models/room.model';
@@ -27,7 +27,7 @@ export interface User {
 }
 @Component({
   selector: 'app-header',
-  imports: [MaterialModule, ShareModule],
+  imports: [MaterialModule, ShareModule, FilterDialogComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   providers: [provideNativeDateAdapter()],
@@ -36,6 +36,7 @@ export interface User {
 
 export class HeaderComponent implements OnInit, OnDestroy {
   readonly dialog = inject(MatDialog);
+  searchData: SearchModel | null = null
   @ViewChild('picker') picker!: MatDateRangePicker<Date>;
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
   @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
@@ -65,6 +66,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       search: SearchState,
     }>,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: SnackbarService
   ) {
 
@@ -117,7 +119,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Format dates to yyyy-mm-dd string
     if(this.range.value.location ){
-      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
 
       console.log('Formatted start date:', formattedStartDate);
@@ -125,10 +127,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
 
       // Normalize location - remove Vietnamese accents and spaces
-      const normalizedLocation = this.normalizeText(this.range.value.location);
 
-      searchData = {
-        location: normalizedLocation,
+      this.searchData = {
+        location: this.range.value.location,
         checkIn: formattedStartDate,
         checkOut: formattedEndDate,
         guests: Number(newValueGuests),
@@ -137,35 +138,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
       };
 
     console.log('Search data with formatted dates:', searchData);
-    this.store.dispatch(SearchActions.searchRooms({searchParams:searchData}));
-
+    this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
     // Navigate to search page with query parameters
     this.router.navigate(['/search'], {
       queryParams: {
-        location: searchData.location,
-        checkIn: searchData.checkIn,
-        checkOut: searchData.checkOut,
-        guests: searchData.guests
+        location: this.searchData.location,
+        checkIn: this.searchData.checkIn,
+        checkOut: this.searchData.checkOut,
+        guests: this.searchData.guests
       }
     });
 
     }else{
-      this.snackBar.showAlert('Please select a location', 'error', 300000, 'right','top');
+      this.snackBar.showAlert('Please select a location', 'error', 3000, 'right','top');
     }
 
 
   }
 
-  // Normalize text - remove Vietnamese accents and spaces
   normalizeText(text: string): string {
     if (!text) return '';
-
     return text
       .normalize('NFD') // Decompose characters with diacritics
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
+      .replace(/[đĐ]/g, 'd') // Replace đ/Đ with d
       .replace(/\s+/g, '') // Remove all spaces
       .toLowerCase(); // Convert to lowercase
   }
+
 
 
 
@@ -189,14 +189,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       console.log('Enter key blocked - please use Search button');
     }else if(this.range.value.location && event.key === 'Enter'){
       // Navigate to search page with query parameters
-      const formattedStartDate = this.formatDateToString(this.range.value.start || null);
+      let today = new Date();
+      const formattedStartDate = this.formatDateToString(this.range.value.start || today);
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
       const normalizedLocation = this.normalizeText(this.range.value.location);
 
       this.router.navigate(['/search'], {
         queryParams: {
-          location: normalizedLocation,
+          location: this.range.value.location,
           checkIn: formattedStartDate,
           checkOut: formattedEndDate,
           guests: Number(newValueGuests)
@@ -220,7 +221,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   infants: number = 0;
   pets: number = 0;
 
-  displayFn(user: User): string {
+  displayFn(user: User | string): string {
+    if (typeof user === 'string') {
+      return user;
+    }
     return user && user.name ? user.name : '';
   }
 
@@ -242,6 +246,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.router.events.subscribe(() => {
         this.checkCurrentRoute();
+        this.loadSearchParamsFromURL();
       })
     );
 
@@ -253,8 +258,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }),
     );
 
+    // Subscribe to location changes to update searchData
+    this.subscriptions.push(
+      this.range.controls.location.valueChanges.subscribe(location => {
+        if (location && typeof location === 'string') {
+          if (!this.searchData) {
+            this.searchData = {} as SearchModel;
+          }
+          this.searchData = { ...this.searchData, location };
+        }
+      })
+    );
+
     // Initialize guests display
     this.updateGuestsDisplay();
+    
+    // Load search params from URL on init - delay to ensure form is ready
+    setTimeout(() => {
+      this.loadSearchParamsFromURL();
+      
+      // Debug: Check form values after loading
+      console.log('Form values after loading:', {
+        location: this.range.controls.location.value,
+        start: this.range.controls.start.value,
+        end: this.range.controls.end.value,
+        guests: this.range.controls.guests.value
+      });
+      console.log('searchData after loading:', this.searchData);
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -267,9 +298,121 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isSearchPage = this.router.url.includes('/search');
   }
 
+  // Load search parameters from URL query params
+  loadSearchParamsFromURL(): void {
+    const queryParams = this.route.snapshot.queryParams;
+    
+    // Check if form is ready
+    if (!this.range || !this.range.controls.location) {
+      console.log('Form not ready yet, skipping loadSearchParamsFromURL');
+      return;
+    }
+    
+    if (queryParams['location']) {
+      // Set location to form control
+      console.log('Location from URL:', queryParams['location']);
+      
+      // Set value as string directly to avoid autocomplete issues
+      this.range.controls.location.setValue(queryParams['location']);
+      
+      // Update searchData with location
+      if (!this.searchData) {
+        this.searchData = {} as SearchModel;
+      }
+      this.searchData = { ...this.searchData, location: queryParams['location'] };
+      
+      console.log('Form location value after setValue:', this.range.controls.location.value);
+      console.log('searchData location:', this.searchData.location);
+    }
+    
+    if (queryParams['checkIn']) {
+      const checkInDate = new Date(queryParams['checkIn']);
+      if (!isNaN(checkInDate.getTime())) {
+        this.range.controls.start.setValue(checkInDate);
+        
+        // Update searchData with checkIn
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, checkIn: queryParams['checkIn'] };
+      }
+    }
+    
+    if (queryParams['checkOut']) {
+      const checkOutDate = new Date(queryParams['checkOut']);
+      if (!isNaN(checkOutDate.getTime())) {
+        this.range.controls.end.setValue(checkOutDate);
+        
+        // Update searchData with checkOut
+        queryParams['checkOut'];
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, checkOut: queryParams['checkOut'] };
+      }
+    }
+    
+    if (queryParams['guests']) {
+      const guests = Number(queryParams['guests']);
+      if (!isNaN(guests)) {
+        // Update guests display based on URL params
+        this.updateGuestsFromParams(guests);
+        
+        // Update searchData with guests
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, guests };
+      }
+    }
+  }
+
+  // Update guests display from URL params
+  private updateGuestsFromParams(totalGuests: number): void {
+    // Simple logic: assume all are adults if no specific breakdown
+    this.adults = totalGuests;
+    this.children = 0;
+    this.infants = 0;
+    this.pets = 0;
+    
+    this.updateGuestsDisplay();
+  }
+
   // Open filter dialog
   openFilterDialog(): void {
-    this.dialog.open(FilterDialogComponent);
+    const dialogRef = this.dialog.open(FilterDialogComponent, {
+      height: 'fit-content',
+      width: '600px',
+      data: { searchData: this.searchData }
+    });
+
+    // Handle dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.filters && this.searchData) {
+        // Update searchData with new filters
+        const updatedSearchData = {
+          ...this.searchData,
+          ...result.filters
+        };
+        this.searchData = updatedSearchData;
+        console.log('Updated search data:', updatedSearchData);
+
+        // Dispatch search action
+        this.store.dispatch(SearchActions.searchRooms({searchParams: updatedSearchData}));
+
+        // Update query params
+        this.router.navigate(['/search'], {
+          queryParams: {
+            location: updatedSearchData.location,
+            checkIn: updatedSearchData.checkIn,
+            checkOut: updatedSearchData.checkOut,
+            guests: updatedSearchData.guests,
+            minPrice: updatedSearchData.minPrice,
+            maxPrice: updatedSearchData.maxPrice
+          }
+        });
+      }
+    });
   }
 
   private _filter(name: string): User[] {

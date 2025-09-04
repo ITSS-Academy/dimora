@@ -4,6 +4,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { CreateRoomLikeDto } from './dto/create-room-like.dto';
 import { Room } from './entities/room.entity';
 import { RoomLike } from './entities/room-like.entity';
+import { Amenity } from './entities/amenity.entity';
 import { SupabaseService } from '../common/services/supabase.service';
 
 @Injectable()
@@ -56,7 +57,12 @@ export class RoomsService {
         );
       }
 
+    
+
       const data = await response.json();
+      data.results.forEach(result => {
+        console.log('result', result.geometry.location);
+      })
 
       if (data.status !== 'OK' || !data.results || data.results.length === 0) {
         throw new HttpException(
@@ -161,18 +167,9 @@ export class RoomsService {
 
   async findAll(): Promise<Room[]> {
     try {
+      // Sử dụng RPC để lấy rooms với amenities đã được join
       const { data, error } = await this.supabaseService.getClient()
-        .from('rooms')
-        .select(`
-          *,
-          room_types (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .order('created_at', { ascending: false });
+        .rpc('get_all_rooms_with_amenities');
 
       if (error) {
         throw new HttpException(
@@ -181,7 +178,7 @@ export class RoomsService {
         );
       }
 
-      return data;
+      return data || [];
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -195,34 +192,25 @@ export class RoomsService {
 
   async findOne(id: string): Promise<Room> {
     try {
+      // Sử dụng RPC để lấy room với amenities đã được join
       const { data, error } = await this.supabaseService.getClient()
-        .from('rooms')
-        .select(`
-          *,
-          room_types (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .eq('id', id)
-        .single();
+        .rpc('get_room_by_id_with_amenities', { room_id: id });
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          throw new HttpException(
-            'Room not found',
-            HttpStatus.NOT_FOUND
-          );
-        }
         throw new HttpException(
           `Failed to fetch room: ${error.message}`,
           HttpStatus.BAD_REQUEST
         );
       }
 
-      return data;
+      if (!data || data.length === 0) {
+        throw new HttpException(
+          'Room not found',
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return data[0];
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -439,10 +427,12 @@ export class RoomsService {
     minPrice?: number;
     maxPrice?: number;
     radius?: number;
+    amenities?: number[];
   }): Promise<Room[]> {
     try {
       // If location is provided, geocode it first then use RPC function
         // Geocode the location to get coordinates
+
         const coordinates = await this.getCoordinatesFromAddress(params.location);
         
         if (!coordinates) {
@@ -451,18 +441,9 @@ export class RoomsService {
             HttpStatus.BAD_REQUEST
           );
         }
-        console.log('coordinates', coordinates);
-        const test = {
-          lat_param: coordinates.latitude,
-          lng_param: coordinates.longitude,
-          check_in_date_param: params.checkIn || null,
-          check_out_date_param: params.checkOut || null,
-          radius_km_param: params.radius || 10,
-          max_guests_param: params.guests || null,
-          min_price_param: params.minPrice || null,
-          max_price_param: params.maxPrice || null
-        }
-        console.log('test', test);
+
+        console.log('params', params);
+   
 
         const { data, error } = await this.supabaseService.getClient()
           .rpc('search_rooms_nearby', {
@@ -470,10 +451,12 @@ export class RoomsService {
             lng_param: coordinates.longitude,
             check_in_date_param: params.checkIn || null,
             check_out_date_param: params.checkOut || null,
-            radius_km_param: params.radius || 10,
+            radius_km_param: params.radius || 50,
             max_guests_param: Number(params.guests) || null,
             min_price_param: Number(params.minPrice) || null,
-            max_price_param: Number(params.maxPrice) || null
+            max_price_param: Number(params.maxPrice) || null,
+            search_term: params.location,  // Thêm search term để xử lý tiếng Việt
+            amenities_param: params.amenities || null
           });
           console.log('data', error);
 
@@ -798,4 +781,58 @@ export class RoomsService {
       );
     }
   }
+
+
+ async findAllAmenities(): Promise<Amenity[]> {
+  try {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('amenities')
+      .select('*');
+
+    if (error) {
+      throw new HttpException(
+        `Failed to fetch amenities: ${error.message}`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return data || [];
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw new HttpException(
+      'Failed to fetch amenities',
+      HttpStatus.BAD_REQUEST
+    );
+  }
+}
+
+async findOneAmenity(id: string): Promise<Amenity> {
+  try {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('amenities')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+      if (error) {
+        throw new HttpException(
+          `Failed to fetch amenity: ${error.message}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return data;
+  }catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw new HttpException(
+      'Failed to fetch amenity',
+      HttpStatus.BAD_REQUEST
+    );
+  }
+}
+ 
+
+  
 }

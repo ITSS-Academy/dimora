@@ -1,64 +1,105 @@
-<h2 mat-dialog-title>Install Angular</h2>
-<mat-dialog-content class="mat-typography">
-  <h3>Develop across all platforms</h3>
-  <p>Learn one way to build applications with Angular and reuse your code and abilities to build
-    apps for any deployment target. For web, mobile web, native mobile and native desktop.</p>
+<div class="filter-dialog-container" [formGroup]="filterForm">
+  <div class="filter-header">
+    <h2 mat-dialog-title>Bộ lọc tìm kiếm</h2>
+    <button  mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-  <h3>Speed &amp; Performance</h3>
-  <p>Achieve the maximum speed possible on the Web Platform today, and take it further, via Web
-    Workers and server-side rendering. Angular puts you in control over scalability. Meet huge
-    data requirements by building data models on RxJS, Immutable.js or another push-model.</p>
+  <mat-dialog-content class="filter-content">
+    <!-- Giá -->
+    <div class="filter-section">
+      <h3>Khoảng giá</h3>
+      <div class="price-range">
+        <div class="price-label-container">
+          <label class="price-label">Khoảng giá</label>
+          <div class="price-values">
+            <span class="price-min">{{formatPrice(minPrice.value || 0)}} VNĐ</span>
+            <span class="price-separator">-</span>
+            <span class="price-max">{{formatPrice(maxPrice.value || 1000000)}} VNĐ</span>
+          </div>
+        </div>
+        <mat-slider
+          class="price-range-slider"
+          [min]="0"
+          [max]="15000000"
+          [step]="100000"
+          range
+          >
+          <input matSliderStartThumb [(ngModel)]="minPrice.value" [ngModelOptions]="{standalone: true}">
+          <input matSliderEndThumb [(ngModel)]="maxPrice.value" [ngModelOptions]="{standalone: true}">
+        </mat-slider>
+      </div>
+    </div>
 
-  <h3>Incredible tooling</h3>
-  <p>Build features quickly with simple, declarative templates. Extend the template language with
-    your own components and use a wide array of existing components. Get immediate Angular-specific
-    help and feedback with nearly every IDE and editor. All this comes together so you can focus
-    on building amazing apps rather than trying to make the code work.</p>
+    <!-- Loại chỗ ở -->
+    <div class="filter-section">
+      <h3>Loại chỗ ở</h3>
+      <div class="property-types">
+        <mat-chip-listbox multiple formControlName="selectedPropertyTypes" class="chip-list">
+          <mat-chip-option value="apartment">Căn hộ</mat-chip-option>
+          <mat-chip-option value="house">Nhà riêng</mat-chip-option>
+          <mat-chip-option value="villa">Biệt thự</mat-chip-option>
+          <mat-chip-option value="cabin">Nhà gỗ</mat-chip-option>
+          <mat-chip-option value="tent">Lều</mat-chip-option>
+          <mat-chip-option value="boat">Thuyền</mat-chip-option>
+        </mat-chip-listbox>
+      </div>
+    </div>
 
-  <h3>Loved by millions</h3>
-  <p>From prototype through global deployment, Angular delivers the productivity and scalable
-    infrastructure that supports Google's largest applications.</p>
+    <!-- Số phòng ngủ -->
+    <div class="filter-section">
+      <h3>Số phòng ngủ</h3>
+      <div class="bedroom-options">
+        <mat-button-toggle-group formControlName="selectedBedrooms" class="bedroom-group">
+          <mat-button-toggle value="1">1</mat-button-toggle>
+          <mat-button-toggle value="2">2</mat-button-toggle>
+          <mat-button-toggle value="3">3</mat-button-toggle>
+          <mat-button-toggle value="4">4+</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
 
-  <h3>What is Angular?</h3>
+    <!-- Tiện ích -->
+    <div class="filter-section">
+      <h3>Tiện ích</h3>
+      <div class="amenities-grid" formGroupName="amenities">
+        <ng-container *ngIf="amenities$ | async as amenities">
+          <mat-checkbox 
+            *ngFor="let amenity of amenities" 
+            [formControlName]="amenity.id.toString()" 
+            class="amenity-checkbox">
+            <div class="amenity-checkbox-content">
+              <mat-icon>{{amenity.icon_name}}</mat-icon>
+              <span>{{amenity.name}}</span>
+            </div>
+          </mat-checkbox>
+        </ng-container>
+      </div>
+    </div>
 
-  <p>Angular is a platform that makes it easy to build applications with the web. Angular
-    combines declarative templates, dependency injection, end to end tooling, and integrated
-    best practices to solve development challenges. Angular empowers developers to build
-    applications that live on the web, mobile, or the desktop</p>
+    <!-- Đánh giá -->
+    <!-- <div class="filter-section">
+      <h3>Đánh giá tối thiểu</h3>
+      <div class="rating-options">
+        <mat-button-toggle-group formControlName="selectedRating" class="rating-group">
+          <mat-button-toggle value="4.5">4.5+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="4.0">4.0+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="3.5">3.5+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="3.0">3.0+ ⭐</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div> -->
+  </mat-dialog-content>
 
-  <h3>Architecture overview</h3>
-
-  <p>Angular is a platform and framework for building client applications in HTML and TypeScript.
-    Angular is itself written in TypeScript. It implements core and optional functionality as a
-    set of TypeScript libraries that you import into your apps.</p>
-
-  <p>The basic building blocks of an Angular application are NgModules, which provide a compilation
-    context for components. NgModules collect related code into functional sets; an Angular app is
-    defined by a set of NgModules. An app always has at least a root module that enables
-    bootstrapping, and typically has many more feature modules.</p>
-
-  <p>Components define views, which are sets of screen elements that Angular can choose among and
-    modify according to your program logic and data. Every app has at least a root component.</p>
-
-  <p>Components use services, which provide specific functionality not directly related to views.
-    Service providers can be injected into components as dependencies, making your code modular,
-    reusable, and efficient.</p>
-
-  <p>Both components and services are simply classes, with decorators that mark their type and
-    provide metadata that tells Angular how to use them.</p>
-
-  <p>The metadata for a component class associates it with a template that defines a view. A
-    template combines ordinary HTML with Angular directives and binding markup that allow Angular
-    to modify the HTML before rendering it for display.</p>
-
-  <p>The metadata for a service class provides the information Angular needs to make it available
-    to components through Dependency Injection (DI).</p>
-
-  <p>An app's components typically define many views, arranged hierarchically. Angular provides
-    the Router service to help you define navigation paths among views. The router provides
-    sophisticated in-browser navigational capabilities.</p>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
-</mat-dialog-actions>
+  <mat-dialog-actions class="filter-actions">
+    <button mat-button (click)="clearFilters()" class="clear-button">
+      <mat-icon>clear_all</mat-icon>
+      Xóa bộ lọc
+    </button>
+    <button mat-raised-button color="primary" (click)="applyFilters()" class="apply-button">
+      <mat-icon>filter_list</mat-icon>
+      Áp dụng
+    </button>
+  </mat-dialog-actions>
+</div>

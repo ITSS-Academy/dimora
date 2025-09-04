@@ -134,11 +134,83 @@ export class AuthService {
 
   
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto, avatar?: Express.Multer.File): Promise<User> {
     try {
+      let avatarUrl = updateUserDto.avatar_url;
+
+      // Nếu có upload avatar mới
+      if (avatar) {
+        // Kiểm tra file size (5MB limit)
+        if (avatar.size > 5 * 1024 * 1024) {
+          throw new HttpException(
+            'Avatar file size must not exceed 5MB',
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        // Kiểm tra file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(avatar.mimetype)) {
+          throw new HttpException(
+            'Only image files (jpg, jpeg, png, gif, webp) are allowed',
+            HttpStatus.BAD_REQUEST
+          );
+        }
+        // Lấy thông tin user hiện tại để xóa avatar cũ
+        const currentUser = await this.findOne(id);
+        
+        // Xóa avatar cũ nếu có
+        if (currentUser.avatar_url) {
+          try {
+            const oldAvatarPath = this.extractPathFromUrl(currentUser.avatar_url);
+            if (oldAvatarPath) {
+              await this.supabaseService.getClient()
+                .storage
+                .from('avatars')
+                .remove([oldAvatarPath]);
+            }
+          } catch (error) {
+            console.log('Failed to delete old avatar:', error);
+          }
+        }
+
+        // Upload avatar mới
+        const fileName = `${id}-${Date.now()}`;
+        const filePath = `users/${id}/${fileName}`;
+
+        const { error: uploadError } = await this.supabaseService.getClient()
+          .storage
+          .from('avatars')
+          .upload(filePath, avatar.buffer, {
+            contentType: avatar.mimetype,
+            upsert: true
+          });
+
+        if (uploadError) {
+          throw new HttpException(
+            `Failed to upload avatar: ${uploadError.message}`,
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        // Lấy public URL của avatar
+        const { data: urlData } = this.supabaseService.getClient()
+          .storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        avatarUrl = urlData.publicUrl;
+      }
+
+      // Cập nhật thông tin user
+      const updateData = {
+        ...updateUserDto,
+        ...(avatarUrl && { avatar_url: avatarUrl })
+      };
+
       const { data, error } = await this.supabaseService.getClient()
         .from('users')
-        .update(updateUserDto)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
@@ -159,6 +231,18 @@ export class AuthService {
         'Failed to update user',
         HttpStatus.BAD_REQUEST
       );
+    }
+  }
+
+  /**
+   * Helper method để extract path từ Supabase URL
+   */
+  private extractPathFromUrl(url: string): string | null {
+    try {
+      const urlParts = url.split('/storage/v1/object/public/avatars/');
+      return urlParts[1] || null;
+    } catch (error) {
+      return null;
     }
   }
 

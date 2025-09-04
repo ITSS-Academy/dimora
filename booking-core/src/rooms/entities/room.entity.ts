@@ -1,3 +1,4 @@
+import { Amenity } from "./amenity.entity";
 export class Room {
   /** ID duy nhất của phòng */
   id: string;
@@ -47,8 +48,8 @@ export class Room {
   /** ID của loại phòng (reference đến bảng room_types) */
   room_type_id: string;
   
-  /** Danh sách tiện nghi có sẵn (ví dụ: ["WiFi", "Điều hòa", "Bếp"]) */
-  amenities: string[];
+  /** Danh sách tiện nghi có sẵn với thông tin chi tiết */
+  amenities: Amenity[];
   
   /** Danh sách URL hình ảnh của phòng */
   images: string[];

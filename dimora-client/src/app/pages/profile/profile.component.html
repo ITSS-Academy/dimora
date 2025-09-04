@@ -13,10 +13,12 @@
           <h2 class="profile-name">{{profile.full_name}}</h2>
           <p class="profile-email">{{profile.email}}</p>
           <p class="profile-phone">{{profile.phone}}</p>
+          @if(mineProfile.id === profile.id){
           <button mat-stroked-button (click)="openDialog()">
             <mat-icon>edit</mat-icon>
             Edit Profile
           </button>
+          }
         </div>
 
       </div>

@@ -12,18 +12,25 @@ import * as authEffects from './ngrx/effects/auth.effects';
 import {provideHttpClient} from '@angular/common/http';
 import {searchReducer} from './ngrx/reducer/search.reducer';
 import * as searchEffects from './ngrx/effects/search.effects';
-
+import {amenitiesReducer} from './ngrx/reducer/amenities.reducer';
+import * as amenitiesEffects from './ngrx/effects/amenities.effects';
+import { roomReducer } from './ngrx/reducer/room.reducer';
+import * as roomEffects from './ngrx/effects/room.effects';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideStore({
       auth: authReducer,
-      search: searchReducer
+      search: searchReducer,
+      amenities: amenitiesReducer,
+      room: roomReducer
     }),
     provideEffects(
       authEffects,
-      searchEffects
+      searchEffects,
+      amenitiesEffects,
+      roomEffects
     ),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
