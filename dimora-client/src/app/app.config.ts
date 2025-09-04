@@ -16,6 +16,8 @@ import {amenitiesReducer} from './ngrx/reducer/amenities.reducer';
 import * as amenitiesEffects from './ngrx/effects/amenities.effects';
 import { roomReducer } from './ngrx/reducer/room.reducer';
 import * as roomEffects from './ngrx/effects/room.effects';
+import { bookingReducer } from './ngrx/reducer/booking.reducer';
+import * as bookingEffects  from './ngrx/effects/booking.effects';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -24,13 +26,15 @@ export const appConfig: ApplicationConfig = {
       auth: authReducer,
       search: searchReducer,
       amenities: amenitiesReducer,
-      room: roomReducer
+      room: roomReducer,
+      booking: bookingReducer
     }),
     provideEffects(
       authEffects,
       searchEffects,
       amenitiesEffects,
-      roomEffects
+      roomEffects,
+      bookingEffects
     ),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),

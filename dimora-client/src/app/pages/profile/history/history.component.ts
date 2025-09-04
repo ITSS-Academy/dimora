@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BookingState } from '../../../ngrx/state/booking.state';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-history',
@@ -6,6 +9,16 @@ import { Component } from '@angular/core';
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss'
 })
-export class HistoryComponent {
+export class HistoryComponent implements OnInit, OnDestroy {
 
+  constructor(private store: Store<{booking: BookingState}>) {}
+
+  subscription: Subscription[] = [];
+
+  ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.forEach(subscription => subscription.unsubscribe());
+  }
 }
