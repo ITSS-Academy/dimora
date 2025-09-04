@@ -17,6 +17,8 @@ import {DialogUpdateProfileComponent} from '../../shared/components/dialog-updat
 import { RoomState } from '../../ngrx/state/room.state';
 import { RoomModel } from '../../models/room.model';
 import * as RoomActions from '../../ngrx/actions/room.actions';
+import { CardComponent } from "../../shared/components/card/card.component";
+import { RoomsComponent } from './rooms/rooms.component';
 @Component({
   selector: 'app-profile',
 
@@ -27,8 +29,9 @@ import * as RoomActions from '../../ngrx/actions/room.actions';
     MaterialModule,
     HistoryComponent,
     AsyncPipe,
-    LoadingComponent
-  ],
+    LoadingComponent,
+    RoomsComponent
+],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -42,8 +45,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
   idToken: string = '';
   mineProfile: AuthModel = <AuthModel>{};
-  roomListByHostId$ !: Observable<RoomModel[]>
-  roomListByHostId: RoomModel[] = <RoomModel[]>[]
   constructor(
     private activatedRoute: ActivatedRoute,
     private store: Store<{
@@ -61,7 +62,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isLoading$ = this.store.select('auth','isLoading')
     this.idToken$ = this.store.select('auth','idToken')
     this.mineProfile$ = this.store.select('auth','mineProfile')
-    this.roomListByHostId$ = this.store.select('room','roomListByHostId')
   }
 
   ngOnInit() {
@@ -81,13 +81,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.mineProfile = mineProfile;
         }
       }),
-      this.roomListByHostId$.subscribe(roomListByHostId => {
-        if (roomListByHostId) {
-          this.roomListByHostId = roomListByHostId;
-        console.log(roomListByHostId)
-
-        }
-      })  
     )
 
   }

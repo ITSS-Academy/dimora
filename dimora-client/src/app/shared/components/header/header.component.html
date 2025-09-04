@@ -10,8 +10,8 @@
   <div class="search-bar" [ngClass]="{'search-page': isSearchPage}">
     <form class="search-container" [formGroup]="range" (keydown)="onFormKeyDown($event)">
       <mat-form-field appearance="outline" class="search-field" (click)="onLocationInputClick()">
-      <input #locationInput type="text" matInput formControlName="location" [matAutocomplete]="auto" placeholder="Where are you going?"  >
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
+      <input #locationInput type="text" matInput formControlName="location" placeholder="Where are you going?"  >
+      <!-- <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
         @for (option of filteredOptions | async; track option) {
           <mat-option [value]="option" >
             <div class="custom-option">
@@ -21,7 +21,7 @@
           </mat-option>
 
         }
-      </mat-autocomplete>
+      </mat-autocomplete> -->
       </mat-form-field>
 
 

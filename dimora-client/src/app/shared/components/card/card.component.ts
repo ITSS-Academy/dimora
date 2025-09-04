@@ -12,4 +12,8 @@ export class CardComponent {
 
   @Input() hotel: RoomModel = {} as RoomModel
 
+  formatPrice(price: number): string {
+    return price.toLocaleString('vi-VN');
+  }
+
 }
