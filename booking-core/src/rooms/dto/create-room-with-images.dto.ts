@@ -1,7 +1,7 @@
 import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, IsLatitude, IsLongitude } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
-export class CreateRoomWithImagesDto {
+export class CreateRoomDto {
   @IsString()
   title: string;
 
@@ -25,18 +25,28 @@ export class CreateRoomWithImagesDto {
   @IsString()
   country: string;
 
-  @IsString()
-  postal_code: string;
+  @IsOptional()
+  @Type(() => Number)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return Number(value);
+    }
+    return value;
+  })
+  @IsNumber()
+  postal_code?: number;
 
   @IsOptional()
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsLatitude()
-  latitude?: string;
+  latitude?: number;
 
   @IsOptional()
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsLongitude()
-  longitude?: string;
+  longitude?: number;
 
   @Type(() => Number)
   @IsNumber()
@@ -77,6 +87,10 @@ export class CreateRoomWithImagesDto {
 
   @IsString()
   host_id: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  images: string[];
 
   @IsOptional()
   @Transform(({ value }) => {

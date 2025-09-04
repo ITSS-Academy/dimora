@@ -2,6 +2,16 @@ import {Component, ViewChild} from '@angular/core';
 import {MapComponent} from '../../shared/components/map/map.component';
 import {DecimalPipe} from '@angular/common';
 import {GoogleMap, MapMarker} from '@angular/google-maps';
+import {RoomModel} from '../../models/room.model';
+import { SearchState } from '../../ngrx/state/search.state';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { LoadingComponent } from "../../shared/components/loading/loading.component";
+import { ActivatedRoute, Router } from '@angular/router';
+import { SearchModel } from '../../models/search.model';
+import * as SearchActions from '../../ngrx/actions/search.actions';
+
 interface Location {
   lat: number;
   lng: number;
@@ -9,27 +19,14 @@ interface Location {
   timestamp?: number;
 }
 
-interface Hotel {
-  id: number;
-  name: string;
-  price: number;
-  address: string;
-  location: google.maps.LatLngLiteral;
-  image: string;
-  rating?: number;
-  distance?: number;
-  isGuestFavorite?: boolean;
-  beds?: string;
-  cancellation?: string;
-  reviewCount?: number;
-}
 @Component({
   selector: 'app-search',
   imports: [
-    DecimalPipe,
     GoogleMap,
-    MapMarker
-  ],
+    MapMarker,
+    AsyncPipe,
+    LoadingComponent
+],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -40,292 +37,88 @@ export class SearchComponent {
   center: google.maps.LatLngLiteral = { lat: 10.774559, lng: 106.675655 }; // Vị trí hiện tại
   zoom = 12;
   isMapReady = false;
+  isLoading$!:Observable<boolean>
+  
+  // Map options for smooth performance
+  mapOptions: google.maps.MapOptions = {
+    zoomControl: true,
+    center: this.center,
+    
+    scaleControl: true,
+    streetViewControl: false,
+    rotateControl: true,
+    fullscreenControl: false,
+    disableDefaultUI: false,
+    gestureHandling: 'greedy', // Smooth gesture handling
+    isFractionalZoomEnabled: true, // Smooth zoom transitions
+    minZoom: 1,
+    maxZoom: 18,
+    // Performance optimizations
+    backgroundColor: '#f8f9fa',
+    clickableIcons: true,
+    draggableCursor: 'grab',
+    draggingCursor: 'grabbing',
+    // Map styling for better performance
+    styles: [
+      {
+        featureType: 'poi',
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }
+    ]
+  };
 
   // Current location
   currentLocation: Location | null = null;
   isGettingLocation = false;
   locationError = '';
 
-  // Hotels
-  hotels: Hotel[] = [];
-  selectedHotel: Hotel | null = null;
-  visibleHotels: Hotel[] = [];
+  // Rooms
+  rooms: RoomModel[] = [];
+  selectedRoom: RoomModel | null = null;
+  visibleRooms: RoomModel[] = [];
   mapCenter: google.maps.LatLngLiteral = { lat: 10.774559, lng: 106.675655 };
-  showSelectedHotelInfo: boolean = false;
+  showSelectedRoomInfo: boolean = false;
   showDialog: boolean = false;
-  dialogHotel: Hotel | null = null;
+  dialogRoom: RoomModel | null = null;
+  searchResult$ !: Observable<RoomModel[]>;
+  subscriptions: Subscription[] = [];
 
-  constructor() {}
+  constructor(
+    private store: Store<{
+    search: SearchState,
+  }>,
+  private route: ActivatedRoute,
+  private router: Router
+) {
+  this.searchResult$ = this.store.select('search','searchRooms');
+  this.isLoading$ = this.store.select('search','isLoading');
+  }
 
   ngOnInit() {
     console.log('🚀 App component initialized');
-    this.initializeHotels();
     this.setCurrentLocationAsDefault();
 
-    // Debug map after view init
-    setTimeout(() => {
-      console.log('🗺️ Map instance:', this.map);
-      if (this.map) {
-        console.log('🗺️ Map is ready');
-      }
-    }, 1000);
-  }
+    // Handle query parameters
+    this.handleQueryParameters();
 
-  // Initialize hotels data
-  initializeHotels(): void {
-    this.hotels = [
-      {
-        id: 1,
-        name: 'Grand Hotel Saigon',
-        price: 2500000,
-        address: '8 Đồng Khởi, Quận 1, TP.HCM',
-        location: { lat: 10.7769, lng: 106.7009 },
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-        rating: 4.5,
-        isGuestFavorite: true,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 127
-      },
-      {
-        id: 2,
-        name: 'Riverside Hotel',
-        price: 1800000,
-        address: '18 Tôn Đức Thắng, Quận 1, TP.HCM',
-        location: { lat: 10.7833, lng: 106.7000 },
-        image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop',
-        rating: 4.2,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 89
-      },
-      {
-        id: 3,
-        name: 'Central Plaza Hotel',
-        price: 3200000,
-        address: '17 Lê Duẩn, Quận 1, TP.HCM',
-        location: { lat: 10.7797, lng: 106.6992 },
-        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop',
-        rating: 4.7,
-        isGuestFavorite: true,
-        beds: '2 double beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 203
-      },
-      {
-        id: 4,
-        name: 'Boutique Hotel District 3',
-        price: 1200000,
-        address: '123 Võ Văn Tần, Quận 3, TP.HCM',
-        location: { lat: 10.7820, lng: 106.6880 },
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-        rating: 4.0,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 56
-      },
-      {
-        id: 5,
-        name: 'Business Hotel Bình Thạnh',
-        price: 1500000,
-        address: '456 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM',
-        location: { lat: 10.8000, lng: 106.7000 },
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-        rating: 4.3,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 94
-      },
-      {
-        id: 6,
-        name: 'Luxury Resort Phú Nhuận',
-        price: 4500000,
-        address: '789 Nguyễn Văn Trỗi, Quận Phú Nhuận, TP.HCM',
-        location: { lat: 10.7900, lng: 106.6800 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.8,
-        isGuestFavorite: true,
-        beds: '2 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 156
-      },
-      {
-        id: 7,
-        name: 'Budget Hotel Tân Bình',
-        price: 800000,
-        address: '321 Cộng Hòa, Quận Tân Bình, TP.HCM',
-        location: { lat: 10.8100, lng: 106.6500 },
-        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop',
-        rating: 3.8,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 42
-      },
-      {
-        id: 8,
-        name: 'Heritage Hotel District 5',
-        price: 2200000,
-        address: '567 Trần Hưng Đạo, Quận 5, TP.HCM',
-        location: { lat: 10.7500, lng: 106.6600 },
-        image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop',
-        rating: 4.4,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 78
-      },
-      {
-        id: 9,
-        name: 'Modern Apartment District 2',
-        price: 2800000,
-        address: '234 Nguyễn Thị Thập, Quận 7, TP.HCM',
-        location: { lat: 10.7300, lng: 106.7200 },
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
-        rating: 4.6,
-        isGuestFavorite: true,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 112
-      },
-      {
-        id: 10,
-        name: 'Cozy Studio District 10',
-        price: 950000,
-        address: '789 Sư Vạn Hạnh, Quận 10, TP.HCM',
-        location: { lat: 10.7600, lng: 106.6700 },
-        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-        rating: 4.1,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 67
-      },
-      {
-        id: 11,
-        name: 'Premium Hotel District 1',
-        price: 3800000,
-        address: '456 Nguyễn Huệ, Quận 1, TP.HCM',
-        location: { lat: 10.7750, lng: 106.7050 },
-        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-        rating: 4.9,
-        isGuestFavorite: true,
-        beds: '2 double beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 234
-      },
-      {
-        id: 12,
-        name: 'Garden Resort District 9',
-        price: 1900000,
-        address: '123 Mai Chí Thọ, Quận 2, TP.HCM',
-        location: { lat: 10.7800, lng: 106.7500 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.3,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 85
-      },
-      {
-        id: 13,
-        name: 'City View Hotel District 4',
-        price: 1600000,
-        address: '567 Võ Văn Kiệt, Quận 4, TP.HCM',
-        location: { lat: 10.7650, lng: 106.7100 },
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-        rating: 4.2,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 73
-      },
-      {
-        id: 14,
-        name: 'Art Deco Hotel District 6',
-        price: 1100000,
-        address: '890 Hậu Giang, Quận 6, TP.HCM',
-        location: { lat: 10.7450, lng: 106.6350 },
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-        rating: 3.9,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 48
-      },
-      {
-        id: 15,
-        name: 'Skyline Hotel District 8',
-        price: 1400000,
-        address: '345 Dương Bá Trạc, Quận 8, TP.HCM',
-        location: { lat: 10.7200, lng: 106.6300 },
-        image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=300&fit=crop',
-        rating: 4.0,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 61
-      },
-      {
-        id: 16,
-        name: 'Riverside Apartment District 11',
-        price: 1700000,
-        address: '678 Lý Thường Kiệt, Quận 11, TP.HCM',
-        location: { lat: 10.7550, lng: 106.6450 },
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
-        rating: 4.4,
-        beds: '1 double bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 92
-      },
-      {
-        id: 17,
-        name: 'Business Center Hotel District 12',
-        price: 1300000,
-        address: '901 Lê Văn Khương, Quận 12, TP.HCM',
-        location: { lat: 10.8300, lng: 106.6200 },
-        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-        rating: 3.7,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 35
-      },
-      {
-        id: 18,
-        name: 'Luxury Villa District 7',
-        price: 5200000,
-        address: '234 Nguyễn Hữu Thọ, Quận 7, TP.HCM',
-        location: { lat: 10.7400, lng: 106.7300 },
-        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-        rating: 4.8,
-        isGuestFavorite: true,
-        beds: '3 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 178
-      },
-      {
-        id: 19,
-        name: 'Budget Inn District 9',
-        price: 750000,
-        address: '567 Lê Văn Việt, Quận 9, TP.HCM',
-        location: { lat: 10.8400, lng: 106.7800 },
-        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop',
-        rating: 3.6,
-        beds: '1 bed',
-        cancellation: 'Free cancellation',
-        reviewCount: 29
-      },
-      {
-        id: 20,
-        name: 'Premium Resort District 2',
-        price: 4100000,
-        address: '789 Nguyễn Duy Trinh, Quận 9, TP.HCM',
-        location: { lat: 10.8200, lng: 106.7600 },
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop',
-        rating: 4.7,
-        isGuestFavorite: true,
-        beds: '2 beds',
-        cancellation: 'Free cancellation',
-        reviewCount: 145
-      }
-    ];
+    // Subscribe to search results from API
+    this.subscriptions.push(
+      this.searchResult$.subscribe(result => {
+        if(result && result.length > 0){
+          this.rooms = result;
+          this.center = { lat: this.rooms[0].latitude, lng: this.rooms[0].longitude };
+          this.updateVisibleRooms();
+        } else {
+          this.rooms = [];
+          this.visibleRooms = [];
+        }
+      })
+    );
 
-    this.calculateDistances();
-    this.updateVisibleHotels();
+
   }
+ 
 
   // Set current location as default
   setCurrentLocationAsDefault(): void {
@@ -335,19 +128,8 @@ export class SearchComponent {
     };
   }
 
-  // Calculate distances from current location
-  calculateDistances(): void {
-    if (!this.currentLocation) return;
+  // Calculate distances from current location - removed
 
-    this.hotels.forEach(hotel => {
-      hotel.distance = this.calculateDistance(
-        this.currentLocation!.lat,
-        this.currentLocation!.lng,
-        hotel.location.lat,
-        hotel.location.lng
-      );
-    });
-  }
 
   // Calculate distance between two points using Haversine formula
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -367,46 +149,28 @@ export class SearchComponent {
     return deg * (Math.PI/180);
   }
 
-  // Update visible hotels based on zoom level and center
-  updateVisibleHotels(): void {
-    // Show all hotels on map, but filter visible cards based on 2km radius
-    this.visibleHotels = this.hotels.filter(hotel => {
-      const distance = this.calculateDistance(
-        this.mapCenter.lat,
-        this.mapCenter.lng,
-        hotel.location.lat,
-        hotel.location.lng
-      );
-      hotel.distance = distance;
-      return distance <= 2; // 2km radius for cards only
-    }).sort((a, b) => (a.distance || 0) - (b.distance || 0));
-    console.log(this.visibleHotels);
+  // Update visible rooms - show all rooms
+  updateVisibleRooms(): void {
+    // Show all rooms without distance calculation
+    this.visibleRooms = [...this.rooms];
   }
 
-  // Get all hotels for map markers (not filtered by distance)
-  getAllHotelsForMap(): Hotel[] {
-    return this.hotels.map(hotel => ({
-      ...hotel,
-      distance: this.calculateDistance(
-        this.mapCenter.lat,
-        this.mapCenter.lng,
-        hotel.location.lat,
-        hotel.location.lng
-      )
-    }));
+  // Get all rooms for map markers
+  getAllRoomsForMap(): RoomModel[] {
+    return [...this.rooms];
   }
 
   // Handle map center change
   onMapCenterChange(): void {
     // Update map center from current map state
-    // this.updateVisibleHotels();
+    // this.updateVisibleRooms();
   }
 
   // Handle map bounds change
   onMapBoundsChange(): void {
     // This will be called when map is dragged or zoomed
-    // We'll update the center and recalculate visible hotels
-    // this.updateVisibleHotels();
+    // We'll update the center and recalculate visible rooms
+    // this.updateVisibleRooms();
   }
 
   // Handle map click
@@ -417,36 +181,25 @@ export class SearchComponent {
       const clickedLat = event.latLng.lat();
       const clickedLng = event.latLng.lng();
 
-      console.log('🔍 Checking all hotels...');
+      console.log('🔍 Checking all rooms...');
 
       console.log(clickedLat, clickedLng);
 
-
-
-      //find hotel by clicked lat and lng
-      const hotel = this.hotels.find(hotel => {
-        return hotel.location.lat === clickedLat && hotel.location.lng === clickedLng;
+      //find room by clicked lat and lng
+      const room = this.rooms.find(room => {
+        return room.latitude === clickedLat && room.longitude === clickedLng;
       });
 
-      console.log(hotel);
+      console.log(room);
 
-      if (hotel) {
-        console.log('🎯 Found nearby hotel:', hotel.name);
-        this.selectHotel(hotel);
+      if (room) {
+        console.log('🎯 Found nearby room:', room.title);
+        this.selectRoom(room);
       } else {
-        console.log('❌ No hotel found nearby');
+        console.log('❌ No room found nearby');
         // Clear selection if clicking away from markers
-        this.clearSelectedHotel();
+        this.clearSelectedRoom();
       }
-
-      // if (nearbyHotel) {
-      //   console.log('🎯 Found nearby hotel:', nearbyHotel.name);
-      //   this.selectHotel(nearbyHotel);
-      // } else {
-      //   console.log('❌ No hotel found nearby');
-      //   // Clear selection if clicking away from markers
-      //   this.clearSelectedHotel();
-      // }
     }
   }
 
@@ -486,8 +239,7 @@ export class SearchComponent {
         this.zoom = 15;
         this.isGettingLocation = false;
 
-        this.calculateDistances();
-        // this.updateVisibleHotels();
+        // this.updateVisibleRooms();
 
         console.log('📍 Vị trí hiện tại:', location);
       },
@@ -517,45 +269,200 @@ export class SearchComponent {
     );
   }
 
+  // Zoom to current location with smooth animation
+  zoomToMyLocation(): void {
+    if (this.currentLocation) {
+      // If we already have location, just zoom to it
+      this.mapOptions.center = { lat: this.currentLocation.lat, lng: this.currentLocation.lng };
+    } 
+  }
+
+  // Smooth zoom to specific location
+  // smoothZoomToLocation(targetLocation: Location): void {
+  //   const targetCenter = { lat: targetLocation.lat, lng: targetLocation.lng };
+  //   const targetZoom = 15;
+  //   const duration = 800;
+  //   const steps = 40;
+  //   const stepDuration = duration / steps;
+    
+  //   const startCenter = { ...this.center };
+  //   const startZoom = this.zoom;
+    
+  //   let currentStep = 0;
+    
+  //   const easeOutQuart = (t: number): number => {
+  //     return 1 - Math.pow(1 - t, 4);
+  //   };
+    
+  //   const animate = () => {
+  //     if (currentStep < steps) {
+  //       const progress = currentStep / steps;
+  //       const easedProgress = easeOutQuart(progress);
+        
+  //       this.center = {
+  //         lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+  //         lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+  //       };
+  //       this.zoom = startZoom + (targetZoom - startZoom) * easedProgress;
+  //       this.mapCenter = { ...this.center };
+        
+  //       currentStep++;
+  //       setTimeout(animate, stepDuration);
+  //     } else {
+  //       this.center = targetCenter;
+  //       this.zoom = targetZoom;
+  //       this.mapCenter = targetCenter;
+  //     }
+  //   };
+    
+  //   animate();
+  // }
+
   // Clear current location
   clearCurrentLocation(): void {
     this.currentLocation = null;
     this.locationError = '';
   }
 
-  // Select hotel
-  selectHotel(hotel: Hotel): void {
-    console.log('🏨 selectHotel called with:', hotel.name);
-    this.selectedHotel = hotel;
-    this.center = hotel.location;
-    this.mapCenter = hotel.location;
-    this.zoom = 16;
-    this.showSelectedHotelInfo = true;
+  // Select room
+  selectRoom(room: RoomModel): void {
+    console.log('🏨 selectRoom called with:', room.title);
+    this.selectedRoom = room;
+    
+    // Smooth zoom animation to selected room
+    this.smoothZoomToRoom(room);
+    
+    this.showSelectedRoomInfo = true;
     // this.showDialog = true;
-    this.dialogHotel = hotel;
-    console.log('🏨 Selected hotel:', hotel);
-    // this.updateVisibleHotels();
+    this.dialogRoom = room;
+    console.log('🏨 Selected room:', room);
+    // this.updateVisibleRooms();
+  }
+
+  // Smooth zoom animation to room
+  smoothZoomToRoom(room: RoomModel): void {
+    const targetCenter = { lat: room.latitude, lng: room.longitude };
+    const targetZoom = 16;
+    
+    // Calculate distance between current and target
+    const distance = this.calculateDistance(
+      this.center.lat,
+      this.center.lng,
+      targetCenter.lat,
+      targetCenter.lng
+    );
+    
+    // If distance is too small, just jump directly without animation
+    if (distance < 0.5) { // Less than 500 meters
+      this.center = targetCenter;
+      this.zoom = targetZoom;
+      this.mapCenter = targetCenter;
+      return;
+    }
+    
+    // If zoom level is similar, just pan without zoom animation
+    const zoomDiff = Math.abs(this.zoom - targetZoom);
+    if (zoomDiff < 2) {
+      this.smoothPanToRoom(room);
+      return;
+    }
+    
+    const duration = 800; // Shorter duration
+    const steps = 40; // Fewer steps
+    const stepDuration = duration / steps;
+    
+    const startCenter = { ...this.center };
+    const startZoom = this.zoom;
+    
+    let currentStep = 0;
+    
+    // Simpler easing function for smoother animation
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4);
+    };
+    
+    const animate = () => {
+      if (currentStep < steps) {
+        const progress = currentStep / steps;
+        const easedProgress = easeOutQuart(progress);
+        
+        this.center = {
+          lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+          lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+        };
+        this.zoom = startZoom + (targetZoom - startZoom) * easedProgress;
+        this.mapCenter = { ...this.center };
+        
+        currentStep++;
+        setTimeout(animate, stepDuration);
+      } else {
+        // Ensure final position is exact
+        this.center = targetCenter;
+        this.zoom = targetZoom;
+        this.mapCenter = targetCenter;
+      }
+    };
+    
+    animate();
+  }
+
+  // Smooth pan animation (no zoom)
+  smoothPanToRoom(room: RoomModel): void {
+    const targetCenter = { lat: room.latitude, lng: room.longitude };
+    const duration = 400; // Very short for nearby locations
+    const steps = 20;
+    const stepDuration = duration / steps;
+    
+    const startCenter = { ...this.center };
+    
+    let currentStep = 0;
+    
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4);
+    };
+    
+    const animate = () => {
+      if (currentStep < steps) {
+        const progress = currentStep / steps;
+        const easedProgress = easeOutQuart(progress);
+        
+        this.center = {
+          lat: startCenter.lat + (targetCenter.lat - startCenter.lat) * easedProgress,
+          lng: startCenter.lng + (targetCenter.lng - startCenter.lng) * easedProgress
+        };
+        this.mapCenter = { ...this.center };
+        
+        currentStep++;
+        setTimeout(animate, stepDuration);
+      } else {
+        this.center = targetCenter;
+        this.mapCenter = targetCenter;
+      }
+    };
+    
+    animate();
   }
 
   // Close dialog
   closeDialog(): void {
     this.showDialog = false;
-    this.dialogHotel = null;
+    this.dialogRoom = null;
   }
+  
   onCurrentLocationMarkerClick(): void {
     console.log('Clicked current location marker');
     // Thêm logic nếu cần, ví dụ center map lại
     this.center = { lat: this.currentLocation!.lat, lng: this.currentLocation!.lng };
   }
 
-  // Clear selected hotel
-  clearSelectedHotel(): void {
-    this.selectedHotel = null;
-    this.showSelectedHotelInfo = false;
+  // Clear selected room
+  clearSelectedRoom(): void {
+    this.selectedRoom = null;
+    this.showSelectedRoomInfo = false;
   }
 
-  // Get marker icon URL for hotels
-  getHotelMarkerIconUrl(): string {
+  // Get marker icon URL for rooms
+  getRoomMarkerIconUrl(): string {
     // Giữ nguyên SVG, nhưng tăng size nếu cần (ví dụ width/height=32)
     const svg = `
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -567,11 +474,11 @@ export class SearchComponent {
     return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
   }
 
-  // Get marker options for hotels
-  getHotelMarkerOptions(): google.maps.MarkerOptions {
+  // Get marker options for rooms
+  getRoomMarkerOptions(): google.maps.MarkerOptions {
     return {
       icon: {
-        url: this.getHotelMarkerIconUrl(),
+        url: this.getRoomMarkerIconUrl(),
       },
       clickable: true  // Explicitly set để nhận click
     };
@@ -612,8 +519,8 @@ export class SearchComponent {
   }
 
   // Get price marker icon URL (AirBnB style)
-  getPriceMarkerIconUrl(hotel: Hotel): string {
-    const isSelected = this.selectedHotel?.id === hotel.id;
+  getPriceMarkerIconUrl(room: RoomModel): string {
+    const isSelected = this.selectedRoom?.id === room.id;
     const backgroundColor = isSelected ? '#222222' : '#ffffff';
     const textColor = isSelected ? '#ffffff' : '#222222';
     const borderColor = isSelected ? '#222222' : '#dddddd';
@@ -622,7 +529,7 @@ export class SearchComponent {
       <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="80" height="32" rx="16" fill="${backgroundColor}" stroke="${borderColor}" stroke-width="1"/>
         <text x="40" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="${textColor}">
-          ₫${(hotel.price / 1000).toFixed(0)}k
+          ₫${(room.price_per_night / 1000).toFixed(0)}k
         </text>
       </svg>
     `;
@@ -630,10 +537,10 @@ export class SearchComponent {
   }
 
   // Get price marker options
-  getPriceMarkerOptions(hotel: Hotel): google.maps.MarkerOptions {
+  getPriceMarkerOptions(room: RoomModel): google.maps.MarkerOptions {
     return {
       icon: {
-        url: this.getPriceMarkerIconUrl(hotel)
+        url: this.getPriceMarkerIconUrl(room)
       }
     };
   }
@@ -642,5 +549,73 @@ export class SearchComponent {
     this.isMapReady = true;
     console.log('🗺️ Map is fully ready!');
     // Nếu cần, add listener động hoặc recalculate gì đó
+  }
+
+  // Get room distance for template - removed
+  getRoomDistance(room: RoomModel): number | null {
+    // Distance calculation removed - no longer needed
+    return null;
+  }
+
+  // Handle query parameters from URL
+  handleQueryParameters(): void {
+    this.subscriptions.push(
+      this.route.queryParams.subscribe(params => {
+        console.log('Query parameters:', params);
+        
+        if (Object.keys(params).length > 0) {
+          // Create search model from query parameters
+          const searchData: SearchModel = {
+            location: params['location'] || '',
+            checkIn: params['checkIn'] || '',
+            checkOut: params['checkOut'] || '',
+            guests: Number(params['guests']) || 1,
+            minPrice: Number(params['minPrice']) || 0,
+            maxPrice: Number(params['maxPrice']) || 0,
+            radius: Number(params['radius']) || 0
+          };
+
+          console.log('Search data from query params:', searchData);
+          
+          // Dispatch search action if we have location
+          if (searchData.location) {
+            this.store.dispatch(SearchActions.searchRooms({ searchParams: searchData }));
+          }
+        }
+      })
+    );
+  }
+
+  // Update URL with current search parameters
+  updateUrlWithSearchParams(searchParams: SearchModel): void {
+    const queryParams = {
+      location: searchParams.location,
+      checkIn: searchParams.checkIn,
+      checkOut: searchParams.checkOut,
+      guests: searchParams.guests,
+      minPrice: searchParams.minPrice,
+      maxPrice: searchParams.maxPrice,
+      radius: searchParams.radius
+    };
+
+    // Remove empty values
+    Object.keys(queryParams).forEach(key => {
+      if (queryParams[key as keyof typeof queryParams] === '' || 
+          queryParams[key as keyof typeof queryParams] === 0) {
+        delete queryParams[key as keyof typeof queryParams];
+      }
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  // Cleanup subscriptions when component is destroyed
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    console.log('Search component destroyed, subscriptions cleaned up');
   }
 }

@@ -1,13 +1,13 @@
 <!-- header.component.html -->
 <mat-toolbar class="airbnb-header" >
   <!-- Logo -->
-  <div class="logo">
+  <div class="logo" (click)="navigateToHome()">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb Logo" class="logo-img">
   </div>
 
 
   <!-- Search Bar -->
-  <div class="search-bar">
+  <div class="search-bar" [ngClass]="{'search-page': isSearchPage}">
     <form class="search-container" [formGroup]="range" (keydown)="onFormKeyDown($event)">
       <mat-form-field appearance="outline" class="search-field" (click)="onLocationInputClick()">
       <input #locationInput type="text" matInput formControlName="location" [matAutocomplete]="auto" placeholder="Where are you going?"  >
@@ -28,8 +28,8 @@
 
 
       <mat-form-field appearance="outline" class="search-field" (click)="picker.open()">
-        <mat-date-range-input  [rangePicker]="picker" >
-          <input matStartDate formControlName="start" readonly placeholder="Start date"  >
+        <mat-date-range-input  [rangePicker]="picker" [min]="minDate" >
+          <input matStartDate formControlName="start"  readonly placeholder="Start date"  >
           <input matEndDate formControlName="end" readonly placeholder="End date"  >
         </mat-date-range-input>
         <mat-icon matSuffix>calendar_month</mat-icon>
@@ -49,8 +49,15 @@
         </button>
       </div>
 
+      <!-- Filter Button - Only show on search page -->
+
 
     </form>
+    <div class="filter-button-container" *ngIf="isSearchPage">
+      <button mat-icon-button class="filter-button" (click)="openFilterDialog()" matTooltip="Filters">
+        <mat-icon>tune</mat-icon>
+      </button>
+    </div>
 
 
   </div>
@@ -63,19 +70,24 @@
         <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" class="button-header" aria-label="Example icon-button with a menu">
           <img class="avatar-img" [src]="profile.avatar_url" alt="" referrerpolicy="no-referrer">
         </button>
+        <mat-menu #profileMenuLogined="matMenu">
+          <button mat-menu-item (click)='navigateToProfile(profile.id)'>
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Log out</span>
+          </button>
+        </mat-menu>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" (click)="login()" class="button-header" aria-label="Example icon-button with a menu">
+        <button mat-icon-button (click)="openDialog()" class="button-header" aria-label="Example icon-button with a menu">
           <mat-icon>account_circle</mat-icon>
         </button>
       }
-    }
-    <mat-menu #profileMenuLogined="matMenu">
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Log out</span>
-      </button>
-    </mat-menu>
 
+
+    }
 
 
 
@@ -134,24 +146,10 @@
           </div>
         </div>
 
-        <mat-divider></mat-divider>
 
-        <div class="guest-category">
-          <div class="guest-info">
-            <div class="guest-label">Pets</div>
 
-          </div>
-          <div class="guest-controls" (click)="$event.stopPropagation()">
-            <button mat-icon-button (click)="decreasePets($event)" [disabled]="pets <= 0">
-              <mat-icon>remove</mat-icon>
-            </button>
-            <span class="guest-count">{{pets}}</span>
-            <button mat-icon-button (click)="increasePets($event)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
-        </div>
       </div>
     </mat-menu>
   </div>
 </mat-toolbar>
+

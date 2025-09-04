@@ -22,23 +22,19 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
         );
       }
 
-      console.log('🔐 [AUTH MIDDLEWARE] Token received:', token);
       
       // Remove Bearer from token
       token = token.replace('Bearer ', '');
       
       // Verify Firebase token
       const decodedToken = await admin.auth().verifyIdToken(token);
-      console.log('✅ [AUTH MIDDLEWARE] Firebase token verified:', decodedToken.uid);
       
       // Check if user exists in database, create if not
       let user;
       try {
         user = await this.authService.findOneByGoogleId(decodedToken.uid);
-        console.log('👤 [AUTH MIDDLEWARE] User found in database:', user.id);
       } catch (error) {
         // User not found, create new user
-        console.log('🆕 [AUTH MIDDLEWARE] User not found, creating new user...');
         user = await this.authService.create({
           id: decodedToken.uid,
           email: decodedToken.email || '',
@@ -47,7 +43,6 @@ export class MiddlewareAuthMiddleware implements NestMiddleware {
           avatar_url: decodedToken.picture || '',
           google_id: decodedToken.uid,
         });
-        console.log('✅ [AUTH MIDDLEWARE] New user created:', user.id);
       }
 
       next(); // Call the next middleware or route handler

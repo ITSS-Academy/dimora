@@ -4,7 +4,7 @@ import {DecimalPipe} from '@angular/common';
 
 @Component({
   selector: 'app-map',
-  imports: [ GoogleMap, MapMarker, DecimalPipe],
+  imports: [],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
