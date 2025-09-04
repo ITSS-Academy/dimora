@@ -1,10 +1,12 @@
-import { IsOptional, IsString, IsNumber, IsLatitude, IsLongitude, Min, Max } from 'class-validator';
+import { IsOptional, IsString, IsNumber, Min, Max, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchRoomsDto {
+
+
   @IsOptional()
   @IsString()
-  city?: string;
+  location: string; // Địa chỉ cụ thể hoặc địa điểm
 
   @IsOptional()
   @IsString()
@@ -23,6 +25,13 @@ export class SearchRoomsDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
+  @Min(0.1)
+  @Max(100)
+  radius?: number; // radius in kilometers, default: 10
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   @Min(0)
   minPrice?: number;
 
@@ -33,19 +42,7 @@ export class SearchRoomsDto {
   maxPrice?: number;
 
   @IsOptional()
-  @IsString()
-  @IsLatitude()
-  lat?: string;
-
-  @IsOptional()
-  @IsString()
-  @IsLongitude()
-  lng?: string;
-
-  @IsOptional()
+  @IsArray()
   @Type(() => Number)
-  @IsNumber()
-  @Min(0.1)
-  @Max(100)
-  radius?: number; // radius in kilometers
+  amenities?: number[];
 }

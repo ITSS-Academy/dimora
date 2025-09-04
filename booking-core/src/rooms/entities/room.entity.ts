@@ -1,3 +1,4 @@
+import { Amenity } from "./amenity.entity";
 export class Room {
   /** ID duy nhất của phòng */
   id: string;
@@ -24,10 +25,13 @@ export class Room {
   country: string;
   
   /** Vĩ độ (latitude) - để hiển thị trên Google Maps */
-  latitude: string;
+  latitude: number;
   
   /** Kinh độ (longitude) - để hiển thị trên Google Maps */
-  longitude: string;
+  longitude: number;
+  
+  /** Mã bưu điện */
+  postal_code: number;
   
   /** Số lượng khách tối đa có thể ở */
   max_guests: number;
@@ -44,8 +48,8 @@ export class Room {
   /** ID của loại phòng (reference đến bảng room_types) */
   room_type_id: string;
   
-  /** Danh sách tiện nghi có sẵn (ví dụ: ["WiFi", "Điều hòa", "Bếp"]) */
-  amenities: string[];
+  /** Danh sách tiện nghi có sẵn với thông tin chi tiết */
+  amenities: Amenity[];
   
   /** Danh sách URL hình ảnh của phòng */
   images: string[];
@@ -62,5 +66,8 @@ export class Room {
   /** Thời gian cập nhật thông tin phòng lần cuối */
   updated_at: Date;
 }
+
+
+
 
 

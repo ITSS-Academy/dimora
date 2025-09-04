@@ -1,0 +1,48 @@
+<mat-dialog-content class="profile-glass">
+  <!-- Avatar -->
+  <div class="avatar-wrapper">
+    <div class="avatar-ring">
+      <img [src]="previewUrl || this.data.profile.avatar_url" alt="avatar" class="avatar" referrerpolicy="no-referrer" />
+    </div>
+
+    <!-- Label + input để trigger khi click vào camera -->
+    <input
+      type="file"
+      #fileInput
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+
+    <button mat-mini-fab color="primary" type="button" (click)="fileInput.click()">
+      <mat-icon>camera_alt</mat-icon>
+    </button>
+  </div>
+
+  <!-- Info -->
+  <form class="form-section" [formGroup]="profileForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="full_name" placeholder="Full Name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="Email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Phone</mat-label>
+      <input matInput formControlName="phone" placeholder="Phone" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="actions">
+  <button mat-stroked-button color="primary" mat-dialog-close class="btn-cancel">
+    Cancel
+  </button>
+  <button mat-flat-button color="primary" (click)="saveProfile()" class="btn-save">
+    Save Changes
+  </button>
+</mat-dialog-actions>

@@ -1,15 +1,25 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MaterialModule} from '../../material.module';
 import {ShareModule} from '../../share.module';
 import {FormControl, FormGroup} from '@angular/forms';
 import {provideNativeDateAdapter} from '@angular/material/core';
-import {map, Observable, startWith} from 'rxjs';
+import {map, Observable, startWith, Subscription} from 'rxjs';
 import {MatDateRangePicker} from '@angular/material/datepicker';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {Store} from '@ngrx/store';
 import {AuthState} from '../../../ngrx/state/auth.state';
 import {AuthModel} from '../../../models/auth.model';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
+import {MatDialog} from '@angular/material/dialog';
+import {Dialog} from '@angular/cdk/dialog';
+import {DialogLoginComponent} from '../dialog-login/dialog-login.component';
+import { Router, ActivatedRoute } from '@angular/router';
+import { SearchModel } from '../../../models/search.model';
+import * as SearchActions from '../../../ngrx/actions/search.actions';
+import { RoomModel } from '../../../models/room.model';
+import { SearchState } from '../../../ngrx/state/search.state';
+import { SnackbarService } from '../../../services/snackbar/snackbar.service';
+import {FilterDialogComponent} from '../filter-dialog/filter-dialog.component';
 
 export interface User {
   name: string;
@@ -17,31 +27,63 @@ export interface User {
 }
 @Component({
   selector: 'app-header',
-  imports: [MaterialModule, ShareModule],
+  imports: [MaterialModule, ShareModule, FilterDialogComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   providers: [provideNativeDateAdapter()],
 })
 
 
-export class HeaderComponent implements OnInit {
-  constructor(
-    private store: Store<{
-      auth: AuthState,
-    }>
-  ) {
-
-    this.mineProfile$ = this.store.select('auth', 'mineProfile');
-
-  }
-
-  mineProfile$ !: Observable<AuthModel>;
-
-
-
+export class HeaderComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  searchData: SearchModel | null = null
   @ViewChild('picker') picker!: MatDateRangePicker<Date>;
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
   @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
+  mineProfile$ !: Observable<AuthModel>;
+  minDate = new Date();
+  subscriptions: Subscription[] = [];
+  searchResult$ !: Observable<RoomModel[]>;
+  isSearchPage: boolean = false;
+  options: User[] = [
+    {
+      name: 'Mary',
+      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
+    },
+    {
+      name: 'Shelley',
+      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+    },
+    {
+      name: 'Igor',
+      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
+    }
+  ];
+  filteredOptions!: Observable<User[]>;
+  constructor(
+    private store: Store<{
+      auth: AuthState,
+      search: SearchState,
+    }>,
+    private router: Router,
+    private route: ActivatedRoute,
+    private snackBar: SnackbarService
+  ) {
+
+    this.mineProfile$ = this.store.select('auth', 'mineProfile');
+    this.searchResult$ = this.store.select('search','searchRooms');
+
+  }
+
+
+
+
+  openDialog() {
+    this.dialog.open(DialogLoginComponent, {
+      minWidth: '800px',
+      maxWidth: '100%',
+    });
+  }
 
   onLocationInputClick() {
     console.log('locationInput clicked');
@@ -72,45 +114,102 @@ export class HeaderComponent implements OnInit {
   onSearch() {
     console.log('Search button clicked');
     console.log('Form values:', this.range.value);
-    console.log('Location:', this.range.controls.location.value);
-    console.log('Start date:', this.range.controls.start.value);
-    console.log('End date:', this.range.controls.end.value);
-    console.log('Guests:', this.range.controls.guests.value);
-    console.log('Guest details:', {
-      adults: this.adults,
-      children: this.children,
-      infants: this.infants,
-      pets: this.pets
+
+    let searchData: SearchModel = {} as SearchModel;
+
+    // Format dates to yyyy-mm-dd string
+    if(this.range.value.location ){
+      const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
+      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
+
+      console.log('Formatted start date:', formattedStartDate);
+      console.log('Formatted end date:', formattedEndDate);
+      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
+
+      // Normalize location - remove Vietnamese accents and spaces
+
+      this.searchData = {
+        location: this.range.value.location,
+        checkIn: formattedStartDate,
+        checkOut: formattedEndDate,
+        guests: Number(newValueGuests),
+        minPrice: 0,
+        maxPrice: 0,
+      };
+
+    console.log('Search data with formatted dates:', searchData);
+    this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
+    // Navigate to search page with query parameters
+    this.router.navigate(['/search'], {
+      queryParams: {
+        location: this.searchData.location,
+        checkIn: this.searchData.checkIn,
+        checkOut: this.searchData.checkOut,
+        guests: this.searchData.guests
+      }
     });
+
+    }else{
+      this.snackBar.showAlert('Please select a location', 'error', 3000, 'right','top');
+    }
+
+
+  }
+
+  normalizeText(text: string): string {
+    if (!text) return '';
+    return text
+      .normalize('NFD') // Decompose characters with diacritics
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
+      .replace(/[đĐ]/g, 'd') // Replace đ/Đ with d
+      .replace(/\s+/g, '') // Remove all spaces
+      .toLowerCase(); // Convert to lowercase
+  }
+
+
+
+
+  // Format Date to yyyy-mm-dd string
+  formatDateToString(date: Date | null): string {
+    if (!date) return '';
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   onFormKeyDown(event: KeyboardEvent) {
     // Chặn phím Enter để ngăn form submit
-    if (event.key === 'Enter') {
+    if (!this.range.value.location && event.key === 'Enter') {
+      console.log(this.range.value.location)
       event.preventDefault();
       event.stopPropagation();
       console.log('Enter key blocked - please use Search button');
+    }else if(this.range.value.location && event.key === 'Enter'){
+      // Navigate to search page with query parameters
+      let today = new Date();
+      const formattedStartDate = this.formatDateToString(this.range.value.start || today);
+      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
+      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
+      const normalizedLocation = this.normalizeText(this.range.value.location);
+
+      this.router.navigate(['/search'], {
+        queryParams: {
+          location: this.range.value.location,
+          checkIn: formattedStartDate,
+          checkOut: formattedEndDate,
+          guests: Number(newValueGuests)
+        }
+      });
     }
   }
 
-  options: User[] = [
-    {
-      name: 'Mary',
-      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
-    },
-    {
-      name: 'Shelley',
-      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
-    },
-    {
-      name: 'Igor',
-      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
-    }
-  ];
-  filteredOptions!: Observable<User[]>;
+
 
   range = new FormGroup({
-    location: new FormControl<User | null>(null),
+    location: new FormControl<string | null>(null),
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
     guests: new FormControl<string>(''),
@@ -122,30 +221,198 @@ export class HeaderComponent implements OnInit {
   infants: number = 0;
   pets: number = 0;
 
-  displayFn(user: User): string {
+  displayFn(user: User | string): string {
+    if (typeof user === 'string') {
+      return user;
+    }
     return user && user.name ? user.name : '';
   }
 
   ngOnInit() {
+   this.subscriptions.push(
     this.mineProfile$.subscribe(profile => {
       if (profile) {
         console.log('User profile loaded:', profile);
       } else {
         console.log('No user profile available');
       }
-    })
+    }),
+  )
 
+    // Check current route to show/hide filter button
+    this.checkCurrentRoute();
+
+    // Subscribe to route changes
+    this.subscriptions.push(
+      this.router.events.subscribe(() => {
+        this.checkCurrentRoute();
+        this.loadSearchParamsFromURL();
+      })
+    );
 
     this.filteredOptions = this.range.controls.location.valueChanges.pipe(
       startWith(''),
       map(value => {
-        const name = typeof value === 'string' ? value : value?.name;
+        const name = typeof value === 'string' ? value : value;
         return name ? this._filter(name as string) : this.options.slice();
       }),
     );
 
+    // Subscribe to location changes to update searchData
+    this.subscriptions.push(
+      this.range.controls.location.valueChanges.subscribe(location => {
+        if (location && typeof location === 'string') {
+          if (!this.searchData) {
+            this.searchData = {} as SearchModel;
+          }
+          this.searchData = { ...this.searchData, location };
+        }
+      })
+    );
+
     // Initialize guests display
     this.updateGuestsDisplay();
+    
+    // Load search params from URL on init - delay to ensure form is ready
+    setTimeout(() => {
+      this.loadSearchParamsFromURL();
+      
+      // Debug: Check form values after loading
+      console.log('Form values after loading:', {
+        location: this.range.controls.location.value,
+        start: this.range.controls.start.value,
+        end: this.range.controls.end.value,
+        guests: this.range.controls.guests.value
+      });
+      console.log('searchData after loading:', this.searchData);
+    }, 100);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+
+  }
+
+  // Check if current route is search page
+  checkCurrentRoute(): void {
+    this.isSearchPage = this.router.url.includes('/search');
+  }
+
+  // Load search parameters from URL query params
+  loadSearchParamsFromURL(): void {
+    const queryParams = this.route.snapshot.queryParams;
+    
+    // Check if form is ready
+    if (!this.range || !this.range.controls.location) {
+      console.log('Form not ready yet, skipping loadSearchParamsFromURL');
+      return;
+    }
+    
+    if (queryParams['location']) {
+      // Set location to form control
+      console.log('Location from URL:', queryParams['location']);
+      
+      // Set value as string directly to avoid autocomplete issues
+      this.range.controls.location.setValue(queryParams['location']);
+      
+      // Update searchData with location
+      if (!this.searchData) {
+        this.searchData = {} as SearchModel;
+      }
+      this.searchData = { ...this.searchData, location: queryParams['location'] };
+      
+      console.log('Form location value after setValue:', this.range.controls.location.value);
+      console.log('searchData location:', this.searchData.location);
+    }
+    
+    if (queryParams['checkIn']) {
+      const checkInDate = new Date(queryParams['checkIn']);
+      if (!isNaN(checkInDate.getTime())) {
+        this.range.controls.start.setValue(checkInDate);
+        
+        // Update searchData with checkIn
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, checkIn: queryParams['checkIn'] };
+      }
+    }
+    
+    if (queryParams['checkOut']) {
+      const checkOutDate = new Date(queryParams['checkOut']);
+      if (!isNaN(checkOutDate.getTime())) {
+        this.range.controls.end.setValue(checkOutDate);
+        
+        // Update searchData with checkOut
+        queryParams['checkOut'];
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, checkOut: queryParams['checkOut'] };
+      }
+    }
+    
+    if (queryParams['guests']) {
+      const guests = Number(queryParams['guests']);
+      if (!isNaN(guests)) {
+        // Update guests display based on URL params
+        this.updateGuestsFromParams(guests);
+        
+        // Update searchData with guests
+        if (!this.searchData) {
+          this.searchData = {} as SearchModel;
+        }
+        this.searchData = { ...this.searchData, guests };
+      }
+    }
+  }
+
+  // Update guests display from URL params
+  private updateGuestsFromParams(totalGuests: number): void {
+    // Simple logic: assume all are adults if no specific breakdown
+    this.adults = totalGuests;
+    this.children = 0;
+    this.infants = 0;
+    this.pets = 0;
+    
+    this.updateGuestsDisplay();
+  }
+
+  // Open filter dialog
+  openFilterDialog(): void {
+    const dialogRef = this.dialog.open(FilterDialogComponent, {
+      height: 'fit-content',
+      width: '600px',
+      data: { searchData: this.searchData }
+    });
+
+    // Handle dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.filters && this.searchData) {
+        // Update searchData with new filters
+        const updatedSearchData = {
+          ...this.searchData,
+          ...result.filters
+        };
+        this.searchData = updatedSearchData;
+        console.log('Updated search data:', updatedSearchData);
+
+        // Dispatch search action
+        this.store.dispatch(SearchActions.searchRooms({searchParams: updatedSearchData}));
+
+        // Update query params
+        this.router.navigate(['/search'], {
+          queryParams: {
+            location: updatedSearchData.location,
+            checkIn: updatedSearchData.checkIn,
+            checkOut: updatedSearchData.checkOut,
+            guests: updatedSearchData.guests,
+            minPrice: updatedSearchData.minPrice,
+            maxPrice: updatedSearchData.maxPrice
+          }
+        });
+      }
+    });
   }
 
   private _filter(name: string): User[] {
@@ -167,6 +434,8 @@ export class HeaderComponent implements OnInit {
     if (this.pets > 0) {
       display += `, ${this.pets} pet${this.pets > 1 ? 's' : ''}`;
     }
+
+    //remove 'guests' or 'guest' in display
 
     this.range.controls.guests.setValue(display);
   }
@@ -228,11 +497,15 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  login() {
-    this.store.dispatch(AuthActions.login());
-  }
+
 
   logout() {
     this.store.dispatch(AuthActions.logout());
+  }
+  navigateToHome() {
+    this.router.navigate(['/home']);
+  }
+  navigateToProfile(id: string) {
+    this.router.navigate(['/profile', id]);
   }
 }

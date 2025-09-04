@@ -24,6 +24,8 @@ mat-stepper {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
+
 }
 #word-one {
   width: 600px;
@@ -66,11 +68,12 @@ mat-stepper {
   justify-content: flex-start;
 }
 .actions {
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+  width: 1400px;
 }
-
 .option {
   width: 202px;
   height: 120px;
@@ -91,11 +94,25 @@ mat-stepper {
   margin-bottom: 4px;
 }
 .option:hover {
-  border-color: var(--on-surface);
+  cursor: pointer;
+  background-color: var(--surface);
+}
+.option.active {
+  // border: 2px solid var(--primary);
+  background-color: var(--secondary-fixed);
 }
 .container-step-two {
-  width: 100%;
+  width: 1400px;
   height: 1630px;
+}
+.container {
+  height: auto;
+}
+.step-two {
+  display: grid;
+  justify-content: center;
+  padding: 0px 80px;
+  gap: 16px;
 }
 .container-step-three {
   width: 100%;
@@ -104,6 +121,7 @@ mat-stepper {
 #word-three {
   width: 630px;
   height: 36px;
+  margin-bottom: 50px;
 }
 .info {
   width: 630px;
@@ -111,17 +129,187 @@ mat-stepper {
   text-align: left;
   background-color: var(--on-tertiary);
   border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  border: 1px solid var(--surface-dim);
 }
-.info h3 {
+.info img {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  margin-top: 30px;
+}
+.form-three h3 {
   width: 512px;
   height: 24px;
   font-size: 18px;
+  margin-bottom: 0px;
 }
-.info p {
+.form-three p {
   width: 400px;
   height: 18px;
   font-size: 14px;
+  margin-top: 3px;
+}
+.form-three {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 15px;
 }
 .step-three {
-  margin: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 70px auto;
+}
+.container-step-four {
+  width: 1303px;
+  height: 610px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.step-four {
+  width: 630px;
+  height: 610px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  margin-bottom: 80px;
+}
+
+.step-four #title h1 {
+  font-size: 32px;
+  width: 630px;
+  height: 36px;
+  margin: 0 0 8px 0;
+  text-align: left;
+  color: #222;
+}
+
+.step-four #title p {
+  font-size: 18px;
+  width: 354px;
+  height: 23px;
+  color: #717171;
+  margin: 0px;
+  text-align: left;
+}
+#title {
+  width: 630px;
+  height: 68px;
+  margin-bottom: 32px;
+  text-align: left;
+  color: #222;
+}
+.info-quantity {
+  width: 630px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.service-name p {
+  font-size: 18px;
+  width: 510px;
+  height: 24px;
+  margin: 0;
+  color: #222;
+}
+.service-name {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quantity button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.quantity button:hover {
+  border-color: #000;
+}
+
+.quantity span {
+  font-size: 16px;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+.info:hover {
+  cursor: pointer;
+  border-color: var(--shadow);
+  border-width: 1px;
+  background-color: var(--primary-fixed);
+}
+.container-step-five {
+  width: 100%;
+  max-width: 1303px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.step-five {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* căn giữa chữ và video theo chiều dọc */
+  gap: 40px; /* khoảng cách giữa chữ và video */
+}
+
+#word-five {
+  flex: 1;
+  max-width: 500px;
+}
+
+#word-five h4 {
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+
+#word-five h1 {
+  font-size: 48px;
+  margin: 0 0 24px;
+  line-height: 1.2;
+}
+
+#word-five p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+#video-five {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+#video-five video {
+  width: 500px;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 12px;
 }

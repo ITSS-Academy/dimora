@@ -1,13 +1,11 @@
 .card-container{
   width: 250px;
   max-height:400px;
-  background-color: red;
 }
 
 .image{
   width: 250px;
   height: 250px;
-  background-color: green;
   border-radius: 25px;
 }
 
@@ -18,19 +16,10 @@
   font-size: 19px;
 }
 
-.card-container {
-  width: 100%;           /* quan trọng: để card chiếm trọn cột grid-auto-columns */
-  box-sizing: border-box;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 12px;
-  background: #fff;
-}
-
 .image {
   width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 8px;
+  aspect-ratio: 1/1;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 8px;
 }

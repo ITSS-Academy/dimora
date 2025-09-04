@@ -1,0 +1,105 @@
+<div class="filter-dialog-container" [formGroup]="filterForm">
+  <div class="filter-header">
+    <h2 mat-dialog-title>Bộ lọc tìm kiếm</h2>
+    <button  mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="filter-content">
+    <!-- Giá -->
+    <div class="filter-section">
+      <h3>Khoảng giá</h3>
+      <div class="price-range">
+        <div class="price-label-container">
+          <label class="price-label">Khoảng giá</label>
+          <div class="price-values">
+            <span class="price-min">{{formatPrice(minPrice.value || 0)}} VNĐ</span>
+            <span class="price-separator">-</span>
+            <span class="price-max">{{formatPrice(maxPrice.value || 1000000)}} VNĐ</span>
+          </div>
+        </div>
+        <mat-slider
+          class="price-range-slider"
+          [min]="0"
+          [max]="15000000"
+          [step]="100000"
+          range
+          >
+          <input matSliderStartThumb [(ngModel)]="minPrice.value" [ngModelOptions]="{standalone: true}">
+          <input matSliderEndThumb [(ngModel)]="maxPrice.value" [ngModelOptions]="{standalone: true}">
+        </mat-slider>
+      </div>
+    </div>
+
+    <!-- Loại chỗ ở -->
+    <div class="filter-section">
+      <h3>Loại chỗ ở</h3>
+      <div class="property-types">
+        <mat-chip-listbox multiple formControlName="selectedPropertyTypes" class="chip-list">
+          <mat-chip-option value="apartment">Căn hộ</mat-chip-option>
+          <mat-chip-option value="house">Nhà riêng</mat-chip-option>
+          <mat-chip-option value="villa">Biệt thự</mat-chip-option>
+          <mat-chip-option value="cabin">Nhà gỗ</mat-chip-option>
+          <mat-chip-option value="tent">Lều</mat-chip-option>
+          <mat-chip-option value="boat">Thuyền</mat-chip-option>
+        </mat-chip-listbox>
+      </div>
+    </div>
+
+    <!-- Số phòng ngủ -->
+    <div class="filter-section">
+      <h3>Số phòng ngủ</h3>
+      <div class="bedroom-options">
+        <mat-button-toggle-group formControlName="selectedBedrooms" class="bedroom-group">
+          <mat-button-toggle value="1">1</mat-button-toggle>
+          <mat-button-toggle value="2">2</mat-button-toggle>
+          <mat-button-toggle value="3">3</mat-button-toggle>
+          <mat-button-toggle value="4">4+</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+
+    <!-- Tiện ích -->
+    <div class="filter-section">
+      <h3>Tiện ích</h3>
+      <div class="amenities-grid" formGroupName="amenities">
+        <ng-container *ngIf="amenities$ | async as amenities">
+          <mat-checkbox 
+            *ngFor="let amenity of amenities" 
+            [formControlName]="amenity.id.toString()" 
+            class="amenity-checkbox">
+            <div class="amenity-checkbox-content">
+              <mat-icon>{{amenity.icon_name}}</mat-icon>
+              <span>{{amenity.name}}</span>
+            </div>
+          </mat-checkbox>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Đánh giá -->
+    <!-- <div class="filter-section">
+      <h3>Đánh giá tối thiểu</h3>
+      <div class="rating-options">
+        <mat-button-toggle-group formControlName="selectedRating" class="rating-group">
+          <mat-button-toggle value="4.5">4.5+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="4.0">4.0+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="3.5">3.5+ ⭐</mat-button-toggle>
+          <mat-button-toggle value="3.0">3.0+ ⭐</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div> -->
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="filter-actions">
+    <button mat-button (click)="clearFilters()" class="clear-button">
+      <mat-icon>clear_all</mat-icon>
+      Xóa bộ lọc
+    </button>
+    <button mat-raised-button color="primary" (click)="applyFilters()" class="apply-button">
+      <mat-icon>filter_list</mat-icon>
+      Áp dụng
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -5,6 +5,7 @@ import * as AuthActions from '../actions/auth.actions';
 export const initialState: AuthState = {
   currentUser: <AuthModel>{},
   mineProfile: <AuthModel>{},
+  isUpdateProfile: false,
   idToken: '',
   isLoading: false,
   error: null
@@ -157,11 +158,40 @@ export const authReducer = createReducer(
     return {
       ...state,
       currentUser: <AuthModel>{},
+      isUpdateProfile: false,
       idToken: '',
       isLoading: false,
       error: null
     }
-  })
+  }),
 
+  //update profile
+  on(AuthActions.updateProfile, (state,{type})=>{
+    console.log(type);
+    return {
+      ...state,
+      isLoading: true,
+      error: null
+    }
+  }),
+
+  on(AuthActions.updateProfileSuccess, (state,{profile,type})=>{
+    console.log(type);
+    return {
+      ...state,
+      isLoading: false,
+      currentUser: profile,
+      error: null
+    }
+  }),
+
+  on(AuthActions.updateProfileFailure, (state,{error,type})=>{
+    console.log(type);
+    return {
+      ...state,
+      isLoading: false,
+      error: error
+    }
+  })
 
 );

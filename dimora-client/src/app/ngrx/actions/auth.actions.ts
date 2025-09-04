@@ -60,6 +60,18 @@ export const logoutFailure = createAction(
 );
 
 
+//update profile
+export const updateProfile = createAction(
+  '[Auth] Update Profile', props<{profile: any, idToken: string}>()
+)
+export const updateProfileSuccess = createAction(
+  '[Auth] Update Profile Success', props<{profile: AuthModel}>()
+)
+export const updateProfileFailure = createAction(
+  '[Auth] Update Profile Failure', props<{error: any}>()
+)
+
+
 
 export const clearAuthState = createAction(
   '[Auth] Clear Auth State',

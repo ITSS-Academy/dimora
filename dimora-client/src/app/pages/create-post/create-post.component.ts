@@ -21,4 +21,17 @@ export class CreatePostComponent {
   thirdFormGroup = this._formBuilder.group({
     thirdCtrl: ['', Validators.required],
   });
+  fourFormGroup = this._formBuilder.group({
+    fourCtrl: ['', Validators.required],
+  });
+  fiveFormGroup = this._formBuilder.group({
+    fiveCtrl: ['', Validators.required],
+  });
+  sixFormGroup = this._formBuilder.group({
+    sixCtrl: ['', Validators.required],
+  });
+  selectedType: string = '';
+  selectType(type: string) {
+    this.selectedType = type;
+  }
 }
