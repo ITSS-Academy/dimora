@@ -1,5 +1,6 @@
 <mat-stepper headerPosition="top" #stepper>
   <mat-step [stepControl]="firstFormGroup">
+    <ng-template matStepLabel>Started</ng-template>
     <div class="container-step-one">
       <div class="step-one">
         <div id="word-one">
@@ -37,110 +38,275 @@
     </div>
   </mat-step>
   <mat-step [stepControl]="secondFormGroup">
+    <ng-template matStepLabel>Structure</ng-template>
     <div class="container-step-two">
-      <div class="step-one">
+      <div class="step-two">
         <div id="word-two">
           <div class="container">
             <h2 class="title">
               Which of the following best describes your place?
             </h2>
             <div class="options-grid">
-              <button class="option">
-                <img src="/home.png" alt="" />House
+              <button
+                class="option"
+                [class.active]="selectedType === 'House'"
+                (click)="selectType('House')"
+              >
+                <img src="/img/home.png" alt="" />House
               </button>
-              <button class="option">
-                <img src="/apartment.png" alt="" />Apartment
+              <button
+                class="option"
+                [class.active]="selectedType === 'Apartment'"
+                (click)="selectType('Apartment')"
+              >
+                <img src="/img/apartment.png" alt="" />Apartment
               </button>
-              <button class="option"><img src="/barn.png" alt="" />Barn</button>
-              <button class="option">
-                <img src="/bed-and-breakfast.png" alt="" />Bed and Breakfast
+              <button
+                class="option"
+                [class.active]="selectedType === 'Barn'"
+                (click)="selectType('Barn')"
+              >
+                <img src="/img/barn.png" alt="" />Barn
               </button>
-              <button class="option"><img src="/boat.png" alt="" />Boat</button>
-              <button class="option">
-                <img src="/cabin.png" alt="" />Cabin
+              <button
+                class="option"
+                [class.active]="selectedType === 'Bed and Breakfast'"
+                (click)="selectType('Bed and Breakfast')"
+              >
+                <img src="/img/bed-and-breakfast.png" alt="" />Bed and Breakfast
               </button>
-              <button class="option">
-                <img src="/camper-RV.png" alt="" />Camper/RV
+              <button
+                class="option"
+                [class.active]="selectedType === 'Boat'"
+                (click)="selectType('Boat')"
+              >
+                <img src="/img/boat.png" alt="" />Boat
               </button>
-              <button class="option">
-                <img src="/casa-particular.png" alt="" />Casa particular
+              <button
+                class="option"
+                [class.active]="selectedType === 'Cabin'"
+                (click)="selectType('Cabin')"
+              >
+                <img src="/img/cabin.png" alt="" />Cabin
               </button>
-              <button class="option">
-                <img src="/castle.png" alt="" />Castle
+              <button
+                class="option"
+                [class.active]="selectedType === 'Camper/RV'"
+                (click)="selectType('Camper/RV')"
+              >
+                <img src="/img/camper-van.png" alt="" />Camper/RV
               </button>
-              <button class="option"><img src="/cave.png" alt="" />Cave</button>
-              <button class="option">
-                <img src="/container.png" alt="" />Container
+              <button
+                class="option"
+                [class.active]="selectedType === 'Casa particular'"
+                (click)="selectType('Casa particular')"
+              >
+                <img src="/img/casa-particular.png" alt="" />Casa particular
               </button>
-              <button class="option">
-                <img src="/cycladic-home.png" alt="" />Cycladic home
+              <button
+                class="option"
+                [class.active]="selectedType === 'Castle'"
+                (click)="selectType('Castle')"
+              >
+                <img src="/img/castle.png" alt="" />Castle
               </button>
-              <button class="option">
-                <img src="/dammuso.png" alt="" />Dammuso
+              <button
+                class="option"
+                [class.active]="selectedType === 'Cave'"
+                (click)="selectType('Cave')"
+              >
+                <img src="/img/cave.png" alt="" />Cave
               </button>
-              <button class="option"><img src="/dome.png" alt="" />Dome</button>
-              <button class="option">
-                <img src="/earth-home.png" alt="" />Earth home
+              <button
+                class="option"
+                [class.active]="selectedType === 'Container'"
+                (click)="selectType('Container')"
+              >
+                <img src="/img/container.png" alt="" />Container
               </button>
-              <button class="option"><img src="/farm.png" alt="" />Farm</button>
-              <button class="option">
-                <img src="/guesthouse.png" alt="" />Guesthouse
+              <button
+                class="option"
+                [class.active]="selectedType === 'Cycladic home'"
+                (click)="selectType('Cycladic home')"
+              >
+                <img src="/img/cycladic-home.png" alt="" />Cycladic home
               </button>
-              <button class="option">
-                <img src="/hotel.png" alt="" />Hotel
+              <button
+                class="option"
+                [class.active]="selectedType === 'Dammuso'"
+                (click)="selectType('Dammuso')"
+              >
+                <img src="/img/dammuso.png" alt="" />Dammuso
               </button>
-              <button class="option">
-                <img src="/houseboat.png" alt="" />Houseboat
+              <button
+                class="option"
+                [class.active]="selectedType === 'Dome'"
+                (click)="selectType('Dome')"
+              >
+                <img src="/img/dome.png" alt="" />Dome
               </button>
-              <button class="option">
-                <img src="/kezhan.png" alt="" />Kezhan
+              <button
+                class="option"
+                [class.active]="selectedType === 'Earth home'"
+                (click)="selectType('Earth home')"
+              >
+                <img src="/img/earth-home.png" alt="" />Earth home
               </button>
-              <button class="option">
-                <img src="/minsu.png" alt="" />Minsu
+              <button
+                class="option"
+                [class.active]="selectedType === 'Farm'"
+                (click)="selectType('Farm')"
+              >
+                <img src="/img/farm.png" alt="" />Farm
               </button>
-              <button class="option"><img src="/riad.png" alt="" />Riad</button>
-              <button class="option">
-                <img src="/ryokan.png" alt="" />Ryokan
+              <button
+                class="option"
+                [class.active]="selectedType === 'Guesthouse'"
+                (click)="selectType('Guesthouse')"
+              >
+                <img src="/img/guesthouse.png" alt="" />Guesthouse
               </button>
-              <button class="option">
-                <img src="/shepherds-hut.png" alt="" />Shepherd’s hut
+              <button
+                class="option"
+                [class.active]="selectedType === 'Hotel'"
+                (click)="selectType('Hotel')"
+              >
+                <img src="/img/hotel.png" alt="" />Hotel
               </button>
-              <button class="option"><img src="/tent.png" alt="" />Tent</button>
-              <button class="option">
-                <img src="/tiny-home.png" alt="" />Tiny home
+              <button
+                class="option"
+                [class.active]="selectedType === 'Houseboat'"
+                (click)="selectType('Houseboat')"
+              >
+                <img src="/img/houseboat.png" alt="" />Houseboat
               </button>
-              <button class="option">
-                <img src="/tower.png" alt="" />Tower
+              <button
+                class="option"
+                [class.active]="selectedType === 'Kezhan'"
+                (click)="selectType('Kezhan')"
+              >
+                <img src="/img/kezhan.png" alt="" />Kezhan
               </button>
-              <button class="option">
-                <img src="/treehouse.png" alt="" />Treehouse
+              <button
+                class="option"
+                [class.active]="selectedType === 'Minsu'"
+                (click)="selectType('Minsu')"
+              >
+                <img src="/img/minsu.png" alt="" />Minsu
               </button>
-              <button class="option">
-                <img src="/noname.png" alt="" />Trullo
+              <button
+                class="option"
+                [class.active]="selectedType === 'Riad'"
+                (click)="selectType('Riad')"
+              >
+                <img src="/img/riad.png" alt="" />Riad
               </button>
-              <button class="option">
-                <img src="/windmill.png" alt="" />Windmill
+              <button
+                class="option"
+                [class.active]="selectedType === 'Ryokan'"
+                (click)="selectType('Ryokan')"
+              >
+                <img src="/img/ryokan.png" alt="" />Ryokan
               </button>
-              <button class="option"><img src="/yurt.png" alt="" />Yurt</button>
-            </div>
-            <div class="actions">
-              <button mat-stroked-button matStepperPrevious>Back</button>
-              <button mat-flat-button matStepperNext>Next</button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Shepherd’s hut'"
+                (click)="selectType('Shepherd’s hut')"
+              >
+                <img src="/img/shepherds-hut.png" alt="" />Shepherd’s hut
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Tent'"
+                (click)="selectType('Tent')"
+              >
+                <img src="/img/tent.png" alt="" />Tent
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Tiny home'"
+                (click)="selectType('Tiny home')"
+              >
+                <img src="/img/home.png" alt="" />Tiny home
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Tower'"
+                (click)="selectType('Tower')"
+              >
+                <img src="/img/tower.png" alt="" />Tower
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Treehouse'"
+                (click)="selectType('Treehouse')"
+              >
+                <img src="/img/treehouse.png" alt="" />Treehouse
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Trullo'"
+                (click)="selectType('Trullo')"
+              >
+                <img src="/img/trullo.png" alt="" />Trullo
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Windmill'"
+                (click)="selectType('Windmill')"
+              >
+                <img src="/img/windmill.png" alt="" />Windmill
+              </button>
+              <button
+                class="option"
+                [class.active]="selectedType === 'Yurt'"
+                (click)="selectType('Yurt')"
+              >
+                <img src="/img/yurt.png" alt="" />Yurt
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <div class="actions">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
     </div>
   </mat-step>
   <mat-step [stepControl]="thirdFormGroup">
+    <ng-template matStepLabel>Privacy Type</ng-template>
     <div class="container-step-three">
       <div class="step-three">
         <div id="word-three">
           <h1>What type of place will guests have?</h1>
         </div>
         <button class="info">
-          <h3>An entire place</h3>
-          <p>Guests have the whole place to themselves.</p>
+          <div class="form-three">
+            <h3>An entire place</h3>
+            <p>Guests have the whole place to themselves.</p>
+          </div>
+          <img src="/img/internet.png" alt="" />
+        </button>
+        <button class="info">
+          <div class="form-three">
+            <h3>A room</h3>
+            <p>
+              Guests have their own room in a home, plus access to shared
+              spaces.
+            </p>
+          </div>
+          <img src="/img/hinh2.png" alt="" />
+        </button>
+        <button class="info">
+          <div class="form-three">
+            <h3>A shared room in a hostel</h3>
+            <p>
+              Guests sleep in a shared room in a professionally managed hostel
+              with staff onsite 24/7.
+            </p>
+          </div>
+          <img src="/img/hinh3.png" alt="" />
         </button>
       </div>
       <div class="outline-button">
@@ -149,8 +315,249 @@
       </div>
     </div>
   </mat-step>
-  <mat-step [stepControl]="thirdFormGroup" optional>
-    <mat-step [formGroup]="thirdFormGroup">
+  <mat-step [stepControl]="fourFormGroup">
+    <ng-template matStepLabel>Floor Plan</ng-template>
+    <div class="container-step-four">
+      <div class="step-four">
+        <div id="word-four">
+          <div id="title">
+            <h1>Share some basics about your place</h1>
+            <p>You'll add more details later, like bed types.</p>
+          </div>
+          <div class="info-quantity">
+            <div class="service-name">
+              <p>Guests</p>
+              <div class="quantity">
+                <button>-</button>
+                <span>0</span>
+                <button>+</button>
+              </div>
+            </div>
+          </div>
+          <div class="info-quantity">
+            <div class="service-name">
+              <p>Bedrooms</p>
+              <div class="quantity">
+                <button>-</button>
+                <span>0</span>
+                <button>+</button>
+              </div>
+            </div>
+          </div>
+          <div class="info-quantity">
+            <div class="service-name">
+              <p>Beds</p>
+              <div class="quantity">
+                <button>-</button>
+                <span>0</span>
+                <button>+</button>
+              </div>
+            </div>
+          </div>
+          <div class="info-quantity">
+            <div class="service-name">
+              <p>Bathrooms</p>
+              <div class="quantity">
+                <button>-</button>
+                <span>0</span>
+                <button>+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="outline-button">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step [stepControl]="fiveFormGroup">
+    <ng-template matStepLabel>Stand Out</ng-template>
+    <div class="container-step-five">
+      <div class="step-five">
+        <div id="word-five">
+          <h4>Step 2</h4>
+          <h1>
+            Make your place <br />
+            stand out
+          </h1>
+          <p>
+            In this step, you’ll add some of the amenities your place
+            <br />
+            offers, plus 5 or more photos. Then, you’ll create a title and the
+            description.
+          </p>
+        </div>
+        <div id="video-five">
+          <video
+            data-testid="video-player"
+            class="v186kq3t atm_9s_1ulexfb atm_e2_1osqo2v atm_vy_1osqo2v atm_tk_h3zj6i_1jtuioo dir dir-ltr"
+            autoplay=""
+            crossorigin="anonymous"
+            playsinline=""
+            preload="auto"
+            style="object-fit: cover"
+          >
+            <source
+              src="https://stream.media.muscache.com/H0101WTUG2qWbyFhy02jlOggSkpsM9H02VOWN52g02oxhDVM.mp4?v_q=high"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+      </div>
+      <div class="outline-button">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="sixFormGroup">
+    <ng-template matStepLabel>Amenities</ng-template>
+    <div class="container-step-six">
+      <div class="step-six">
+        <div id="word-six">
+          <div class="container">
+            <h2 class="title">Tell guests what your place has to offer</h2>
+            <div class="option-menu">
+              <button class="option">
+                <img src="/img/wi-fi-icon.png" alt="" />Wifi
+              </button>
+              <button class="option">
+                <img src="/img/monitor.png" alt="" />TV
+              </button>
+              <button class="option">
+                <img src="/img/kitchen.png" alt="" />Kitchen
+              </button>
+              <button class="option">
+                <img src="/img/wash.png" alt="" />Washer
+              </button>
+              <button class="option">
+                <img src="/img/free-parking.png" alt="" />Free parking on
+                premises
+              </button>
+              <button class="option">
+                <img src="/img/paid-parking-on-premises.png" alt="" />Paid
+                parking on premises
+              </button>
+              <button class="option">
+                <img src="/img/air-conditioner.png" alt="" />Air conditioning
+              </button>
+              <button class="option">
+                <img src="/img/dedicated-workspace.png" alt="" />Dedicated
+                workspace
+              </button>
+              <h2 class="title">Do you have any standout amenities?</h2>
+              <button class="option">
+                <img src="/img/gym.png" alt="" />Pool
+              </button>
+              <button class="option">
+                <img src="/img/hot-bath.png" alt="" />Hot tub
+              </button>
+              <button class="option">
+                <img src="/img/patio.png" alt="" />Patio
+              </button>
+              <button class="option">
+                <img src="/img/grill.png" alt="" />BBQ grill
+              </button>
+              <button class="option">
+                <img src="/img/outdoor-dining-area.png" alt="" />Outdoor dining
+                area
+              </button>
+              <button class="option">
+                <img src="/img/fire.png" alt="" />Fire pit
+              </button>
+              <button class="option">
+                <img src="/img/pool-table.png" alt="" />Pool table
+              </button>
+              <button class="option">
+                <img src="/img/fireplace.png" alt="" />Indoor fireplace
+              </button>
+              <button class="option">
+                <img src="/img/piano.png" alt="" />Piano
+              </button>
+              <button class="option">
+                <img src="/img/fitness.png" alt="" />Exercise equipment
+              </button>
+              <button class="option">
+                <img src="/img/pond.png" alt="" />Lake access
+              </button>
+              <button class="option">
+                <img src="/img/beach-access.png" alt="" />Beach access
+              </button>
+              <button class="option">
+                <img src="/img/ski-in-ski-out.png" alt="" />Ski-in/Ski-out
+              </button>
+              <button class="option">
+                <img src="/img/riad.png" alt="" />Outdoor shower
+              </button>
+              <h2 class="title">Do you have any of these safety items?</h2>
+              <button class="option">
+                <img src="/img/ryokan.png" alt="" />Smoke alarm
+              </button>
+              <button class="option">
+                <img src="/img/shepherds-hut.png" alt="" />First aid kit
+              </button>
+              <button class="option">
+                <img src="/img/tent.png" alt="" />Fire extinguisher
+              </button>
+              <button class="option">
+                <img src="/img/home.png" alt="" />Carbon monoxide alarm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="sixFormGroup">
+    <ng-template matStepLabel>Stand Out</ng-template>
+    <div class="container-step-five">
+      <div class="step-five">
+        <div id="word-five">
+          <h4>Step 2</h4>
+          <h1>
+            Make your place <br />
+            stand out
+          </h1>
+          <p>
+            In this step, you’ll add some of the amenities your place
+            <br />
+            offers, plus 5 or more photos. Then, you’ll create a title and the
+            <br />
+            description.
+          </p>
+        </div>
+        <div id="video-five">
+          <video
+            data-testid="video-player"
+            class="v186kq3t atm_9s_1ulexfb atm_e2_1osqo2v atm_vy_1osqo2v atm_tk_h3zj6i_1jtuioo dir dir-ltr"
+            autoplay=""
+            crossorigin="anonymous"
+            playsinline=""
+            preload="auto"
+            style="object-fit: cover"
+          >
+            <source
+              src="https://stream.media.muscache.com/H0101WTUG2qWbyFhy02jlOggSkpsM9H02VOWN52g02oxhDVM.mp4?v_q=high"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+      </div>
+      <div class="outline-button">
+        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-flat-button matStepperNext>Next</button>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="fiveFormGroup" optional>
+    <mat-step [formGroup]="fiveFormGroup">
       <ng-template matStepLabel></ng-template>
       <mat-form-field>
         <input
