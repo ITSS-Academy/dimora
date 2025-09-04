@@ -7,7 +7,7 @@ import {AsyncPipe, NgOptimizedImage} from '@angular/common';
 import {LoadingComponent} from '../../shared/components/loading/loading.component';
 import {ActivatedRoute} from '@angular/router';
 import * as AuthActions from '../../ngrx/actions/auth.actions';
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { ScheduleComponent } from './schedule/schedule.component';
 import { MaterialModule } from '../../shared/material.module';
@@ -29,12 +29,16 @@ import {DialogUpdateProfileComponent} from '../../shared/components/dialog-updat
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   profile = <AuthModel>{};
   currentProfile$ !: Observable<AuthModel>
+  idToken$ !: Observable<string>
+  mineProfile$ !: Observable<AuthModel>
   isLoading$ !: Observable<boolean>
   subscription: Subscription[] = [];
+  idToken: string = '';
+  mineProfile: AuthModel = <AuthModel>{};
   constructor(
     private activatedRoute: ActivatedRoute,
     private store: Store<{
@@ -49,6 +53,8 @@ export class ProfileComponent implements OnInit {
 
     this.currentProfile$ = this.store.select('auth','currentUser')
     this.isLoading$ = this.store.select('auth','isLoading')
+    this.idToken$ = this.store.select('auth','idToken')
+    this.mineProfile$ = this.store.select('auth','mineProfile')
   }
 
   ngOnInit() {
@@ -58,8 +64,22 @@ export class ProfileComponent implements OnInit {
           this.profile = profile;
         }
       }),
+      this.idToken$.subscribe(idToken => {
+        if (idToken) {
+          this.idToken = idToken;
+        }
+      }),
+      this.mineProfile$.subscribe(mineProfile => {
+        if (mineProfile.id) {
+          this.mineProfile = mineProfile;
+        }
+      })  
     )
 
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.forEach(subscription => subscription.unsubscribe());
   }
 
 
@@ -67,6 +87,7 @@ export class ProfileComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogUpdateProfileComponent, {
       data: {
         profile: this.profile,
+        idToken: this.idToken,
       },
       width: '400px'
     });

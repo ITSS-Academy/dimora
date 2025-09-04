@@ -1,6 +1,6 @@
 .carousel-container {
   position: relative;
-  width: 100vw; /* Toàn bộ chiều rộng viewport */
+  width: calc(100vw - 40px); /* Toàn bộ chiều rộng viewport */
   margin: 0 auto;
   overflow: hidden; /* Ẩn các phần tử tràn ra ngoài */
   padding: 20px;

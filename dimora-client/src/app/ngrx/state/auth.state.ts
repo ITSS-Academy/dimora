@@ -5,5 +5,6 @@ export interface AuthState {
   mineProfile: AuthModel;
   idToken: string;
   isLoading: boolean;
+  isUpdateProfile: boolean;
   error: any;
 }

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -64,9 +65,38 @@ export class AuthController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseInterceptors(FileInterceptor('avatar', {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+      files: 1 // Chỉ cho phép 1 file
+    },
+    fileFilter: (req, file, cb) => {
+      // Chỉ cho phép image files
+      if (file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+        cb(null, true);
+      } else {
+        cb(new HttpException(
+          'Only image files (jpg, jpeg, png, gif, webp) are allowed',
+          HttpStatus.BAD_REQUEST
+        ), false);
+      }
+    }
+  }))
+  async update(
+    @Param('id') id: string, 
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() avatar?: Express.Multer.File
+  ) {
     try {
-      return await this.authService.update(id, updateUserDto);
+      // Kiểm tra file size nếu có avatar
+      if (avatar && avatar.size > 5 * 1024 * 1024) {
+        throw new HttpException(
+          'Avatar file size must not exceed 5MB',
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      return await this.authService.update(id, updateUserDto, avatar);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

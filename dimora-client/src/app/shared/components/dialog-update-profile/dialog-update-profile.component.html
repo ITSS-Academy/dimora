@@ -21,19 +21,19 @@
 
   <!-- Info -->
   <form class="form-section" [formGroup]="profileForm">
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="outline">
       <mat-label>Full Name</mat-label>
-      <input matInput formControlName="full_name"  >
+      <input matInput formControlName="full_name" placeholder="Full Name" />
     </mat-form-field>
 
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
-      <input matInput formControlName="email"/>
+      <input matInput formControlName="email" placeholder="Email" />
     </mat-form-field>
 
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="outline">
       <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone"/>
+      <input matInput formControlName="phone" placeholder="Phone" />
     </mat-form-field>
   </form>
 </mat-dialog-content>

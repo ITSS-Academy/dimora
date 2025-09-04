@@ -13,7 +13,9 @@ import {Observable, Subscription} from 'rxjs';
 import * as AmenitiesActions from './ngrx/actions/amenities.actions';
 import { AmenitiesModel } from './models/amenities.model';
 import { AmenitiesState } from './ngrx/state/amenities.state';
-
+import { RoomState } from './ngrx/state/room.state';
+import * as RoomActions from './ngrx/actions/room.actions';
+  
 @Component({
   selector: 'app-root',
   imports: [ShareModule, MaterialModule, RouterOutlet, HeaderComponent],
@@ -31,11 +33,12 @@ export class AppComponent implements OnInit {
     private auth: Auth,
     private store:Store<{
     auth: AuthState,
-    amenities: AmenitiesState
+    amenities: AmenitiesState,
+    room: RoomState
   }>) {
     this.currentUser$ = this.store.select('auth', 'currentUser');
     this.store.dispatch(AmenitiesActions.getAllAmenities());
-
+    this.store.dispatch(RoomActions.getRoomList());
     this.amenities$ = this.store.select('amenities', 'amenities');
     // Initialization logic can go here if needed
     this.auth.onAuthStateChanged(async (auth:any) =>{
