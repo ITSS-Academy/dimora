@@ -25,10 +25,10 @@ export class CreatePostComponent {
     fourCtrl: ['', Validators.required],
   });
   fiveFormGroup = this._formBuilder.group({
-    fourCtrl: ['', Validators.required],
+    fiveCtrl: ['', Validators.required],
   });
   sixFormGroup = this._formBuilder.group({
-    fourCtrl: ['', Validators.required],
+    sixCtrl: ['', Validators.required],
   });
   selectedType: string = '';
   selectType(type: string) {
