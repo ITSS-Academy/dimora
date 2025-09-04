@@ -9,14 +9,14 @@ body {
 /* Container chính */
 .container {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 20px auto ;
 }
 
 /* Tiêu đề */
 .container .title {
   font-size: 22px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
 }
 
 /* Gallery */
@@ -66,7 +66,7 @@ body {
 .host-section {
   margin-top: 25px;
   padding: 18px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 10px;
   background: #fafafa;
 }
@@ -538,7 +538,7 @@ body {
 .add-comment {
   margin-top: 20px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid #fff;
   border-radius: 8px;
   background: #fff;
 
@@ -567,7 +567,7 @@ body {
         width: 100%;
         min-height: 80px;
         padding: 8px;
-        border: 1px solid #ccc;
+        border: 1px solid #ffffff;
         border-radius: 6px;
         resize: vertical;
         margin-bottom: 10px;
@@ -576,7 +576,7 @@ body {
       .submit-btn {
         align-self: flex-end;
         background: #ff385c;
-        color: #fff;
+        color: #ffffff;
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
@@ -593,7 +593,7 @@ body {
 .add-comment {
   margin: 40px 0;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 10px;
 
   h3 {
@@ -631,7 +631,7 @@ body {
 
         label {
           font-size: 24px;
-          color: #ccc;
+          color: #debfbf;
           cursor: pointer;
           transition: color 0.2s;
         }
@@ -648,7 +648,7 @@ body {
         width: 100%;
         min-height: 80px;
         padding: 10px;
-        border: 1px solid #ddd;
+        border: 1px solid #dddddd;
         border-radius: 6px;
         font-size: 14px;
         resize: vertical;
@@ -671,4 +671,18 @@ body {
       }
     }
   }
+}
+/* Ẩn thanh scroll bar nhưng vẫn cuộn được */
+.reviews {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+}
+
+.reviews::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+/* Sắp xếp comment mới nhất -> cũ nhất */
+.reviews {
+  display: flex;
+  flex-direction: column-reverse;
 }
