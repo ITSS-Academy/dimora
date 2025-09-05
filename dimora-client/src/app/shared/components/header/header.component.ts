@@ -111,22 +111,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    
-
     let searchData: SearchModel = {} as SearchModel;
 
-    // Format dates to yyyy-mm-dd string
-    if(this.range.value.location){
+    // Check if we have location from form or from searchData (when navigating from other pages)
+    const location = this.range.value.location || this.searchData?.location;
+    
+    if(location){
       const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
       const formattedEndDate = this.formatDateToString(this.range.value.end || null);
-
       
       let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
 
-      // Normalize location - remove Vietnamese accents and spaces
-
       this.searchData = {
-        location: this.range.value.location,
+        location: location,
         checkIn: formattedStartDate,
         checkOut: formattedEndDate,
         guests: Number(newValueGuests),
@@ -134,23 +131,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
         maxPrice: 0,
       };
 
-    
-    this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
-    // Navigate to search page with query parameters
-    this.router.navigate(['/search'], {
-      queryParams: {
-        location: this.searchData.location,
-        checkIn: this.searchData.checkIn,
-        checkOut: this.searchData.checkOut,
-        guests: this.searchData.guests
-      }
-    });
+      this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
+      
+      // Navigate to search page with query parameters
+      this.router.navigate(['/search'], {
+        queryParams: {
+          location: this.searchData.location,
+          checkIn: this.searchData.checkIn,
+          checkOut: this.searchData.checkOut,
+          guests: this.searchData.guests
+        }
+      });
 
-    }else{
+    } else {
       this.snackBar.showAlert('Please select a location', 'error', 3000, 'right','top');
     }
-
-
   }
 
   normalizeText(text: string): string {
@@ -178,27 +173,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onFormKeyDown(event: KeyboardEvent) {
-    // Chặn phím Enter để ngăn form submit
-    if (!this.range.value.location && event.key === 'Enter') {
-      
+    if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-    }else if(this.range.value.location && event.key === 'Enter'){
-      // Navigate to search page with query parameters
-      let today = new Date();
-      const formattedStartDate = this.formatDateToString(this.range.value.start || today);
-      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
-      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
-      const normalizedLocation = this.normalizeText(this.range.value.location);
-
-      this.router.navigate(['/search'], {
-        queryParams: {
-          location: this.range.value.location,
-          checkIn: formattedStartDate,
-          checkOut: formattedEndDate,
-          guests: Number(newValueGuests)
-        }
-      });
+      
+      // Use setTimeout to ensure form value is updated
+      setTimeout(() => {
+        this.onSearch();
+      }, 0);
     }
   }
 

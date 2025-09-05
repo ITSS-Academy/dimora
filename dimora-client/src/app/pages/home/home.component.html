@@ -15,15 +15,15 @@
   <div class="nav-buttons" *ngIf="getRoomsForCarousel(0).length > 0">
     <div class="place">
       {{ getCityNameForCarousel(0) }}
-      <mat-icon>chevron_right</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
     </div>
 
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scroll('left')" [disabled]="currentPosition === 0">
-      <mat-icon>chevron_left</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
     </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scroll('right')" [disabled]="currentPosition >= maxPosition">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
   </div>
@@ -35,13 +35,13 @@
 
 
   <div class="nav-buttons" *ngIf="getRoomsForCarousel(1).length > 0">
-    <div class="place">{{ getCityNameForCarousel(1) }} <mat-icon>chevron_right</mat-icon></div>
+    <div class="place">{{ getCityNameForCarousel(1) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollSecond('left')" [disabled]="currentPositionSecond === 0">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
       </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollSecond('right')" [disabled]="currentPositionSecond >= maxPositionSecond">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
   </div>
@@ -54,13 +54,13 @@
 
 
 <div class="nav-buttons" *ngIf="getRoomsForCarousel(2).length > 0">
-  <div class="place">{{ getCityNameForCarousel(2) }} <mat-icon>chevron_right</mat-icon></div>
+  <div class="place">{{ getCityNameForCarousel(2) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
   <div class="director-buttons">
     <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollThird('left')" [disabled]="currentPositionThird === 0">
-      <mat-icon>chevron_left</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
     </button>
     <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollThird('right')" [disabled]="currentPositionThird >= maxPositionThird">
-      <mat-icon>chevron_right</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
     </button>
   </div>
 </div>
@@ -72,13 +72,13 @@
 
 
   <div class="nav-buttons" *ngIf="getRoomsForCarousel(3).length > 0">
-    <div class="place">{{ getCityNameForCarousel(3) }} <mat-icon>chevron_right</mat-icon></div>
+    <div class="place">{{ getCityNameForCarousel(3) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollFourth('left')" [disabled]="currentPositionFourth === 0">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
       </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollFourth('right')" [disabled]="currentPositionFourth >= maxPositionFourth">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
   </div>

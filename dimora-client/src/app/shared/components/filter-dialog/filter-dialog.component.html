@@ -2,7 +2,7 @@
   <div class="filter-header">
     <h2 mat-dialog-title>Bộ lọc tìm kiếm</h2>
     <button  mat-icon-button mat-dialog-close class="close-button">
-      <mat-icon>close</mat-icon>
+      <mat-icon class="material-symbols-rounded">close</mat-icon>
     </button>
   </div>
 
@@ -70,7 +70,7 @@
             [formControlName]="amenity.id.toString()" 
             class="amenity-checkbox">
             <div class="amenity-checkbox-content">
-              <mat-icon>{{amenity.icon_name}}</mat-icon>
+              <mat-icon class="material-symbols-rounded">{{amenity.icon_name}}</mat-icon>
               <span>{{amenity.name}}</span>
             </div>
           </mat-checkbox>
@@ -94,11 +94,11 @@
 
   <mat-dialog-actions class="filter-actions">
     <button mat-button (click)="clearFilters()" class="clear-button">
-      <mat-icon>clear_all</mat-icon>
+      <mat-icon class="material-symbols-rounded">clear_all</mat-icon>
       Xóa bộ lọc
     </button>
     <button mat-raised-button color="primary" (click)="applyFilters()" class="apply-button">
-      <mat-icon>filter_list</mat-icon>
+      <mat-icon class="material-symbols-rounded">filter_list</mat-icon>
       Áp dụng
     </button>
   </mat-dialog-actions>
