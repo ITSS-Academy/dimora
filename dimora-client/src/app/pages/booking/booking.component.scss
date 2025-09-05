@@ -4,14 +4,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
 }
 
 
 .total-outline{
   width: 80%;
   height: 100%;
-  background-color: #ffffff;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -27,7 +25,6 @@
     display: flex;
     flex-direction: column;
     height: fit-content;
-    background-color: #ffffff;
     margin-top: 50px;
     border-radius: 20px;
     border: 0.5px solid var(--outline);
@@ -105,24 +102,24 @@
 
 .right-outline{
   height: 100%;
-  width: 500px;
-  background-color: white;
+  width: fit-content;
+  background-color: rgba(60, 56, 56, 0);
   .booking-confirm{
     display: flex;
     flex-direction: column;
-    height: 850px;
-    gap: 0px;
-    background-color: #ffffff;
+    height: fit-content;
     margin-top: 50px;
     border-radius: 20px;
     border: 0.5px solid var(--outline);
+    padding: 20px;
+    gap: 20px;
 
   }
 }
 
 .hotel-information{
-  height: 100px;
-  width: 500px;
+  height: 100%;
+  width: 100%;
   background-color: rgba(60, 56, 56, 0);
   display: flex;
   flex-direction: row;
@@ -135,79 +132,71 @@
   .name{
     font-size: 30px;
     font-weight: 600;
-    margin-top: 20px;
-    margin-left: 20px;
   }
   .location{
     font-size: 16px;
     font-weight: 500;
-    margin-left: 24px;
   }
 }
 
 .star{
   display: flex;
   flex-direction: row;
-  margin-top: 20px;
-  margin-left: 80px;
-  gap: 2px;
 }
 
 .hotel-image{
-  width: 460px;
-  height: auto;
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
 }
 
 .hotel-image-container{
-  margin-top: 20px;
-  margin-left: 20px;
-  width: 460px;
-  height: 250px;
-  border-radius: 20px;
+  width: 500px;
+  height: auto;
   overflow: hidden;
+  border-radius: 16px;
 }
 
 .first-line{
-  width: 400px;
-  height: 0.3px;
-  background-color: black;
-  margin-top: 0px;
+  width: 100%;
+  height: 0.1px;
+  background-color: var(--outline);
+  margin:0px;
 }
 
 .first-line-container{
-  justify-content: center;
   display: flex;
   width: 100%;
-  height: 10px;
-  margin-top: 30px;
 }
 
 .time-container{
-  width: 400px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   .left-time-container{
-    width: 160px;
+    width: fit-content;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: start;
     h4{
-      margin-bottom: 10px;
+      margin-bottom: 0px;
       margin-top: 0px;
     }
   }
 
   .right-time-container{
-    width: 160px;
+    width: fit-content;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: start;
     h4{
-      margin-bottom: 10px;
+      margin-bottom: 0px;
       margin-top: 0px;
     }
   }
@@ -215,74 +204,64 @@
 
 .bottom{
   display: flex;
-  justify-content: center;
 }
 
-.second-line{
-  width: 400px;
-  height: 0.3px;
-  background-color: black;
-  margin-top: 0px;
-}
 
-.second-line-container{
-  justify-content: center;
-  display: flex;
-  width: 100%;
-  height: 10px;
-  margin-top: 10px;
-}
 
 .people-number{
-  width: 500px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  gap: 40px;
-  .left-people-number{
-    width: 180px;
-    height: 100%;
-    justify-content: flex-start;
+  .number-title{
+    margin: 0px;
+  }
+ 
+  .chip-set{
     display: flex;
-    flex-direction: column;
-    .number-title{
-      margin-left: 0px;
-      margin-top:0px ;
-      margin-bottom: 10px;
+    flex-direction: row;
+    gap: 10px;
+    .right-people-number{
+      width: fit-content;
+      height: 100%;
+      justify-content: flex-start;
+      display: flex;
+      flex-direction: column;
+     
     }
   }
-  .right-people-number{
-    width: 180px;
-    height: 100%;
-    justify-content: flex-start;
-    display: flex;
-    flex-direction: column;
-    .kids{
-      margin-top: 32px;
-    }
-  }
+ 
 }
 
 .cost-information{
-  width: 500px;
-  height: 200px;
+  width: 100%;
+  height: fit-content;
   display: flex;
-  justify-content: center;
-  .cost-detail{
-    width: 400px;
-    height: 200px;
-    h5{
-      margin-top: 0px;
-      margin-bottom: 10px;
-    }
-    h3{
-      margin: 0px;
-    }
-    h1{
-      margin-top: 5px;
-      font-size: 20px;
-      color: #cc2020;
-    }
+  flex-direction: row;
+  justify-content: space-between;
+  .cost-detail-left{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+  gap: 10px;
+
   }
+  .cost-detail-right{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: center;
+  gap: 10px;
+
+    
+  }
+  h4{
+    margin: 0px;
+  }
+  h3{
+    margin: 0px;
+  }
+
 }

@@ -12,7 +12,7 @@ import * as RoomActions from '../../ngrx/actions/room.actions';
 import { NgIf } from '@angular/common';
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule, CardComponent, MapComponent,NgIf],
+  imports: [MaterialModule, CardComponent,NgIf],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

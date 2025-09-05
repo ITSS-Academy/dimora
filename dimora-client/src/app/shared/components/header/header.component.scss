@@ -4,11 +4,11 @@
 .airbnb-header {
   background-color: white;
   color: black;
-  height: 80px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 30px;
   box-shadow: none;
   border-bottom: 1px solid #ddd;
 
@@ -16,7 +16,7 @@
     flex: 0 0 auto;
     cursor: pointer;
     .logo-img {
-      height: 40px;
+      height: 35px;
     }
   }
 
@@ -45,17 +45,15 @@
       align-items: center;
       background-color: var(--surface-container);
       border: 1px solid #ddd;
-      border-radius: 40px;
-      height: 66px;
+      border-radius: 30px;
+      height: 56px;
       width: 100%;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
       padding: 0 8px;
     }
 
     // Styles for search page
     &.search-page {
       max-width: 950px; // Slightly wider on search page
-      
       
     }
   }
@@ -84,6 +82,9 @@
 
       mat-icon {
         color: var(--on-surface);
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
       }
     }
 
@@ -198,6 +199,38 @@ mat-form-field {
   --mdc-outlined-text-field-focus-outline-color: transparent;
   --mdc-outlined-text-field-outline-width: 0px 1px 0px 0px;
   --mdc-outlined-text-field-focus-outline-width: 0px;
+  
+  // Reduce form field height
+  ::ng-deep .mat-mdc-form-field-flex {
+    height: 40px !important;
+  }
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    height: 40px !important;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 40px !important;
+    padding: 8px 0 !important;
+  }
+  
+  ::ng-deep .mat-mdc-input-element {
+    font-size: 14px !important;
+  }
+}
+
+// Search button styles
+.search-button {
+  height: 40px !important;
+  min-width: 80px !important;
+  font-size: 14px !important;
+  
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 4px !important;
+  }
 }
 
 ::ng-deep .mat-mdc-autocomplete-panel {
