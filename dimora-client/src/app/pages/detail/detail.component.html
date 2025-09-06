@@ -1,7 +1,9 @@
 @if(isLoading$ | async) {
   <app-loading></app-loading>
 } @else {
-  @if(roomData$|async; as room) {
+  @if(roomData$ | async; as room) {
+    @if(currentUser$ | async; as currentUser) {
+    @if(room?.id) {
     <div class="container">
       <div class="title">{{room.title}}</div>
     
@@ -25,10 +27,9 @@
           <!-- Host Section -->
           <div class="host-section">
             <div class="host-info">
-              <img src="https://via.placeholder.com/50" alt="Host" class="host-avatar">
+              <img [src]="currentUser.avatar_url" alt="Host" class="host-avatar" referrerpolicy="no-referrer">
               <div>
-                <p><strong>Host: Baileys Ho</strong></p>
-                <p class="subtext">Superhost · 11 tháng kinh nghiệm đón tiếp khách</p>
+                <p><strong>Host: {{currentUser.full_name}}</strong></p>
               </div>
             </div>
           </div>
@@ -63,13 +64,13 @@
             </div>
           </div>
         </div>
-    
+
         <!-- Booking -->
         <div class="booking-container">
           <form [formGroup]="bookingForm" (ngSubmit)="onBookRoom()">
             <div class="price-section">
-              <h2 *ngIf="totalNights > 0 && totalPrice > 0">{{ formatPrice(totalPrice) }}đ</h2>
-              <h2 *ngIf="totalNights === 0 && room.price_per_night">{{ formatPrice(room.price_per_night) }}đ</h2>
+              <h2 *ngIf="totalNights > 0 && totalPrice > 0">{{ formatPrice(totalPrice) }} VNĐ</h2>
+              <h2 *ngIf="totalNights === 0 && room.price_per_night">{{ formatPrice(room.price_per_night) }} VNĐ</h2>
               <p *ngIf="totalNights > 0">cho {{ totalNights }} đêm</p>
               <p *ngIf="totalNights === 0">cho 1 đêm</p>
             </div>
@@ -152,19 +153,18 @@
     
     
     <!-- Modal hiển thị thêm ảnh -->
-    <div id="photoModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Thư viện ảnh</h2>
-          <span class="modal-close" id="closeModal">&times;</span>
-        </div>
-        <div class="gallery-modal">
-          <div class="gallery-grid">
-            <!-- ảnh như bạn đã dán -->
-          </div>
-        </div>
-      </div>
+    
+    <!-- Map Section -->
+    <div class="map-section">
+      <h3>Vị trí</h3>
+      <app-map 
+        [latitude]="room.latitude" 
+        [longitude]="room.longitude"
+        [zoom]="15"
+        >
+      </app-map>
     </div>
+
     <div class="reviews">
       <!-- Review 1 -->
       <div class="review-item">
@@ -243,16 +243,23 @@
       </div>
     </div>
     <!-- Add Comment Section -->
+    @if(mineProfile$ | async; as mineProfile) {
+      @if(mineProfile.id) {
+
     <div class="add-comment">
-      <h3>Thêm comments của bạn vào</h3>
       <div class="comment-box">
         <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
         <div class="input-area">
           <!-- Rating stars -->
           <!-- Textarea -->
-          <textarea placeholder="Viết đánh giá của bạn..."></textarea>
-          <button class="submit-btn">Gửi</button>
-          <div class="rating">
+          <mat-form-field appearance="outline" class="comment-textarea">
+            <mat-label>Viết đánh giá của bạn...</mat-label>
+            <textarea matInput rows="2" style="resize: none; overflow-y: auto;"></textarea>
+            <button mat-icon-button matSuffix class="send-btn">
+              <mat-icon>send</mat-icon>
+            </button>
+          </mat-form-field>
+          <!-- <div class="rating">
             <input type="radio" id="star5" name="rating" value="5">
             <label for="star5" title="5 sao">★</label>
             <input type="radio" id="star4" name="rating" value="4">
@@ -263,11 +270,22 @@
             <label for="star2" title="2 sao">★</label>
             <input type="radio" id="star1" name="rating" value="1">
             <label for="star1" title="1 sao">★</label>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
+  }
+  }
+
     </div>
+    } @else {
+      <app-not-found></app-not-found>
+    }
+    } @else {
+      <app-not-found></app-not-found>
+    }
+  } @else {
+    <app-not-found></app-not-found>
   }
   
   

@@ -11,8 +11,15 @@ export class BookingService {
   constructor(private http: HttpClient) { }
 
   getBooking(hostId: string, idToken: string) {
-    console.log(hostId, idToken)
-    return this.http.get<BookingModel[]>(`${environment.apiUrl}bookings/host/${hostId}`, {
+    return this.http.get<BookingModel[]>(`${environment.apiUrl}bookings/user/${hostId}`, {
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+  }
+
+  createBooking(booking: BookingModel, idToken: string) {
+    return this.http.post<BookingModel>(`${environment.apiUrl}bookings`, booking, {
       headers: {
         Authorization: `Bearer ${idToken}`
       }

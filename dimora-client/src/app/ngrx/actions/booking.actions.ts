@@ -14,4 +14,20 @@ export const getBookingSuccess = createAction(
 export const getBookingFailure = createAction(
     '[Booking] Get Booking Failure',
     props<{error: any}>()
-)   
+)
+
+
+export const createBooking = createAction(
+    '[Booking] Create Booking',
+    props<{booking: BookingModel, idToken: string}>()
+)
+
+export const createBookingSuccess = createAction(
+    '[Booking] Create Booking Success',
+    props<{booking: BookingModel}>()
+)
+
+export const createBookingFailure = createAction(
+    '[Booking] Create Booking Failure',
+    props<{error: any}>()
+)

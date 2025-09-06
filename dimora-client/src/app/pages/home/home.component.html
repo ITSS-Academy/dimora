@@ -1,3 +1,6 @@
+@if(isLoading$ | async){
+  <app-loading></app-loading>
+}@else{
 
 <!--<app-loading></app-loading>-->
 
@@ -91,3 +94,5 @@
   <!-- <app-map [latitude]="11.9404" [longitude]="108.4583"></app-map> -->
 
 </div>
+
+}

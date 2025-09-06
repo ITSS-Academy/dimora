@@ -38,7 +38,6 @@ export class AppComponent implements OnInit {
   }>) {
     this.currentUser$ = this.store.select('auth', 'currentUser');
     this.store.dispatch(AmenitiesActions.getAllAmenities());
-    this.store.dispatch(RoomActions.getRoomList());
     this.amenities$ = this.store.select('amenities', 'amenities');
     // Initialization logic can go here if needed
     this.auth.onAuthStateChanged(async (auth:any) =>{

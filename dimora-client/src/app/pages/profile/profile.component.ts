@@ -48,8 +48,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
   idToken: string = '';
   mineProfile: AuthModel = <AuthModel>{};
-  bookingList: BookingModel[] = [];
-  bookingList$ !: Observable<BookingModel[]>
   userId: string = '';
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -69,7 +67,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isLoading$ = this.store.select('auth','isLoading')
     this.idToken$ = this.store.select('auth','idToken')
     this.mineProfile$ = this.store.select('auth','mineProfile')
-    this.bookingList$ = this.store.select('booking','bookingList')
   }
 
   ngOnInit() {
@@ -91,11 +88,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.mineProfile = mineProfile;
         }
       }),
-      this.bookingList$.subscribe(bookingList => {
-        if (bookingList) {
-          this.bookingList = bookingList;
-        }
-      }),
+      
     )
 
   }

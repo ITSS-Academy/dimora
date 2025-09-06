@@ -5,6 +5,7 @@ import * as BookingActions from '../actions/booking.actions'
 
 export const initialState: BookingState = {
     bookingList: <BookingModel[]>[],
+    bookingDetail: <BookingModel>{},
     isLoading: false,
     error: null
 }
@@ -32,6 +33,34 @@ export const bookingReducer = createReducer(
     }),
 
     on(BookingActions.getBookingFailure, (state,{type,error}) => {
+        console.log(type)
+        return {
+            ...state,
+            isLoading: false,
+            error: error
+        }
+    }),
+
+    on(BookingActions.createBooking, (state,{type}) => {
+        console.log(type)
+        return {
+            ...state,
+            isLoading: true,
+            error: null
+        }
+    }),
+
+    on(BookingActions.createBookingSuccess, (state,{type,booking}) => {
+        console.log(type)
+        return {
+            ...state,
+            bookingDetail: booking,
+            isLoading: false,
+            error: null
+        }
+    }),
+
+    on(BookingActions.createBookingFailure, (state,{type,error}) => {
         console.log(type)
         return {
             ...state,

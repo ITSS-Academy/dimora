@@ -24,7 +24,6 @@ export class BookingsController {
     try {
       
       // Validate DTO
-      
       // Use user_id from DTO if provided, otherwise use default
       const userId = createBookingDto.user_id || '';
       console.log('👤 [BOOKING CONTROLLER] Using user ID:', userId);

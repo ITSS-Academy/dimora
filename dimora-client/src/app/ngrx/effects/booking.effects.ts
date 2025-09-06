@@ -16,3 +16,16 @@ export const bookingEffects = createEffect(
     {functional: true}
 
 )
+
+export const createBookingEffects = createEffect(
+    (actions$ = inject(Actions), bookingService = inject(BookingService)) => {
+        return actions$.pipe(
+            ofType(BookingActions.createBooking),
+            switchMap((action) => bookingService.createBooking(action.booking, action.idToken).pipe(
+                map((booking) => BookingActions.createBookingSuccess({booking})),
+                catchError((error) => of(BookingActions.createBookingFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)

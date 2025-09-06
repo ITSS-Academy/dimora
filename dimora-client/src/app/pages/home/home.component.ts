@@ -9,10 +9,11 @@ import { RoomState } from '../../ngrx/state/room.state';
 import { RoomModel } from '../../models/room.model';
 import { MapComponent } from "../../shared/components/map/map.component";
 import * as RoomActions from '../../ngrx/actions/room.actions';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule, CardComponent,NgIf],
+  imports: [MaterialModule, CardComponent,NgIf, LoadingComponent, AsyncPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

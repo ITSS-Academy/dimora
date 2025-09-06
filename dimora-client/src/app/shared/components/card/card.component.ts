@@ -19,7 +19,11 @@ constructor(private router: Router) {}
   }
 
   navigateToDetail(id: string) {
-    this.router.navigate(['/detail', id]);
+    this.router.navigate(['/detail', id], {
+      queryParams: {
+        hostId: this.hotel.host_id
+      }
+    });
   }
 
 }

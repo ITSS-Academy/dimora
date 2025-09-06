@@ -7,19 +7,23 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import * as RoomActions from '../../ngrx/actions/room.actions';
+import * as AuthActions from '../../ngrx/actions/auth.actions';
+import { AuthState } from '../../ngrx/state/auth.state';
 import { RoomState } from '../../ngrx/state/room.state';
 import { Store } from '@ngrx/store';
-import { AuthState } from '../../ngrx/state/auth.state';
 import { BookingState } from '../../ngrx/state/booking.state';
 import { Observable, Subscription } from 'rxjs';
 import { RoomModel } from '../../models/room.model';
 import { LoadingComponent } from "../../shared/components/loading/loading.component";
 import { SnackbarService } from '../../services/snackbar/snackbar.service';
+import { AuthModel } from '../../models/auth.model';
+import { NotFoundComponent } from "../not-found/not-found.component";
+import { MapComponent } from "../../shared/components/map/map.component";
 
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule, LoadingComponent],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule, LoadingComponent, NotFoundComponent, MapComponent],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
   providers: [provideNativeDateAdapter()]
@@ -29,11 +33,14 @@ export class DetailComponent implements OnInit, OnDestroy {
   @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
 
   roomId: string | null = null;
+  hostId: string | null = null;
   roomData: any;
 
   roomData$ !: Observable<RoomModel>;
   isLoading$ !: Observable<boolean>;
   subscription: Subscription[] = [];
+  currentUser$ !: Observable<AuthModel>;
+  mineProfile$ !: Observable<AuthModel>;
   
   // Form for booking
   bookingForm = new FormGroup({
@@ -67,9 +74,22 @@ export class DetailComponent implements OnInit, OnDestroy {
         if (this.roomId) {
           this.store.dispatch(RoomActions.getRoomById({id: this.roomId}));
         }
+      }
+    });
 
-        // Fake data (sau này thay bằng API)
-        this.roomData = {
+    this.route.queryParams.subscribe(queryParams => {
+      if (queryParams['hostId']) {
+        this.hostId = queryParams['hostId'];
+        if (this.hostId) {
+          this.store.dispatch(AuthActions.getUserById({id: this.hostId}));
+        }
+
+        console.log('Host ID:', this.hostId);
+      }
+    });
+
+    // Fake data (sau này thay bằng API)
+    this.roomData = {
           title: 'Studio và bồn tắm trong rừng | Bếp riêng, Ban công',
           images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-1353653864064161285/original/736f6de3-2004-4bab-b151-074c43995dd1.jpeg?im_w=720',
@@ -106,22 +126,25 @@ export class DetailComponent implements OnInit, OnDestroy {
             }
           ]
         };
-      }
-    });
 
     this.roomData$ = this.store.select('room', 'roomDetail');
     this.isLoading$ = this.store.select('room', 'isLoading');
+    this.currentUser$ = this.store.select('auth', 'currentUser');
+    this.mineProfile$ = this.store.select('auth', 'mineProfile');
   }
 
   ngOnInit(): void {
     this.updateGuestsDisplay();
     this.subscription.push(
       this.roomData$.subscribe(roomData => {
-        if (roomData) {
+        if (roomData && roomData.id === this.roomId) {
           console.log('Room data:', roomData);
           this.roomData = roomData;
           // Recalculate price when room data is loaded
           this.calculateTotalPrice();
+        } else if (roomData === null && this.roomId) {
+          // Room not found, redirect to not-found page
+          this.router.navigate(['/not-found']);
         }
       })
     );
@@ -250,9 +273,12 @@ export class DetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/booking'], {
       queryParams: {
         roomId: this.roomId,
+        hostId: this.hostId,
         checkIn: checkInDate,
         checkOut: checkOutDate,
-        guests: totalGuests,
+        adults: this.adults,
+        children: this.children,
+        infants: this.infants,
         totalAmount: this.totalPrice || this.roomData?.price_per_night
       }
     });
