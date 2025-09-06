@@ -30,9 +30,33 @@ export class AuthService {
   }
 
 
-
   getUserById(userId: string) {
     return this.http.get<AuthModel>(`${environment.apiUrl}users/${userId}`);
+  }
+
+  updateProfile(profileForm: any, idToken: string) {
+    const formData = new FormData();
+    console.log(profileForm);
+    
+    // Add all form values to FormData
+    Object.keys(profileForm).forEach(key => {
+      const value = profileForm[key];
+      if (value !== null && value !== undefined) {
+        if (key === 'avatar' && value instanceof File) {
+          // File avatar với key "avatar"
+          formData.append('avatar', value);
+        } else {
+          // Các field khác
+          formData.append(key, value.toString());
+        }
+      }
+    });
+    
+    return this.http.patch<AuthModel>(`${environment.apiUrl}users/${profileForm.id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
   }
 
 }

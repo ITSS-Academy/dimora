@@ -789,7 +789,6 @@ export class RoomsService {
       .from('amenities')
       .select('*');
 
-    console.log('data', data);
     if (error) {
       throw new HttpException(
         `Failed to fetch amenities: ${error.message}`,

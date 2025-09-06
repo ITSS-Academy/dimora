@@ -3,6 +3,10 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MaterialModule} from '../../material.module';
 import {FormControl, FormGroup, FormsModule, Validators} from '@angular/forms';
 import {ShareModule} from '../../share.module';
+import * as AuthActions from '../../../ngrx/actions/auth.actions';
+import { Store } from '@ngrx/store';
+import { AuthState } from '../../../ngrx/state/auth.state';
+import { SnackbarService } from '../../../services/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-dialog-update-profile',
@@ -13,8 +17,12 @@ import {ShareModule} from '../../share.module';
 export class DialogUpdateProfileComponent {
   data = inject(MAT_DIALOG_DATA);
   profile: any;
-
-  constructor() {
+  constructor(
+    private snackbar: SnackbarService,
+    private store: Store<{
+      auth: AuthState,
+    }>
+  ) {
   console.log(this.data.profile);
   }
 
@@ -39,15 +47,21 @@ export class DialogUpdateProfileComponent {
   }
 
   saveProfile() {
-    const updatedProfile = {
-      full_name: this.profileForm.value.full_name || this.data.profile.full_name,
-      email: this.profileForm.value.email || this.data.profile.email,
-      phone: this.profileForm.value.phone || this.data.profile.phone,
-      avatar: this.profileForm.value.avatar || this.data.profile.avatar_url,
-    };
+    if (this.profileForm.valid) {
+      const updatedProfile = {
+        id: this.data.profile.id,
+        full_name: this.profileForm.value.full_name || this.data.profile.full_name,
+        email: this.profileForm.value.email || this.data.profile.email,
+        phone: this.profileForm.value.phone || this.data.profile.phone,
+        avatar: this.profileForm.value.avatar || this.data.profile.avatar_url,
+      };
+    console.log('Profile sau khi save:', updatedProfile);
+      this.store.dispatch(AuthActions.updateProfile({profile: updatedProfile, idToken: this.data.idToken}));
+    }else{
+      this.snackbar.showAlert('Please fill all fields', 'error', 3000, 'right', 'top');
+    }
 
     // TODO: gọi API update
-    console.log('Profile sau khi save:', updatedProfile);
   }
 
   profileForm = new FormGroup({

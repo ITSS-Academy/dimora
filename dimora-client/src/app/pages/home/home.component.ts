@@ -1,44 +1,58 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MaterialModule} from '../../shared/material.module';
-import * as AuthActions from '../../ngrx/actions/auth.actions';
 import {AuthState} from '../../ngrx/state/auth.state';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {AuthModel} from '../../models/auth.model';
-import {LoadingComponent} from '../../shared/components/loading/loading.component';
 import {CardComponent} from '../../shared/components/card/card.component';
+import { RoomState } from '../../ngrx/state/room.state';
+import { RoomModel } from '../../models/room.model';
+import { MapComponent } from "../../shared/components/map/map.component";
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule, CardComponent],
+  imports: [MaterialModule, CardComponent, MapComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('carouselFirstTrack') carouselFirstTrack!: ElementRef;
   @ViewChild('carouselSecondTrack') carouselSecondTrack!: ElementRef;
   @ViewChild('carouselThirdTrack') carouselThirdTrack!: ElementRef;
   @ViewChild('carouselFourthTrack') carouselFourthTrack!: ElementRef;
 
-   currentPosition: number = 0;
-   currentPositionSecond: number = 0;
-   currentPositionThird: number = 0;
+  currentPosition: number = 0;
+  currentPositionSecond: number = 0;
+  currentPositionThird: number = 0;
   currentPositionFourth: number = 0;
-  currentUser$!: Observable<AuthModel>;
 
-   maxPosition: number = 0;
-   maxPositionSecond: number = 0;
-   maxPositionThird: number = 0;
-   maxPositionFourth: number = 0;
-  idToken: string = '';
+
+  currentUser$!: Observable<AuthModel>;
+  roomList$!: Observable<RoomModel[]>;
+  isLoading$!: Observable<boolean>;
   idToken$ !: Observable<string>
+  idToken: string = '';
+  subscriptions: Subscription[] = [];
+  
+
+
+
+
+  maxPosition: number = 0;
+  maxPositionSecond: number = 0;
+  maxPositionThird: number = 0;
+  maxPositionFourth: number = 0;
+  
   constructor(
     private store: Store<{
-      auth: AuthState
+      auth: AuthState,
+      room: RoomState
     }>,
   ) {
 
     this.idToken$ = this.store.select('auth', 'idToken');
     this.currentUser$ = this.store.select('auth', 'currentUser')
+    this.roomList$ = this.store.select('room', 'roomList');
+    this.isLoading$ = this.store.select('room', 'isLoading');
   }
 
 
@@ -98,18 +112,21 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit() {
+    this.subscriptions.push(
     this.idToken$.subscribe((idToken: string) => {
       if (idToken) {
         console.log('ID Token:', idToken);
         this.idToken = idToken;
-      }
-    });
+        }
+      }),
 
-    this.currentUser$.subscribe((user: AuthModel) => {
-      if (user.id) {
-        console.log('Current User:', user);
+    this.roomList$.subscribe((roomList: RoomModel[]) => {
+      if (roomList && roomList.length > 0) {
+        console.log('Room List:', roomList);
       }
-    })
+    }),
+  )
+
     setTimeout(() => {
       this.updateAllMaxPositions();
       window.addEventListener('resize', this.updateAllMaxPositions.bind(this));
@@ -129,7 +146,7 @@ export class HomeComponent implements OnInit {
   updateMaxPosition(carouselType: 'first' | 'second' | 'third' | 'fourth') {
     let track: ElementRef;
     let maxPosition: number;
-    
+
     switch(carouselType) {
       case 'first':
         track = this.carouselFirstTrack;
@@ -153,23 +170,23 @@ export class HomeComponent implements OnInit {
 
     const trackElement = track.nativeElement;
     const cards = trackElement.querySelectorAll('app-card');
-    
+
     if (cards.length === 0) return;
 
     // Get actual card width and gap
     const cardWidth = cards[0].offsetWidth;
     const gap = 30; // From CSS gap: 30px
-    
+
     // Get container width (parent of track)
     const containerWidth = trackElement.parentElement?.offsetWidth || window.innerWidth;
-    
+
     // Calculate how many cards can fit in the container
     const cardsPerView = Math.floor(containerWidth / (cardWidth + gap));
-    
+
     // Calculate total scrollable width
     const totalCardsWidth = cards.length * (cardWidth + gap);
     const maxScrollWidth = Math.max(0, totalCardsWidth - containerWidth + gap);
-    
+
     // Update the corresponding maxPosition
     switch(carouselType) {
       case 'first':
@@ -192,7 +209,7 @@ export class HomeComponent implements OnInit {
     let track: ElementRef;
     let currentPos: number;
     let maxPos: number;
-    
+
     switch(carouselType) {
       case 'first':
         track = this.carouselFirstTrack;
@@ -220,7 +237,7 @@ export class HomeComponent implements OnInit {
 
     const trackElement = track.nativeElement;
     const cards = trackElement.querySelectorAll('app-card');
-    
+
     if (cards.length === 0) return;
 
     const cardWidth = cards[0].offsetWidth;
@@ -228,7 +245,7 @@ export class HomeComponent implements OnInit {
     const scrollDistance = cardWidth + gap;
 
     let newPosition: number;
-    
+
     if (direction === 'left') {
       newPosition = Math.max(0, currentPos - scrollDistance);
     } else {
@@ -273,6 +290,10 @@ export class HomeComponent implements OnInit {
   scrollFourth(direction: string) {
     this.updateMaxPosition('fourth');
     this.scrollCarousel('fourth', direction as 'left' | 'right');
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

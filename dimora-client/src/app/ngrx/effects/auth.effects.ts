@@ -75,3 +75,19 @@ export const getUserByIdEffects = createEffect(
   },
   {functional: true}
 )
+
+export const updateProfileEffects = createEffect(
+  (actions$ = inject(Actions), authService = inject(AuthService)) => {
+    return actions$.pipe(
+      ofType(AuthActions.updateProfile),
+      switchMap((action) => authService.updateProfile(action.profile, action.idToken).pipe(
+        map((profile: AuthModel) =>{
+          console.log('profile', profile);
+          return AuthActions.updateProfileSuccess({profile: profile});
+        }),
+        catchError((error) => of(AuthActions.updateProfileFailure({error: error.message})))
+      ))
+    )
+  },
+  {functional: true}
+)
