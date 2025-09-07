@@ -1,0 +1,29 @@
+<div class="not-found-container">
+  <div class="not-found-content">
+    <div class="error-icon">
+      <mat-icon>search_off</mat-icon>
+    </div>
+    
+    <h1 class="error-title">Không tìm thấy</h1>
+    
+    <p class="error-message">
+      Xin lỗi, chúng tôi không thể tìm thấy phòng hoặc thông tin bạn đang tìm kiếm.
+    </p>
+    
+    <p class="error-subtitle">
+      Có thể phòng đã bị xóa, không còn khả dụng, hoặc URL không chính xác.
+    </p>
+    
+    <div class="action-buttons">
+      <button mat-flat-button color="primary" (click)="goHome()">
+        <mat-icon class="material-symbols-rounded">home</mat-icon>
+        Về trang chủ
+      </button>
+      
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon class="material-symbols-rounded">arrow_back</mat-icon>
+        Quay lại
+      </button>
+    </div>
+  </div>
+</div>

@@ -15,7 +15,7 @@
     />
 
     <button mat-mini-fab color="primary" type="button" (click)="fileInput.click()">
-      <mat-icon>camera_alt</mat-icon>
+      <mat-icon class="material-symbols-rounded">camera_alt</mat-icon>
     </button>
   </div>
 
@@ -26,9 +26,9 @@
       <input matInput formControlName="full_name" placeholder="Full Name" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" >
       <mat-label>Email</mat-label>
-      <input matInput formControlName="email" placeholder="Email" />
+      <input matInput formControlName="email" placeholder="Email" readonly  />
     </mat-form-field>
 
     <mat-form-field appearance="outline">

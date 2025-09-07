@@ -29,3 +29,31 @@ export const getRoomByIdEffects = createEffect(
     },
     {functional: true}
 )
+
+export const getRoomByHostIdEffects = createEffect(
+    (actions$ = inject(Actions), roomsService = inject(RoomsService)) => {
+        return actions$.pipe(
+            ofType(RoomActions.getRoomByHostId),
+            switchMap((action) => roomsService.getRoomByHostId(action.hostId).pipe(
+                map((roomList) => {
+                    return RoomActions.getRoomByHostIdSuccess({roomList: roomList})
+                }),
+                catchError((error) => of(RoomActions.getRoomByHostIdFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)
+
+export const createRoomEffects = createEffect(
+    (actions$ = inject(Actions), roomsService = inject(RoomsService)) => {
+        return actions$.pipe(
+            ofType(RoomActions.createRoom),
+            switchMap((action) => roomsService.createRoom(action.room, action.idToken).pipe(
+                map((room) => RoomActions.createRoomSuccess({room})),
+                catchError((error) => of(RoomActions.createRoomFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)

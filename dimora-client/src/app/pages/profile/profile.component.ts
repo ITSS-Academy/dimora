@@ -14,6 +14,14 @@ import { MaterialModule } from '../../shared/material.module';
 import { HistoryComponent } from './history/history.component';
 import { MatDialog } from '@angular/material/dialog';
 import {DialogUpdateProfileComponent} from '../../shared/components/dialog-update-profile/dialog-update-profile.component';
+import { RoomState } from '../../ngrx/state/room.state';
+import { RoomModel } from '../../models/room.model';
+import * as RoomActions from '../../ngrx/actions/room.actions';
+import { CardComponent } from "../../shared/components/card/card.component";
+import { RoomsComponent } from './rooms/rooms.component';
+import { BookingState } from '../../ngrx/state/booking.state';
+import * as BookingActions from '../../ngrx/actions/booking.actions';
+import { BookingModel } from '../../models/booking.model';
 @Component({
   selector: 'app-profile',
 
@@ -24,8 +32,9 @@ import {DialogUpdateProfileComponent} from '../../shared/components/dialog-updat
     MaterialModule,
     HistoryComponent,
     AsyncPipe,
-    LoadingComponent
-  ],
+    LoadingComponent,
+    RoomsComponent
+],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -39,15 +48,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
   idToken: string = '';
   mineProfile: AuthModel = <AuthModel>{};
+  userId: string = '';
   constructor(
     private activatedRoute: ActivatedRoute,
     private store: Store<{
     auth: AuthState,
+    room: RoomState,
+    booking: BookingState
   }>) {
     this.activatedRoute.params.subscribe(params => {
-      const userId = params['id'];
-
-      this.store.dispatch(AuthActions.getUserById({id: userId}))
+       this.userId = params['id'];
+      this.store.dispatch(AuthActions.getUserById({id: this.userId}))
+      this.store.dispatch(RoomActions.getRoomByHostId({hostId: this.userId}))
       // You can use the userId to fetch user-specific data if needed
     })
 
@@ -67,13 +79,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.idToken$.subscribe(idToken => {
         if (idToken) {
           this.idToken = idToken;
+          this.store.dispatch(BookingActions.getBooking({hostId: this.userId, idToken: this.idToken}))
+
         }
       }),
       this.mineProfile$.subscribe(mineProfile => {
         if (mineProfile.id) {
           this.mineProfile = mineProfile;
         }
-      })  
+      }),
+      
     )
 
   }

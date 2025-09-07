@@ -3,13 +3,16 @@ import {Auth, signInWithPopup, GoogleAuthProvider} from '@angular/fire/auth';
 import {HttpClient} from '@angular/common/http';
 import {AuthModel} from '../../models/auth.model';
 import {environment} from '../../../environments/environment';
+import { Store } from '@ngrx/store';
+import { AuthState } from '../../ngrx/state/auth.state';
+import * as AuthActions from '../../ngrx/actions/auth.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private auth: Auth, private http: HttpClient) { }
+  constructor(private auth: Auth, private http: HttpClient, private store: Store<{auth: AuthState}>) { }
 
   async login() {
     const credential = await signInWithPopup(this.auth, new GoogleAuthProvider());
@@ -18,6 +21,7 @@ export class AuthService {
   }
 
   async logout() {
+    await this.store.dispatch(AuthActions.clearAuthState());
     await this.auth.signOut();
   }
 

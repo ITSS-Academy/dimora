@@ -1,7 +1,7 @@
-<mat-stepper headerPosition="top" #stepper>
-  <mat-step [stepControl]="firstFormGroup">
+<mat-stepper headerPosition="top" #stepper (selectionChange)="onStepChange($event)" (click)="onStepperClick($event); onStepHeaderClick($event)">
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(0)">
     <ng-template matStepLabel>Started</ng-template>
-    <div class="container-step-one">
+    <div class="container-step-one" (click)="onStepContentClick($event)">
       <div class="step-one">
         <div id="word-one">
           <h4>Step 1</h4>
@@ -25,20 +25,18 @@
             preload="auto"
             src="https://stream.media.muscache.com/zFaydEaihX6LP01x8TSCl76WHblb01Z01RrFELxyCXoNek.mp4?v_q=high"
             type="video/mp4"
-          >
-        
-          </video>
+          ></video>
         </div>
       </div>
       <div class="outline-button">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
+        <button mat-flat-button matStepperNext (click)="onStepCompleted(0)">Next</button>
       </div>
     </div>
   </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(1)">
     <ng-template matStepLabel>Structure</ng-template>
-    <div class="container-step-two">
+    <div class="container-step-two" (click)="onStepContentClick($event)">
       <div class="step-two">
         <div id="word-two">
           <div class="container">
@@ -46,337 +44,108 @@
               Which of the following best describes your place?
             </h2>
             <div class="options-grid">
-              <button
-                class="option"
-                [class.active]="selectedType === 'House'"
-                (click)="selectType('House')"
-              >
-                <img src="/img/home.png" alt="" />House
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Apartment'"
-                (click)="selectType('Apartment')"
-              >
-                <img src="/img/apartment.png" alt="" />Apartment
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Barn'"
-                (click)="selectType('Barn')"
-              >
-                <img src="/img/barn.png" alt="" />Barn
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Bed and Breakfast'"
-                (click)="selectType('Bed and Breakfast')"
-              >
-                <img src="/img/bed-and-breakfast.png" alt="" />Bed and Breakfast
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Boat'"
-                (click)="selectType('Boat')"
-              >
-                <img src="/img/boat.png" alt="" />Boat
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cabin'"
-                (click)="selectType('Cabin')"
-              >
-                <img src="/img/cabin.png" alt="" />Cabin
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Camper/RV'"
-                (click)="selectType('Camper/RV')"
-              >
-                <img src="/img/camper-van.png" alt="" />Camper/RV
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Casa particular'"
-                (click)="selectType('Casa particular')"
-              >
-                <img src="/img/casa-particular.png" alt="" />Casa particular
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Castle'"
-                (click)="selectType('Castle')"
-              >
-                <img src="/img/castle.png" alt="" />Castle
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cave'"
-                (click)="selectType('Cave')"
-              >
-                <img src="/img/cave.png" alt="" />Cave
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Container'"
-                (click)="selectType('Container')"
-              >
-                <img src="/img/container.png" alt="" />Container
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cycladic home'"
-                (click)="selectType('Cycladic home')"
-              >
-                <img src="/img/cycladic-home.png" alt="" />Cycladic home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Dammuso'"
-                (click)="selectType('Dammuso')"
-              >
-                <img src="/img/dammuso.png" alt="" />Dammuso
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Dome'"
-                (click)="selectType('Dome')"
-              >
-                <img src="/img/dome.png" alt="" />Dome
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Earth home'"
-                (click)="selectType('Earth home')"
-              >
-                <img src="/img/earth-home.png" alt="" />Earth home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Farm'"
-                (click)="selectType('Farm')"
-              >
-                <img src="/img/farm.png" alt="" />Farm
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Guesthouse'"
-                (click)="selectType('Guesthouse')"
-              >
-                <img src="/img/guesthouse.png" alt="" />Guesthouse
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Hotel'"
-                (click)="selectType('Hotel')"
-              >
-                <img src="/img/hotel.png" alt="" />Hotel
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Houseboat'"
-                (click)="selectType('Houseboat')"
-              >
-                <img src="/img/houseboat.png" alt="" />Houseboat
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Kezhan'"
-                (click)="selectType('Kezhan')"
-              >
-                <img src="/img/kezhan.png" alt="" />Kezhan
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Minsu'"
-                (click)="selectType('Minsu')"
-              >
-                <img src="/img/minsu.png" alt="" />Minsu
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Riad'"
-                (click)="selectType('Riad')"
-              >
-                <img src="/img/riad.png" alt="" />Riad
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Ryokan'"
-                (click)="selectType('Ryokan')"
-              >
-                <img src="/img/ryokan.png" alt="" />Ryokan
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Shepherd’s hut'"
-                (click)="selectType('Shepherd’s hut')"
-              >
-                <img src="/img/shepherds-hut.png" alt="" />Shepherd’s hut
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tent'"
-                (click)="selectType('Tent')"
-              >
-                <img src="/img/tent.png" alt="" />Tent
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tiny home'"
-                (click)="selectType('Tiny home')"
-              >
-                <img src="/img/home.png" alt="" />Tiny home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tower'"
-                (click)="selectType('Tower')"
-              >
-                <img src="/img/tower.png" alt="" />Tower
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Treehouse'"
-                (click)="selectType('Treehouse')"
-              >
-                <img src="/img/treehouse.png" alt="" />Treehouse
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Trullo'"
-                (click)="selectType('Trullo')"
-              >
-                <img src="/img/trullo.png" alt="" />Trullo
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Windmill'"
-                (click)="selectType('Windmill')"
-              >
-                <img src="/img/windmill.png" alt="" />Windmill
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Yurt'"
-                (click)="selectType('Yurt')"
-              >
-                <img src="/img/yurt.png" alt="" />Yurt
-              </button>
+              @for (roomType of roomTypes$ | async; track roomType.id) {
+                <button 
+                  mat-button 
+                  class="option" 
+                  [class.selected]="isRoomTypeSelected(roomType.id)"
+                  (click)="onRoomTypeSelected(roomType.id)">
+                  <img class="material-symbols-rounded" src="{{roomType.icon}}" />
+                  <span>{{roomType.name}}</span>
+                </button>
+              }
             </div>
           </div>
         </div>
       </div>
       <div class="actions">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
+        <button
+          mat-flat-button
+          matStepperNext
+          [disabled]="roomForm.get('room_type_id')?.invalid"
+          (click)="onStepCompleted(1)"
+        >
+          Next
+        </button>
       </div>
     </div>
   </mat-step>
-  <mat-step [stepControl]="thirdFormGroup">
-    <ng-template matStepLabel>Privacy Type</ng-template>
-    <div class="container-step-three">
-      <div class="step-three">
-        <div id="word-three">
-          <h1>What type of place will guests have?</h1>
-        </div>
-        <button class="info">
-          <div class="form-three">
-            <h3>An entire place</h3>
-            <p>Guests have the whole place to themselves.</p>
-          </div>
-          <img src="/img/internet.png" alt="" />
-        </button>
-        <button class="info">
-          <div class="form-three">
-            <h3>A room</h3>
-            <p>
-              Guests have their own room in a home, plus access to shared
-              spaces.
-            </p>
-          </div>
-          <img src="/img/hinh2.png" alt="" />
-        </button>
-        <button class="info">
-          <div class="form-three">
-            <h3>A shared room in a hostel</h3>
-            <p>
-              Guests sleep in a shared room in a professionally managed hostel
-              with staff onsite 24/7.
-            </p>
-          </div>
-          <img src="/img/hinh3.png" alt="" />
-        </button>
-      </div>
-      <div class="outline-button">
-        <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
-      </div>
-    </div>
-  </mat-step>
-  <mat-step [stepControl]="fourFormGroup">
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(2)">
     <ng-template matStepLabel>Floor Plan</ng-template>
-    <div class="container-step-four">
-      <div class="step-four">
+    <div class="container-step-three" (click)="onStepContentClick($event)">
+      <div class="step-three">
         <div id="word-four">
           <div id="title">
             <h1>Share some basics about your place</h1>
             <p>You'll add more details later, like bed types.</p>
           </div>
+
           <div class="info-quantity">
             <div class="service-name">
               <p>Guests</p>
               <div class="quantity">
-                <button>-</button>
-                <span>0</span>
-                <button>+</button>
+                <button (click)="decrease('guests')">-</button>
+                <span>{{ roomForm.get("guests")?.value }}</span>
+                <button (click)="increase('guests')">+</button>
               </div>
             </div>
           </div>
+
           <div class="info-quantity">
             <div class="service-name">
               <p>Bedrooms</p>
               <div class="quantity">
-                <button>-</button>
-                <span>0</span>
-                <button>+</button>
+                <button (click)="decrease('bedrooms')">-</button>
+                <span>{{ roomForm.get("bedrooms")?.value }}</span>
+                <button (click)="increase('bedrooms')">+</button>
               </div>
             </div>
           </div>
+
           <div class="info-quantity">
             <div class="service-name">
               <p>Beds</p>
               <div class="quantity">
-                <button>-</button>
-                <span>0</span>
-                <button>+</button>
+                <button (click)="decrease('beds')">-</button>
+                <span>{{ roomForm.get("beds")?.value }}</span>
+                <button (click)="increase('beds')">+</button>
               </div>
             </div>
           </div>
+
           <div class="info-quantity">
             <div class="service-name">
               <p>Bathrooms</p>
               <div class="quantity">
-                <button>-</button>
-                <span>0</span>
-                <button>+</button>
+                <button (click)="decrease('bathrooms')">-</button>
+                <span>{{ roomForm.get("bathrooms")?.value }}</span>
+                <button (click)="increase('bathrooms')">+</button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="outline-button">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
+        <button
+          mat-flat-button
+          matStepperNext
+          [disabled]="!canGoNextFromThird()"
+          (click)="onStepCompleted(2)"
+        >
+          Next
+        </button>
       </div>
     </div>
   </mat-step>
 
-  <mat-step [stepControl]="fiveFormGroup">
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(3)">
     <ng-template matStepLabel>Stand Out</ng-template>
-    <div class="container-step-five">
-      <div class="step-five">
-        <div id="word-five">
+    <div class="container-step-four" (click)="onStepContentClick($event)">
+      <div class="step-four">
+        <div id="word-four">
           <h4>Step 2</h4>
           <h1>
             Make your place <br />
@@ -408,154 +177,569 @@
       </div>
       <div class="outline-button">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
+        <button mat-flat-button matStepperNext (click)="onStepCompleted(3)">Next</button>
       </div>
     </div>
   </mat-step>
-  <mat-step [stepControl]="sixFormGroup">
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(4)">
     <ng-template matStepLabel>Amenities</ng-template>
-    <div class="container-step-six">
-      <div class="step-six">
-        <div id="word-six">
-          <div class="container">
-            <h2 class="title">Tell guests what your place has to offer</h2>
+    <form [formGroup]="roomForm">
+      <div class="container-step-five" (click)="onStepContentClick($event)">
+        <div class="step-five">
+          <div id="word-five">
+            <!-- Tiêu đề -->
+
+            
+            <!-- <div class="tell-guests">
+              <h1>Tell guests what your place has to offer</h1>
+              <span
+                >You can add more amenities after you publish your
+                listing.</span
+              >
+            </div> -->
+
+            <!-- Guest favorites -->
+            <h2 class="title">What about these guest favorites?</h2>
+            <div class="amenities-grid">
+
+            @for (amenity of this.amenities$ | async; track amenity.id) {
+                <button
+                type="button"
+                class="amenity-item"
+                [class.selected]="isAmenitySelected(amenity.id.toString())"
+                (click)="toggleAmenityById(amenity.id.toString())"
+              >
+                <mat-icon class="material-symbols-rounded">{{amenity.icon_name}}</mat-icon>
+                <span>{{amenity.name}}</span>
+            </button>
+            }
+            </div>
+
+            <!-- Standout amenities -->
+            <!-- <h2 class="title">Do you have any standout amenities?</h2>
             <div class="option-menu">
-              <button class="option">
-                <img src="/img/wi-fi-icon.png" alt="" />Wifi
-              </button>
-              <button class="option">
-                <img src="/img/monitor.png" alt="" />TV
-              </button>
-              <button class="option">
-                <img src="/img/kitchen.png" alt="" />Kitchen
-              </button>
-              <button class="option">
-                <img src="/img/wash.png" alt="" />Washer
-              </button>
-              <button class="option">
-                <img src="/img/free-parking.png" alt="" />Free parking on
-                premises
-              </button>
-              <button class="option">
-                <img src="/img/paid-parking-on-premises.png" alt="" />Paid
-                parking on premises
-              </button>
-              <button class="option">
-                <img src="/img/air-conditioner.png" alt="" />Air conditioning
-              </button>
-              <button class="option">
-                <img src="/img/dedicated-workspace.png" alt="" />Dedicated
-                workspace
-              </button>
-              <h2 class="title">Do you have any standout amenities?</h2>
-              <button class="option">
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Pool')"
+                (click)="toggleAmenity('Pool')"
+              >
                 <img src="/img/gym.png" alt="" />Pool
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Hot tub')"
+                (click)="toggleAmenity('Hot tub')"
+              >
                 <img src="/img/hot-bath.png" alt="" />Hot tub
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Patio')"
+                (click)="toggleAmenity('Patio')"
+              >
                 <img src="/img/patio.png" alt="" />Patio
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('BBQ grill')"
+                (click)="toggleAmenity('BBQ grill')"
+              >
                 <img src="/img/grill.png" alt="" />BBQ grill
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Outdoor dining area')"
+                (click)="toggleAmenity('Outdoor dining area')"
+              >
                 <img src="/img/outdoor-dining-area.png" alt="" />Outdoor dining
                 area
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Fire pit')"
+                (click)="toggleAmenity('Fire pit')"
+              >
                 <img src="/img/fire.png" alt="" />Fire pit
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Pool table')"
+                (click)="toggleAmenity('Pool table')"
+              >
                 <img src="/img/pool-table.png" alt="" />Pool table
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Indoor fireplace')"
+                (click)="toggleAmenity('Indoor fireplace')"
+              >
                 <img src="/img/fireplace.png" alt="" />Indoor fireplace
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Piano')"
+                (click)="toggleAmenity('Piano')"
+              >
                 <img src="/img/piano.png" alt="" />Piano
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Exercise equipment')"
+                (click)="toggleAmenity('Exercise equipment')"
+              >
                 <img src="/img/fitness.png" alt="" />Exercise equipment
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Lake access')"
+                (click)="toggleAmenity('Lake access')"
+              >
                 <img src="/img/pond.png" alt="" />Lake access
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Beach access')"
+                (click)="toggleAmenity('Beach access')"
+              >
                 <img src="/img/beach-access.png" alt="" />Beach access
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Ski-in/Ski-out')"
+                (click)="toggleAmenity('Ski-in/Ski-out')"
+              >
                 <img src="/img/ski-in-ski-out.png" alt="" />Ski-in/Ski-out
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Outdoor shower')"
+                (click)="toggleAmenity('Outdoor shower')"
+              >
                 <img src="/img/riad.png" alt="" />Outdoor shower
               </button>
-              <h2 class="title">Do you have any of these safety items?</h2>
-              <button class="option">
+            </div> -->
+
+            <!-- Safety items -->
+            <!-- <h2 class="title">Do you have any of these safety items?</h2> -->
+            <!-- <div class="option-menu">
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Smoke alarm')"
+                (click)="toggleAmenity('Smoke alarm')"
+              >
                 <img src="/img/ryokan.png" alt="" />Smoke alarm
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('First aid kit')"
+                (click)="toggleAmenity('First aid kit')"
+              >
                 <img src="/img/shepherds-hut.png" alt="" />First aid kit
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Fire extinguisher')"
+                (click)="toggleAmenity('Fire extinguisher')"
+              >
                 <img src="/img/tent.png" alt="" />Fire extinguisher
               </button>
-              <button class="option">
+
+              <button
+                type="button"
+                class="option"
+                [class.selected]="isAmenitySelected('Carbon monoxide alarm')"
+                (click)="toggleAmenity('Carbon monoxide alarm')"
+              >
                 <img src="/img/home.png" alt="" />Carbon monoxide alarm
               </button>
+            </div> -->
+          </div>
+        </div>
+
+        <!-- Nút điều hướng -->
+        <div class="outline-button">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button
+            mat-flat-button
+            matStepperNext
+            [disabled]="roomForm.get('amenities')?.invalid"
+            (click)="onStepCompleted(4)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(5)">
+    <ng-template matStepLabel>Photos</ng-template>
+    <form [formGroup]="roomForm">
+      <div class="container-step-photos" (click)="onStepContentClick($event)">
+        <div class="step-photos">
+          <div class="word-photos">
+            <h1>Thêm ảnh cho chỗ ở của bạn</h1>
+            <span>Kéo để sắp xếp lại thứ tự ảnh. Ảnh đầu tiên sẽ là ảnh bìa.</span>
+          </div>
+
+          <!-- Upload section -->
+          <div class="upload-section" *ngIf="previewUrls.length === 0">
+            <div class="upload-box">
+              <input
+                type="file"
+                #fileInput
+                accept="image/*"
+                multiple
+                hidden
+                (change)="onFilesSelected($event)"
+              />
+              <div class="upload-label">
+                <img
+                  src="https://a0.muscache.com/im/pictures/mediaverse/mys-amenities-n8/original/c83b2a87-3be4-43c9-ad47-12dd2aee24c4.jpeg"
+                  alt="camera"
+                />
+                <button
+                  type="button"
+                  class="add-photo-btn"
+                  (click)="fileInput.click()"
+                >
+                  Thêm ảnh
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Photo management section -->
+          <div class="photo-management" *ngIf="previewUrls.length > 0">
+            <!-- Ảnh chính (cover) -->
+            <div class="main-image-container">
+              <div 
+                class="main-image" 
+                [draggable]="true"
+                (dragstart)="onDragStart($event, 0)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event, 0)"
+              >
+                <img [src]="previewUrls[0]" alt="Ảnh bìa" />
+                <div class="image-overlay">
+                  <div class="cover-label">Ảnh bìa</div>
+                  <button type="button" class="remove-btn" (click)="removeImage(0)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid ảnh nhỏ -->
+            <div class="thumbnail-grid">
+              <!-- Các ảnh từ số 2 trở đi -->
+              <div
+                class="thumbnail-item"
+                *ngFor="let img of previewUrls.slice(1); let i = index"
+                [draggable]="true"
+                (dragstart)="onDragStart($event, i + 1)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event, i + 1)"
+              >
+                <img [src]="img" alt="Ảnh phụ" />
+                <div class="thumbnail-overlay">
+                  <button
+                    type="button"
+                    class="remove-btn"
+                    (click)="removeImage(i + 1)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Nút thêm ảnh -->
+              <div class="thumbnail-item add-more" (click)="fileInputThumbnail.click()">
+                <div class="add-icon">
+                  <mat-icon>add</mat-icon>
+                </div>
+                <p>Thêm ảnh</p>
+              </div>
+            </div>
+
+            <!-- Hidden input cho Add More trong thumbnail grid -->
+            <input
+              type="file"
+              #fileInputThumbnail
+              accept="image/*"
+              multiple
+              hidden
+              (change)="onFilesSelected($event)"
+            />
+          </div>
+        </div>
+
+        <div class="outline-button">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button
+            mat-flat-button
+            matStepperNext
+            [disabled]="!canGoToStepEight()"
+            (click)="onStepCompleted(5)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+
+
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(6)">
+    <ng-template matStepLabel>Title & Description</ng-template>
+
+    <form [formGroup]="roomForm">
+      <div class="container-step-seven" (click)="onStepContentClick($event)">
+        <div class="step-seven">
+          <div id="word-seven">
+            <h1>Thêm tiêu đề và mô tả cho chỗ ở</h1>
+            <span>
+              Viết tiêu đề ngắn gọn và mô tả chi tiết để thu hút khách hàng.
+            </span>
+          </div>
+
+          <!-- Ô nhập tiêu đề -->
+          <div class="input-section">
+            <div class="input-label">
+              <label>Tiêu đề *</label>
+            </div>
+            <textarea
+              formControlName="title"
+              maxlength="50"
+              placeholder="Nhập tiêu đề cho chỗ ở của bạn..."
+              class="title-input"
+            ></textarea>
+          </div>
+
+          <!-- Ô nhập mô tả -->
+          <div class="input-section">
+            <div class="input-label">
+              <label>Mô tả chi tiết *</label>
+              <span class="char-count">{{ roomForm.get("description")?.value?.length || 0 }}/500</span>
+            </div>
+            <textarea
+              formControlName="description"
+              maxlength="500"
+              placeholder="Mô tả chi tiết về chỗ ở, tiện nghi, vị trí và những điều đặc biệt..."
+              class="description-input"
+              rows="6"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Stepper navigation -->
+        <div class="outline-button">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button
+            mat-flat-button
+            matStepperNext
+            [disabled]="!canGoToStepNine()"
+            (click)="onStepCompleted(6)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(7)">
+    <ng-template matStepLabel>Location</ng-template>
+    
+    <form [formGroup]="roomForm">
+      <div class="container-step-eight" (click)="onStepContentClick($event)">
+        <div class="step-eight">
+          <div class="word-eight">
+            <h1>Chỗ ở của bạn nằm ở đâu?</h1>
+          </div>
+
+          <!-- Map Container with Address Inputs -->
+          <div class="map-container">
+            <!-- Google Maps -->
+            <div class="map-background">
+              <google-map
+                [center]="mapCenter"
+                [zoom]="mapZoom"
+                [options]="{
+                  mapTypeControl: false,
+                  streetViewControl: false,
+                  fullscreenControl: false,
+                  zoomControl: true,
+                  scrollwheel: false,
+                  styles: [
+                    {
+                      featureType: 'poi',
+                      elementType: 'labels',
+                      stylers: [{ visibility: 'off' }]
+                    }
+                  ]
+                }"
+                (mapClick)="onMapClick($event)"
+                width="100%"
+                height="100%">
+                
+                <!-- Marker -->
+                <map-marker
+                  *ngIf="markerPosition"
+                  [position]="markerPosition"
+                  [draggable]="true"
+                  (mapDragend)="onMarkerDragEnd($event)"
+                  title="Vị trí chỗ ở của bạn">
+                </map-marker>
+              </google-map>
+            </div>
+
+            <!-- Address Input Overlay -->
+            <div class="address-input-overlay">
+              <div class="address-inputs">
+                <!-- Thành phố (chọn trước) -->
+                <div class="address-input-group">
+                  <mat-icon class="input-icon">location_city</mat-icon>
+                  <mat-select 
+                    formControlName="city" 
+                    placeholder="Chọn thành phố"
+                    (selectionChange)="onCityChange($event.value)"
+                    (keydown.enter)="onSelectEnter($event)"
+                    class="address-select">
+                    <mat-option *ngFor="let city of cities" [value]="city">
+                      {{ city }}
+                    </mat-option>
+                  </mat-select>
+                </div>
+
+                <!-- Quận/Phường/Huyện -->
+                <div class="address-input-group">
+                  <mat-icon class="input-icon">location_city</mat-icon>
+                  <mat-select 
+                    formControlName="location" 
+                    placeholder="Chọn quận/huyện"
+                    (selectionChange)="onDistrictChange($event.value)"
+                    (keydown.enter)="onSelectEnter($event)"
+                    class="address-select">
+                    <mat-option *ngFor="let district of availableDistricts" [value]="district">
+                      {{ district }}
+                    </mat-option>
+                  </mat-select>
+                </div>
+
+                <!-- Địa chỉ chi tiết -->
+                <div class="address-input-group">
+                  <mat-icon class="input-icon">place</mat-icon>
+                  <input 
+                    matInput 
+                    formControlName="address" 
+                    placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường)"
+                    class="address-input"
+                    (blur)="searchAddress()"
+                    (keydown.enter)="onAddressEnter($event)">
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="actions">
-        <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
-      </div>
-    </div>
-  </mat-step>
-  <mat-step [stepControl]="sixFormGroup">
-    <ng-template matStepLabel>Stand Out</ng-template>
-    <div class="container-step-five">
-      <div class="step-five">
-        <div id="word-five">
-          <h4>Step 2</h4>
-          <h1>
-            Make your place <br />
-            stand out
-          </h1>
-          <p>
-            In this step, you’ll add some of the amenities your place
-            <br />
-            offers, plus 5 or more photos. Then, you’ll create a title and the
-            <br />
-            description.
-          </p>
-        </div>
-        <div id="video-five">
-          <video
-            data-testid="video-player"
-            class="v186kq3t atm_9s_1ulexfb atm_e2_1osqo2v atm_vy_1osqo2v atm_tk_h3zj6i_1jtuioo dir dir-ltr"
-            autoplay=""
-            crossorigin="anonymous"
-            playsinline=""
-            preload="auto"
-            style="object-fit: cover"
+
+        <!-- Stepper navigation -->
+        <div class="outline-button-step8">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button
+            mat-flat-button
+            matStepperNext
+            [disabled]="!canGoToStepTen()"
+            (click)="onStepCompleted(7)"
           >
-            <source
-              src="https://stream.media.muscache.com/H0101WTUG2qWbyFhy02jlOggSkpsM9H02VOWN52g02oxhDVM.mp4?v_q=high"
-              type="video/mp4"
-            />
-          </video>
+            Next
+          </button>
         </div>
       </div>
-      <div class="outline-button">
-        <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext>Next</button>
-      </div>
-    </div>
+    </form>
   </mat-step>
-  <mat-step [stepControl]="fiveFormGroup" optional>
+
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(8)">
+    <ng-template matStepLabel>Pricing</ng-template>
+    <form [formGroup]="roomForm">
+      <div class="container-step-nine" (click)="onStepContentClick($event)">
+        <div class="step-eight">
+          <h1>Thiết lập giá cho chỗ ở</h1>
+          <p>Nhập giá cơ bản cho căn hộ/phòng của bạn.</p>
+
+          <div class="price-input">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Giá cơ bản (₫)</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="basePrice"
+                (input)="onPriceChange()"
+                placeholder="Ví dụ: 500000"
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            class="price-display"
+            *ngIf="roomForm.get('basePrice')?.value"
+          >
+            <h2>
+              ₫{{ roomForm.get("basePrice")?.value | number : "1.0-0" }}
+            </h2>
+            <p class="guest-price">
+              Giá cho khách (trước thuế): ₫{{ guestPrice | number : "1.0-0" }}
+            </p>
+          </div>
+        </div>
+
+        <div class="outline-button">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button
+            mat-flat-button
+            matStepperNext
+            [disabled]="roomForm.get('basePrice')?.invalid"
+            (click)="createRoom()"
+          >
+            Create Room
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <!-- <mat-step [stepControl]="fiveFormGroup" optional>
     <mat-step [formGroup]="fiveFormGroup">
       <ng-template matStepLabel></ng-template>
       <mat-form-field>
@@ -572,12 +756,64 @@
       </div>
     </mat-step>
   </mat-step>
-  <mat-step>
-    <ng-template matStepLabel>Done</ng-template>
-    You are now done.
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="stepper.reset()">Reset</button>
+  
+  <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(9)">
+    <ng-template matStepLabel>Hoàn thành</ng-template>
+    
+    <div class="completion-step" (click)="onStepContentClick($event)">
+      <h2>Xem lại thông tin phòng của bạn</h2>
+      
+      <div class="summary-card">
+        <div class="summary-section">
+          <h3>Thông tin cơ bản</h3>
+          <p><strong>Tiêu đề:</strong> {{ roomForm.get('title')?.value || 'Chưa nhập' }}</p>
+          <p><strong>Loại phòng:</strong> {{ roomForm.get('room_type_id')?.value || 'Chưa chọn' }}</p>
+          <p><strong>Giá/đêm:</strong> {{ formatPrice(roomForm.get('price_per_night')?.value || 0) }}</p>
+        </div>
+        
+        <div class="summary-section">
+          <h3>Thông tin chỗ ở</h3>
+          <p><strong>Khách tối đa:</strong> {{ roomForm.get('max_guests')?.value || 0 }} khách</p>
+          <p><strong>Phòng ngủ:</strong> {{ roomForm.get('bedrooms')?.value || 0 }}</p>
+          <p><strong>Giường:</strong> {{ roomForm.get('beds')?.value || 0 }}</p>
+          <p><strong>Phòng tắm:</strong> {{ roomForm.get('bathrooms')?.value || 0 }}</p>
+        </div>
+        
+        <div class="summary-section">
+          <h3>Tiện nghi</h3>
+          <div class="amenities-summary">
+            <span *ngFor="let amenity of roomForm.get('amenities')?.value" class="amenity-chip">
+              {{ amenity }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="summary-section">
+          <h3>Hình ảnh</h3>
+          <p><strong>Số ảnh:</strong> {{ roomForm.get('images')?.value?.length || 0 }} ảnh</p>
+        </div>
+      </div>
+      
+      <div class="form-status">
+        <p *ngIf="isFormValid()" class="valid-status">
+          ✅ Tất cả thông tin đã được điền đầy đủ
+        </p>
+        <p *ngIf="!isFormValid()" class="invalid-status">
+          ❌ Vui lòng kiểm tra lại các thông tin còn thiếu
+        </p>
+      </div>
+      
+      <div class="action-buttons">
+        <button mat-button matStepperPrevious>Quay lại</button>
+        <button 
+          mat-flat-button 
+          color="primary" 
+          (click)="onConfirm()"
+          [disabled]="!isFormValid()">
+          <mat-icon>check</mat-icon>
+          Xác nhận tạo phòng
+        </button>
+      </div>
     </div>
   </mat-step>
-</mat-stepper>
+<!-- </mat-stepper> -->

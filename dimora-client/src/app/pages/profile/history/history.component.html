@@ -1,62 +1,79 @@
-
-<div class="rental-table">
-  <div class="header">
-    <div class="col name">Tên</div>
-    <div class="col type">Loại</div>
-    <div class="col location">Vị trí</div>
-    <div class="col price">Giá tiền</div>
-    <div class="col rating">Đánh giá</div>
+<div class="history-container">
+  <div class="history-header">
+    <h2>Lịch sử đặt phòng</h2>
+    <p>Xem lại các chuyến đi và đặt phòng của bạn</p>
   </div>
 
-  <div class="row">
-    <div class="col name">
-      <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/409682467.jpg?k=f246b55662f7400124d30cc131d3c74c6746aec3a524a80d9d7f2a9188f98ea5&o=" alt="Nhà" />
-      <div class="info" data-tooltip="Nhà/phòng cho thuê loại hình Nhà của bạn đã được tạo vào 21 tháng 8, 2025">
-        Homestay Mi Casa
+  @if(bookingList.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <mat-icon class="material-symbols-rounded">hotel</mat-icon>
       </div>
+      <h3>Chưa có lịch sử đặt phòng</h3>
+      <p>Bạn chưa có chuyến đi nào. Hãy khám phá và đặt phòng ngay!</p>
+      <button mat-flat-button class="explore-button">
+        <mat-icon class="material-symbols-rounded">search</mat-icon>
+        Khám phá ngay
+      </button>
     </div>
-    <div class="col type">Nhà</div>
-    <div class="col location">Đà Lạt</div>
-    <div class="col price">₫560,000</div>
-    <div class="col rating">
-      ⭐⭐⭐⭐☆
-    </div>
-    <div class="col name">
-      <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/422597251.jpg?k=2c24fab430d366947b7f452292664ee6ca97124432d38b35cf25c853f9814309&o=" alt="Nhà" />
-      <div class="info" data-tooltip="Nhà/phòng cho thuê loại hình Nhà của bạn đã được tạo vào 21 tháng 8, 2025">
-        Homestay 296 Cetete
-      </div>
-    </div>
-    <div class="col type">Nhà</div>
-    <div class="col location">Đà Lạt</div>
-    <div class="col price">₫370,000</div>
-    <div class="col rating">
-      ⭐⭐⭐⭐☆
-    </div>
-    <div class="col name">
-      <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/732534706.jpg?k=5be1225c9fae770442f1f90160a6e994043155b0a7016a4fd974c541f64cdb03&o=" alt="Nhà" />
-      <div class="info" data-tooltip="Nhà/phòng cho thuê loại hình Nhà của bạn đã được tạo vào 21 tháng 8, 2025">
-      Azura Bay Stay Panorama
-      </div>
-    </div>
-    <div class="col type">Khách sạn</div>
-    <div class="col location">Nha Trang</div>
-    <div class="col price">₫2,370,000</div>
-    <div class="col rating">
-      ⭐⭐⭐⭐☆
-    </div>
-    <div class="col name">
-      <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/30/c5/5f/15/deluxe-pool-villa.jpg?w=1400&h=-1&s=1" alt="Nhà" />
-      <div class="info" data-tooltip="Nhà/phòng cho thuê loại hình Nhà của bạn đã được tạo vào 21 tháng 8, 2025">
-        New word Phu Quoc Resort
-      </div>
-    </div>
-    <div class="col type">Villa</div>
-    <div class="col location">Phu Quoc</div>
-    <div class="col price">₫7,3870,000</div>
-    <div class="col rating">
-      ⭐⭐⭐⭐☆
-    </div>
-  </div>
+  } @else {
+    <div class="booking-list">
+      @for (booking of bookingList; track booking.id) {
+        <div class="booking-card">
+          <div class="booking-image">
+            <img [src]="booking.rooms.images[0]" [alt]="booking.rooms.title" loading="lazy">
+            <div class="booking-status" [class]="getStatusClass(booking.status)">
+              {{ getStatusText(booking.status) }}
+            </div>
+          </div>
+          
+          <div class="booking-content">
+            <div class="booking-header">
+              <h3 class="room-title">{{ booking.rooms.title }}</h3>
+            </div>
+            
+            <div class="booking-details">
+              <div class="detail-item">
+                <mat-icon class="material-symbols-rounded">location_on</mat-icon>
+                <span>{{ booking.rooms.city }} , {{booking.rooms.country}}</span>
+              </div>
+              
+             
+              
+              <div class="detail-item">
+                <mat-icon class="material-symbols-rounded">group</mat-icon>
+                <span>{{ booking.guest_count }} khách</span>
+              </div>
 
+              <div class="detail-item">
+                <mat-icon class="material-symbols-rounded">calendar_month</mat-icon>
+                <span>{{ booking.check_in_date }} - {{ booking.check_out_date }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <mat-icon class="material-symbols-rounded">nights_stay</mat-icon>
+                <span>{{ calculateNights(booking.check_in_date, booking.check_out_date) }} đêm</span>
+              </div>
+            </div>
+            
+            <div class="booking-footer">
+              <div class="price-info">
+                <span class="total-price">{{ formatPrice(booking.total_amount) }}</span>
+                <span class="price-detail">đã bao gồm thuế</span>
+              </div>
+              
+              <div class="booking-actions">
+                <button mat-stroked-button class="action-button" (click)="viewDetails(booking)">
+                  <mat-icon class="material-symbols-rounded">visibility</mat-icon>
+                  Chi tiết
+                </button>
+                
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>

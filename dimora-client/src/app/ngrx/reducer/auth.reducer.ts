@@ -156,7 +156,7 @@ export const authReducer = createReducer(
   on(AuthActions.clearAuthState, (state,{type})=>{
     console.log(type);
     return {
-      ...state,
+      mineProfile: <AuthModel>{},
       currentUser: <AuthModel>{},
       isUpdateProfile: false,
       idToken: '',

@@ -1,3 +1,6 @@
+@if(isLoading$ | async){
+  <app-loading></app-loading>
+}@else{
 
 <!--<app-loading></app-loading>-->
 
@@ -12,82 +15,78 @@
 
 
 <div class="carousel-container">
-  <div class="nav-buttons">
+  <div class="nav-buttons" *ngIf="getRoomsForCarousel(0).length > 0">
     <div class="place">
-      Thành Phố Đà Lạt
-      <mat-icon>chevron_right</mat-icon>
+      {{ getCityNameForCarousel(0) }}
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
     </div>
-
 
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scroll('left')" [disabled]="currentPosition === 0">
-      <mat-icon>chevron_left</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
     </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scroll('right')" [disabled]="currentPosition >= maxPosition">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
   </div>
-  <div class="carousel-track" #carouselFirstTrack>
-    @for (item of dummyHotel; track $index) {
+  <div class="carousel-track" #carouselFirstTrack *ngIf="getRoomsForCarousel(0).length > 0">
+    @for (item of getRoomsForCarousel(0); track $index) {
       <app-card [hotel]="item"></app-card>
     }
   </div>
 
 
-  <div class="nav-buttons">
-    <div class="place">Thành Phố Hà Nội <mat-icon>chevron_right</mat-icon></div>
+  <div class="nav-buttons" *ngIf="getRoomsForCarousel(1).length > 0">
+    <div class="place">{{ getCityNameForCarousel(1) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollSecond('left')" [disabled]="currentPositionSecond === 0">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
       </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollSecond('right')" [disabled]="currentPositionSecond >= maxPositionSecond">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
-
   </div>
-  <div class="carousel-track" #carouselSecondTrack>
-    @for (item of dummyHotel; track $index) {
+  <div class="carousel-track" #carouselSecondTrack *ngIf="getRoomsForCarousel(1).length > 0">
+    @for (item of getRoomsForCarousel(1); track $index) {
       <app-card [hotel]="item"></app-card>
     }
   </div>
 
 
 
-<div class="nav-buttons">
-  <div class="place">Thành Phố Hồ Chí Minh <mat-icon>chevron_right</mat-icon></div>
+<div class="nav-buttons" *ngIf="getRoomsForCarousel(2).length > 0">
+  <div class="place">{{ getCityNameForCarousel(2) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
   <div class="director-buttons">
     <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollThird('left')" [disabled]="currentPositionThird === 0">
-      <mat-icon>chevron_left</mat-icon>
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
     </button>
-          <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollThird('right')" [disabled]="currentPositionThird >= maxPositionThird">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
+    <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollThird('right')" [disabled]="currentPositionThird >= maxPositionThird">
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
+    </button>
   </div>
-
 </div>
-<div class="carousel-track" #carouselThirdTrack>
-  @for (item of dummyHotel; track $index) {
+<div class="carousel-track" #carouselThirdTrack *ngIf="getRoomsForCarousel(2).length > 0">
+  @for (item of getRoomsForCarousel(2); track $index) {
     <app-card [hotel]="item"></app-card>
   }
 </div>
 
 
-  <div class="nav-buttons">
-    <div class="place">Thành Phố Đà Nẵng <mat-icon>chevron_right</mat-icon></div>
+  <div class="nav-buttons" *ngIf="getRoomsForCarousel(3).length > 0">
+    <div class="place">{{ getCityNameForCarousel(3) }} <mat-icon class="material-symbols-rounded">chevron_right</mat-icon></div>
     <div class="director-buttons">
       <button mat-icon-button class="scroll-btn scroll-left" (click)="scrollFourth('left')" [disabled]="currentPositionFourth === 0">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
       </button>
       <button mat-icon-button class="scroll-btn scroll-right" (click)="scrollFourth('right')" [disabled]="currentPositionFourth >= maxPositionFourth">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
       </button>
     </div>
-
   </div>
-  <div class="carousel-track" #carouselFourthTrack>
-    @for (item of dummyHotel; track $index) {
+  <div class="carousel-track" #carouselFourthTrack *ngIf="getRoomsForCarousel(3).length > 0">
+    @for (item of getRoomsForCarousel(3); track $index) {
       <app-card [hotel]="item"></app-card>
     }
   </div>
@@ -95,3 +94,5 @@
   <!-- <app-map [latitude]="11.9404" [longitude]="108.4583"></app-map> -->
 
 </div>
+
+}

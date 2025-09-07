@@ -95,13 +95,14 @@ export class RoomsService {
   async create(createRoomDto: CreateRoomDto, files: Express.Multer.File[]): Promise<Room> {
     try {
       // Tạo room trước để lấy ID
+      console.log('🔍 [ROOM SERVICE] Creating room with data:', createRoomDto);
       const roomData: CreateRoomDto = { 
         ...createRoomDto, 
         amenities: this.processAmenities(createRoomDto.amenities),
         images: [],
         latitude: createRoomDto.latitude || 0,
         longitude: createRoomDto.longitude || 0,
-        postal_code: createRoomDto.postal_code ? Number(createRoomDto.postal_code) : undefined
+        postal_code: createRoomDto.postal_code ? Number(createRoomDto.postal_code) : 700000
       };
       
       // Nếu không có tọa độ, tự động lấy từ địa chỉ
@@ -111,6 +112,7 @@ export class RoomsService {
         roomData.latitude = coordinates.latitude;
         roomData.longitude = coordinates.longitude;
       }
+      console.log('🔍 [ROOM SERVICE] Room data with coordinates:', roomData);
 
       // Tạo room trực tiếp trong database
       const { data: createdRoom, error: createError } = await this.supabaseService.getClient()

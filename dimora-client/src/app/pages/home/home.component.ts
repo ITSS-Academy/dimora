@@ -8,9 +8,12 @@ import {CardComponent} from '../../shared/components/card/card.component';
 import { RoomState } from '../../ngrx/state/room.state';
 import { RoomModel } from '../../models/room.model';
 import { MapComponent } from "../../shared/components/map/map.component";
+import * as RoomActions from '../../ngrx/actions/room.actions';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 @Component({
   selector: 'app-home',
-  imports: [MaterialModule, CardComponent, MapComponent],
+  imports: [MaterialModule, CardComponent,NgIf, LoadingComponent, AsyncPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -32,6 +35,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   idToken$ !: Observable<string>
   idToken: string = '';
   subscriptions: Subscription[] = [];
+
+  // Grouped rooms by city
+  cityGroups: { city: string; rooms: RoomModel[] }[] = [];
+  otherRooms: RoomModel[] = [];
   
 
 
@@ -53,6 +60,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentUser$ = this.store.select('auth', 'currentUser')
     this.roomList$ = this.store.select('room', 'roomList');
     this.isLoading$ = this.store.select('room', 'isLoading');
+    this.store.dispatch(RoomActions.getRoomList());
+
   }
 
 
@@ -123,6 +132,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.roomList$.subscribe((roomList: RoomModel[]) => {
       if (roomList && roomList.length > 0) {
         console.log('Room List:', roomList);
+        this.groupRoomsByCity(roomList);
+        
+        // Update max positions after data is grouped
+        setTimeout(() => {
+          this.updateAllMaxPositions();
+        }, 100);
       }
     }),
   )
@@ -175,8 +190,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Get actual card width and gap
     const cardWidth = cards[0].offsetWidth;
-    const gap = 30; // From CSS gap: 30px
-
+    const gap = 29; // From CSS gap: 30px
+    
     // Get container width (parent of track)
     const containerWidth = trackElement.parentElement?.offsetWidth || window.innerWidth;
 
@@ -202,6 +217,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.maxPositionFourth = maxScrollWidth;
         break;
     }
+    
+    console.log(`${carouselType} carousel: ${cards.length} cards, maxPosition: ${maxScrollWidth}`);
   }
 
   // Generic scroll method
@@ -241,7 +258,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (cards.length === 0) return;
 
     const cardWidth = cards[0].offsetWidth;
-    const gap = 30;
+    const gap = 29;
     const scrollDistance = cardWidth + gap;
 
     let newPosition: number;
@@ -290,6 +307,92 @@ export class HomeComponent implements OnInit, OnDestroy {
   scrollFourth(direction: string) {
     this.updateMaxPosition('fourth');
     this.scrollCarousel('fourth', direction as 'left' | 'right');
+  }
+
+  // Group rooms by city
+  private groupRoomsByCity(roomList: RoomModel[]): void {
+    // Reset arrays
+    this.cityGroups = [];
+    this.otherRooms = [];
+    
+    // Reset carousel positions
+    this.currentPosition = 0;
+    this.currentPositionSecond = 0;
+    this.currentPositionThird = 0;
+    this.currentPositionFourth = 0;
+
+    // Group rooms by city
+    const cityMap = new Map<string, RoomModel[]>();
+    
+    roomList.forEach(room => {
+      const city = room.city || 'Unknown';
+      if (!cityMap.has(city)) {
+        cityMap.set(city, []);
+      }
+      cityMap.get(city)!.push(room);
+    });
+
+    // Convert to array and sort by room count (descending)
+    const cityArray = Array.from(cityMap.entries())
+      .map(([city, rooms]) => ({ city, rooms }))
+      .sort((a, b) => b.rooms.length - a.rooms.length);
+
+    // Take cities with at least 3 rooms, prioritize by room count
+    let remainingRooms: RoomModel[] = [];
+    
+    cityArray.forEach(({ city, rooms }) => {
+      if (rooms.length >= 3) {
+        if (this.cityGroups.length < 3) {
+          this.cityGroups.push({ city, rooms });
+        } else {
+          // If we already have 3 groups, check if this city has more rooms
+          // Find the group with least rooms to potentially replace
+          const minGroupIndex = this.cityGroups.reduce((minIndex, group, index) => 
+            group.rooms.length < this.cityGroups[minIndex].rooms.length ? index : minIndex, 0);
+          
+          if (rooms.length > this.cityGroups[minGroupIndex].rooms.length) {
+            // Replace the group with least rooms
+            const replacedGroup = this.cityGroups[minGroupIndex];
+            remainingRooms = remainingRooms.concat(replacedGroup.rooms);
+            this.cityGroups[minGroupIndex] = { city, rooms };
+          } else {
+            // Add to remaining
+            remainingRooms = remainingRooms.concat(rooms);
+          }
+        }
+      } else {
+        // Cities with less than 3 rooms go to remaining
+        remainingRooms = remainingRooms.concat(rooms);
+      }
+    });
+
+    // Put remaining rooms in the 4th group
+    this.otherRooms = remainingRooms;
+
+    console.log('Total cities found:', cityArray.length);
+    console.log('Cities with >= 3 rooms:', cityArray.filter(c => c.rooms.length >= 3).length);
+    console.log('City Groups:', this.cityGroups.map(g => `${g.city} (${g.rooms.length} rooms)`));
+    console.log('Other Rooms count:', this.otherRooms.length);
+  }
+
+  // Get rooms for specific carousel
+  getRoomsForCarousel(index: number): RoomModel[] {
+    if (index < this.cityGroups.length) {
+      return this.cityGroups[index].rooms;
+    } else if (index === 3) {
+      return this.otherRooms;
+    }
+    return [];
+  }
+
+  // Get city name for carousel title
+  getCityNameForCarousel(index: number): string {
+    if (index < this.cityGroups.length) {
+      return this.cityGroups[index].city;
+    } else if (index === 3) {
+      return 'Other Locations';
+    }
+    return '';
   }
 
   ngOnDestroy() {
