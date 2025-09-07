@@ -3,12 +3,14 @@ import {MaterialModule} from '../../shared/material.module';
 import {max, min} from 'rxjs';
 import {FormsModule} from '@angular/forms';
 import {RootCommands} from '@angular/cli/src/commands/command-config';
+import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-update-post',
   imports: [
     MaterialModule,
-    FormsModule
+    FormsModule,
+    NgForOf
   ],
   templateUrl: './update-post.component.html',
   styleUrl: './update-post.component.scss'
@@ -32,4 +34,18 @@ export class UpdatePostComponent {
   Rooms: any;
   Beds: any;
   Bathrooms: any;
+  uploadedImages: string[] = [];
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.uploadedImages.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
 }

@@ -7,11 +7,13 @@
       <div class="title"> <h2>Photo tour</h2></div>
       <div class="guide"> <h3>Please add at least 4 photos to help guests learn more about your accommodation</h3></div>
       <div class="images">
-        <img class="upload-img" src="/img/truong-thpt-chau-thanh-ba-ria-vung-tau.jpg">
-        <img class="upload-img" src="/img/truong-thpt-chau-thanh-ba-ria-vung-tau.jpg">
-        <img class="upload-img" src="/img/truong-thpt-chau-thanh-ba-ria-vung-tau.jpg">
-        <img class="upload-img" src="/img/truong-thpt-chau-thanh-ba-ria-vung-tau.jpg">
-        <div class="add-img"> <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon> </div>
+        <ng-container *ngFor="let img of uploadedImages; let i = index">
+          <img class="upload-img" [src]="img" alt="Uploaded image {{i+1}}">
+        </ng-container>
+        <div class="add-img">
+          <input type="file" multiple accept="image/*" (change)="onFileSelected($event)" style="display:none;" #fileInput>
+          <mat-icon aria-hidden="false" aria-label="Add image" fontIcon="add" (click)="fileInput.click()"></mat-icon>
+        </div>
       </div>
     </div>
 
