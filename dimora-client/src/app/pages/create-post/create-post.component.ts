@@ -17,6 +17,10 @@ import { GoogleMap, MapGeocoder, MapMarker } from "@angular/google-maps";
 import { AmenitiesState } from '../../ngrx/state/amenities.state';
 import { AmenitiesModel } from '../../models/amenities.model';
 import { SnackbarService } from '../../services/snackbar/snackbar.service';
+import { RoomTypeModel } from '../../models/room_type.model';
+import { RoomTypesState } from '../../ngrx/state/room-types.state';
+import { Router } from '@angular/router';
+import { AuthModel } from '../../models/auth.model';
 
 @Component({
   selector: 'app-create-post',
@@ -30,28 +34,53 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   token$ !: Observable<string>
   amenities$ !: Observable<AmenitiesModel[]>
   subscriptions: Subscription[] = []
-  
+  roomTypes$ !: Observable<RoomTypeModel[]>
+  idToken: string = ''
+  isCreateRoom$ !: Observable<boolean>
+  mineProfile$ !: Observable<AuthModel>
+  mineProfile: AuthModel = <AuthModel>{};
   constructor(
+    private router: Router,
     private store: Store<{
       room: RoomState,
       auth: AuthState,
-      amenities: AmenitiesState
+      amenities: AmenitiesState,
+      roomTypes: RoomTypesState
     }>,
     private geocoder: MapGeocoder,
     private snackBar: SnackbarService 
   ){
     this.token$ = this.store.select('auth', 'idToken')
     this.amenities$ = this.store.select('amenities', 'amenities')
+    this.roomTypes$ = this.store.select('roomTypes', 'roomTypes')
+    this.isCreateRoom$ = this.store.select('room', 'isCreatingRoom')
+    this.mineProfile$ = this.store.select('auth', 'mineProfile')
   }
 
   ngOnInit(): void {
     // Add document click listener to maintain stepper focus
     document.addEventListener('click', this.onDocumentClick.bind(this));
     this.subscriptions.push(
-      this.amenities$.subscribe(amenities => {
-        
+
+      this.isCreateRoom$.subscribe(isCreateRoom => {
+        if (isCreateRoom) {
+          this.snackBar.showAlert('Room created successfully', 'Close', 3000)
+          this.store.dispatch(RoomActions.clearCreateRoomState())
+          // this.router.navigate(['/profile', this.mineProfile.id])
+        }
+      }),
+      this.token$.subscribe(token => {
+        this.idToken = token
+      }),
+      this.mineProfile$.subscribe(mineProfile => {
+        if (mineProfile.id) {
+          this.mineProfile = mineProfile
+        }
       })
     )
+   
+   
+    
   }
 
   ngOnDestroy(): void {
@@ -74,8 +103,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   roomForm = new FormGroup({
     // Step 1 - Basic info
     
-    // Step 2 - Property type
+    // Step 2 - Room type
     propertyType: new FormControl(''),
+    room_type_id: new FormControl('', Validators.required),
     
     // Step 3 - Capacity
     guests: new FormControl(0, [Validators.required, Validators.min(0)]),
@@ -118,6 +148,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   // UI state variables
   selectedType: string = '';
+  selectedRoomTypeId: string = '';
   selectedAmenities: string[] = [];
   selectedOptions: string[] = [];
   previewUrls: string[] = [];
@@ -242,6 +273,18 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   selectType(type: string) {
     this.selectedType = type;
     this.roomForm.get('propertyType')?.setValue(type);
+  }
+
+  // Room type selection method
+  onRoomTypeSelected(roomTypeId: string) {
+    // Chỉ được chọn 1 room type
+    this.roomForm.get('room_type_id')?.setValue(roomTypeId);
+    this.selectedRoomTypeId = roomTypeId;
+  }
+
+  // Check if room type is selected
+  isRoomTypeSelected(roomTypeId: string): boolean {
+    return this.selectedRoomTypeId === roomTypeId;
   }
 
   increase(controlName: string) {
@@ -684,7 +727,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         const roomData: any = {
           title: this.roomForm.get('title')?.value || undefined,
           description: this.roomForm.get('description')?.value || undefined,
-          room_type_id: this.roomForm.get('propertyType')?.value || undefined,
+          room_type_id: this.roomForm.get('room_type_id')?.value || undefined,
           location: this.roomForm.get('location')?.value || undefined,
           address: this.roomForm.get('address')?.value || undefined,
           city: this.roomForm.get('city')?.value || undefined,
@@ -707,7 +750,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         console.log('Creating room with data:', roomData);
         
         // Dispatch action to create room
-        // this.store.dispatch(RoomActions.createRoom({ room: roomData as RoomModel }));
+        this.store.dispatch(RoomActions.createRoom({ room: roomData, idToken: this.idToken }));
         
       } catch (error) {
         console.error('Error creating room:', error);

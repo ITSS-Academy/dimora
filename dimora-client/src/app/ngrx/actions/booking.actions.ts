@@ -31,3 +31,8 @@ export const createBookingFailure = createAction(
     '[Booking] Create Booking Failure',
     props<{error: any}>()
 )
+
+//clear booking state
+export const clearBookingState = createAction(
+    '[Booking] Clear Booking State'
+)

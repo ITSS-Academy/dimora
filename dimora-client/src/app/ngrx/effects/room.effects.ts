@@ -44,3 +44,16 @@ export const getRoomByHostIdEffects = createEffect(
     },
     {functional: true}
 )
+
+export const createRoomEffects = createEffect(
+    (actions$ = inject(Actions), roomsService = inject(RoomsService)) => {
+        return actions$.pipe(
+            ofType(RoomActions.createRoom),
+            switchMap((action) => roomsService.createRoom(action.room, action.idToken).pipe(
+                map((room) => RoomActions.createRoomSuccess({room})),
+                catchError((error) => of(RoomActions.createRoomFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)

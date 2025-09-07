@@ -8,6 +8,7 @@ export const initialState: RoomState = {
     roomDetail: <RoomModel>{},
     roomListByHostId: <RoomModel[]>[],
     isLoading: false,
+    isCreatingRoom: false,
     error: null
 }
 
@@ -99,6 +100,58 @@ export const roomReducer = createReducer(
             ...state,
             isLoading: false,
             error: error
+        }
+    }),
+
+
+    //create room
+    on(RoomActions.createRoom, (state,{type}) =>{
+        console.log(type)
+        return{
+            ...state,
+            isCreatingRoom: true,
+            error: null
+        }
+    }),
+
+    on(RoomActions.createRoomSuccess, (state,{type,room}) =>{
+        console.log(type)
+        return{
+            ...state,
+            roomList: [...state.roomList, room],
+            isCreatingRoom: false,
+            error: null
+        }
+    }),
+
+    on(RoomActions.createRoomFailure, (state,{type,error}) =>{
+        console.log(type)
+        console.log(error)
+        return{
+            ...state,
+            isCreatingRoom: false,
+            error: error
+        }
+    }),
+
+    on(RoomActions.clearRoomState, (state,{type}) =>{
+        console.log(type)
+        return{
+            isLoading: false,
+            roomList: <RoomModel[]>[],
+            roomDetail: <RoomModel>{},
+            roomListByHostId: <RoomModel[]>[],
+            isCreatingRoom: false,
+            error: null
+        }
+    }),
+
+    on(RoomActions.clearCreateRoomState, (state,{type}) =>{
+        console.log(type)
+        return{
+            ...state,
+            isCreatingRoom: false,
+            error: null
         }
     }),
 

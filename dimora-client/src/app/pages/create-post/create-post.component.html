@@ -44,223 +44,16 @@
               Which of the following best describes your place?
             </h2>
             <div class="options-grid">
-              <button
-                class="option"
-                [class.active]="selectedType === 'House'"
-                (click)="selectType('House')"
-              >
-                <img src="/img/home.png" alt="" />House
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Apartment'"
-                (click)="selectType('Apartment')"
-              >
-                <img src="/img/apartment.png" alt="" />Apartment
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Barn'"
-                (click)="selectType('Barn')"
-              >
-                <img src="/img/barn.png" alt="" />Barn
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Bed and Breakfast'"
-                (click)="selectType('Bed and Breakfast')"
-              >
-                <img src="/img/bed-and-breakfast.png" alt="" />Bed and Breakfast
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Boat'"
-                (click)="selectType('Boat')"
-              >
-                <img src="/img/boat.png" alt="" />Boat
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cabin'"
-                (click)="selectType('Cabin')"
-              >
-                <img src="/img/cabin.png" alt="" />Cabin
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Camper/RV'"
-                (click)="selectType('Camper/RV')"
-              >
-                <img src="/img/camper-van.png" alt="" />Camper/RV
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Casa particular'"
-                (click)="selectType('Casa particular')"
-              >
-                <img src="/img/casa-particular.png" alt="" />Casa particular
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Castle'"
-                (click)="selectType('Castle')"
-              >
-                <img src="/img/castle.png" alt="" />Castle
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cave'"
-                (click)="selectType('Cave')"
-              >
-                <img src="/img/cave.png" alt="" />Cave
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Container'"
-                (click)="selectType('Container')"
-              >
-                <img src="/img/container.png" alt="" />Container
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Cycladic home'"
-                (click)="selectType('Cycladic home')"
-              >
-                <img src="/img/cycladic-home.png" alt="" />Cycladic home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Dammuso'"
-                (click)="selectType('Dammuso')"
-              >
-                <img src="/img/dammuso.png" alt="" />Dammuso
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Dome'"
-                (click)="selectType('Dome')"
-              >
-                <img src="/img/dome.png" alt="" />Dome
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Earth home'"
-                (click)="selectType('Earth home')"
-              >
-                <img src="/img/earth-home.png" alt="" />Earth home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Farm'"
-                (click)="selectType('Farm')"
-              >
-                <img src="/img/farm.png" alt="" />Farm
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Guesthouse'"
-                (click)="selectType('Guesthouse')"
-              >
-                <img src="/img/guesthouse.png" alt="" />Guesthouse
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Hotel'"
-                (click)="selectType('Hotel')"
-              >
-                <img src="/img/hotel.png" alt="" />Hotel
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Houseboat'"
-                (click)="selectType('Houseboat')"
-              >
-                <img src="/img/houseboat.png" alt="" />Houseboat
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Kezhan'"
-                (click)="selectType('Kezhan')"
-              >
-                <img src="/img/kezhan.png" alt="" />Kezhan
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Minsu'"
-                (click)="selectType('Minsu')"
-              >
-                <img src="/img/minsu.png" alt="" />Minsu
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Riad'"
-                (click)="selectType('Riad')"
-              >
-                <img src="/img/riad.png" alt="" />Riad
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Ryokan'"
-                (click)="selectType('Ryokan')"
-              >
-                <img src="/img/ryokan.png" alt="" />Ryokan
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Shepherd’s hut'"
-                (click)="selectType('Shepherd’s hut')"
-              >
-                <img src="/img/shepherds-hut.png" alt="" />Shepherd’s hut
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tent'"
-                (click)="selectType('Tent')"
-              >
-                <img src="/img/tent.png" alt="" />Tent
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tiny home'"
-                (click)="selectType('Tiny home')"
-              >
-                <img src="/img/home.png" alt="" />Tiny home
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Tower'"
-                (click)="selectType('Tower')"
-              >
-                <img src="/img/tower.png" alt="" />Tower
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Treehouse'"
-                (click)="selectType('Treehouse')"
-              >
-                <img src="/img/treehouse.png" alt="" />Treehouse
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Trullo'"
-                (click)="selectType('Trullo')"
-              >
-                <img src="/img/trullo.png" alt="" />Trullo
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Windmill'"
-                (click)="selectType('Windmill')"
-              >
-                <img src="/img/windmill.png" alt="" />Windmill
-              </button>
-              <button
-                class="option"
-                [class.active]="selectedType === 'Yurt'"
-                (click)="selectType('Yurt')"
-              >
-                <img src="/img/yurt.png" alt="" />Yurt
-              </button>
+              @for (roomType of roomTypes$ | async; track roomType.id) {
+                <button 
+                  mat-button 
+                  class="option" 
+                  [class.selected]="isRoomTypeSelected(roomType.id)"
+                  (click)="onRoomTypeSelected(roomType.id)">
+                  <img class="material-symbols-rounded" src="{{roomType.icon}}" />
+                  <span>{{roomType.name}}</span>
+                </button>
+              }
             </div>
           </div>
         </div>
@@ -270,7 +63,7 @@
         <button
           mat-flat-button
           matStepperNext
-          [disabled]="roomForm.get('propertyType')?.invalid"
+          [disabled]="roomForm.get('room_type_id')?.invalid"
           (click)="onStepCompleted(1)"
         >
           Next

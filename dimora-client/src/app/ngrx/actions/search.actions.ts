@@ -16,3 +16,8 @@ export const searchRoomsFailure = createAction(
     '[Search] Search Rooms Failure',
     props<{error: any}>()
 )
+
+//clear search state
+export const clearSearchState = createAction(
+    '[Search] Clear Search State'
+)

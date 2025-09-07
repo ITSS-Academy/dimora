@@ -67,5 +67,15 @@ export const bookingReducer = createReducer(
             isLoading: false,
             error: error
         }
+    }),
+
+    on(BookingActions.clearBookingState, (state,{type}) => {
+        console.log(type)
+        return {
+            bookingDetail: <BookingModel>{},
+            bookingList: <BookingModel[]>[],
+            isLoading: false,
+            error: null
+        }
     })
 )           

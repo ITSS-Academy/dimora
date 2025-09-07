@@ -107,6 +107,14 @@ mat-stepper {
   // border: 2px solid var(--primary);
   background-color: var(--secondary-fixed);
 }
+
+.option.selected {
+  background-color: var(--primary-container);
+  
+
+  
+
+}
 .container-step-two {
   width: 100%;
   height: 100%;
@@ -1133,10 +1141,7 @@ mat-stepper {
   transition: all 0.2s;
 }
 
-.option.selected {
-  border: 2px solid var(--shadow); /* màu khi chọn */
-  background-color: #fff0f3;
-}
+
 
 .option mat-icon {
   font-size: 32px;

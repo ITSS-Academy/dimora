@@ -47,3 +47,28 @@ export const getRoomByHostIdFailure = createAction(
     '[Room] Get Room By Host Id Failure',
     props<{error: any}>()
 )
+
+//create room
+export const createRoom = createAction(
+    '[Room] Create Room',
+    props<{room: any, idToken: string}>()
+)
+
+export const createRoomSuccess = createAction(
+    '[Room] Create Room Success',
+    props<{room: RoomModel}>()
+)
+
+export const createRoomFailure = createAction(
+    '[Room] Create Room Failure',
+    props<{error: any}>()
+)
+
+//clear room state
+export const clearRoomState = createAction(
+    '[Room] Clear Room State'
+)
+
+export const clearCreateRoomState = createAction(
+    '[Room] Clear Create Room State'
+)

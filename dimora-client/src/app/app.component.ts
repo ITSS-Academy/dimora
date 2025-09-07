@@ -15,6 +15,8 @@ import { AmenitiesModel } from './models/amenities.model';
 import { AmenitiesState } from './ngrx/state/amenities.state';
 import { RoomState } from './ngrx/state/room.state';
 import * as RoomActions from './ngrx/actions/room.actions';
+import * as RoomTypesActions from './ngrx/actions/room-types.actions';
+import { RoomTypesState } from './ngrx/state/room-types.state';
   
 @Component({
   selector: 'app-root',
@@ -34,11 +36,13 @@ export class AppComponent implements OnInit {
     private store:Store<{
     auth: AuthState,
     amenities: AmenitiesState,
-    room: RoomState
+    room: RoomState,
+    roomTypes: RoomTypesState
   }>) {
     this.currentUser$ = this.store.select('auth', 'currentUser');
     this.store.dispatch(AmenitiesActions.getAllAmenities());
     this.amenities$ = this.store.select('amenities', 'amenities');
+    this.store.dispatch(RoomTypesActions.getRoomTypes());
     // Initialization logic can go here if needed
     this.auth.onAuthStateChanged(async (auth:any) =>{
       if (auth) {
