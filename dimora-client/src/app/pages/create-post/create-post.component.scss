@@ -291,57 +291,86 @@ mat-stepper {
   margin: 0px;
   font-weight: lighter;
 }
-.container-step-five .title {
-  width: 630px;
-  font-size: 18px;
-  height: 24px;
-  margin: 0 0 15px;
-}
-.container-step-five .option-menu {
+
+
+// Amenities grid layout - đơn giản và hiệu quả
+.amenities-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 cột bằng nhau */
-  gap: 16px; /* khoảng cách giữa các cột */
-  justify-content: center;
-  grid-auto-rows: auto;
-}
-.container-step-five .option-menu #one {
-  display: flex;
-  flex-wrap: wrap;
-}
-#word-five {
-  max-width: 700px;
-  margin: 0 auto 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  align-items: flex-start; /* chữ và box căn trái */
-}
-.container-step-five .option img {
-  width: 24px;
-  height: 24px;
-}
-.container-step-five .option {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* icon + chữ căn trái */
-  gap: 10px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 16px;
-  background: #fff;
-  cursor: pointer;
-  &.selected {
-    border-width: 1px;
-    border-color: var(--outline);
-    background-color: var(--surface);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
-.container-step-five .option:hover {
-  border: 1px solid var(--outline);
-  border-width: 1px;
-  background-color: var(--surface);
+
+
+
+// Amenity item styles - sử dụng màu design system
+.amenity-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  background: var(--surface-container-lowest);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--on-surface);
+  min-height: 100px;
+  text-align: center;
+  
+  &:hover {
+    border-color: var(--primary);
+    background: var(--primary-container);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    
+    mat-icon {
+      color: var(--on-primary);
+    }
+  }
+  
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: var(--on-surface-variant);
+    transition: color 0.2s ease;
+  }
+  
+  span {
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+    font-size: 13px;
+  }
+  
+  &:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 }
 .upload-box {
   margin: 40px auto;

@@ -11,9 +11,12 @@ import { Store } from '@ngrx/store';
 import * as RoomActions from '../../ngrx/actions/room.actions';
 import { RoomState } from '../../ngrx/state/room.state';
 import { AuthState } from '../../ngrx/state/auth.state';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MatStepper } from '@angular/material/stepper';
 import { GoogleMap, MapGeocoder, MapMarker } from "@angular/google-maps";
+import { AmenitiesState } from '../../ngrx/state/amenities.state';
+import { AmenitiesModel } from '../../models/amenities.model';
+import { SnackbarService } from '../../services/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-create-post',
@@ -25,24 +28,37 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper;
   
   token$ !: Observable<string>
+  amenities$ !: Observable<AmenitiesModel[]>
+  subscriptions: Subscription[] = []
+  
   constructor(
     private store: Store<{
       room: RoomState,
-      auth: AuthState
+      auth: AuthState,
+      amenities: AmenitiesState
     }>,
-    private geocoder: MapGeocoder
+    private geocoder: MapGeocoder,
+    private snackBar: SnackbarService 
   ){
     this.token$ = this.store.select('auth', 'idToken')
+    this.amenities$ = this.store.select('amenities', 'amenities')
   }
 
   ngOnInit(): void {
     // Add document click listener to maintain stepper focus
     document.addEventListener('click', this.onDocumentClick.bind(this));
+    this.subscriptions.push(
+      this.amenities$.subscribe(amenities => {
+        
+      })
+    )
   }
 
   ngOnDestroy(): void {
     // Remove document click listener
     document.removeEventListener('click', this.onDocumentClick.bind(this));
+
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   ngAfterViewInit(): void {
@@ -68,7 +84,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     bathrooms: new FormControl(0, [Validators.required, Validators.min(0)]),
     
     // Step 4 - Location (placeholder)
-    fourCtrl: new FormControl('', Validators.required),
     
     // Step 5 - Amenities
     amenities: new FormControl<string[]>([], Validators.required),
@@ -83,7 +98,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     title: new FormControl('', [Validators.required, Validators.maxLength(50)]),
     
     // Step 9 - Highlights
-    highlights: new FormControl<string[]>([]),
     
     // Step 10 - Price
     basePrice: new FormControl(null, [Validators.required, Validators.min(50000)]),
@@ -266,8 +280,22 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.selectedAmenities = updated;
   }
 
-  isAmenitySelected(amenity: string): boolean {
-    return this.selectedAmenities.includes(amenity);
+  // New method to toggle amenity by ID
+  toggleAmenityById(amenityId: string) {
+    const amenities = this.roomForm.get('amenities')?.value || [];
+    let updated = [];
+    if (amenities.includes(amenityId)) {
+      updated = amenities.filter((a: string) => a !== amenityId);
+    } else {
+      updated = [...amenities, amenityId];
+    }
+    this.roomForm.get('amenities')?.setValue(updated);
+    this.selectedAmenities = updated;
+  }
+
+  isAmenitySelected(amenityId: string): boolean {
+    const amenities = this.roomForm.get('amenities')?.value || [];
+    return amenities.includes(amenityId);
   }
 
   onFilesSelected(event: Event): void {
@@ -587,27 +615,27 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.isManualClick = false;
   }
 
-  toggleHighlight(option: string) {
-    const control = this.roomForm.get('highlights') as FormControl<string[]>;
-    if (!control) return;
+  // toggleHighlight(option: string) {
+  //   const control = this.roomForm.get('highlights') as FormControl<string[]>;
+  //   if (!control) return;
 
-    const current: string[] = Array.isArray(control.value) ? [...control.value] : [];
+  //   const current: string[] = Array.isArray(control.value) ? [...control.value] : [];
 
-    const idx = current.indexOf(option);
-    if (idx > -1) {
-      current.splice(idx, 1);
-    } else {
-      if (current.length >= 2) {
-        return;
-      }
-      current.push(option);
-    }
+  //   const idx = current.indexOf(option);
+  //   if (idx > -1) {
+  //     current.splice(idx, 1);
+  //   } else {
+  //     if (current.length >= 2) {
+  //       return;
+  //     }
+  //     current.push(option);
+  //   }
 
-    this.selectedOptions = current;
-    control.setValue([...current]);
-    control.markAsTouched();
-    control.updateValueAndValidity();
-  }
+  //   this.selectedOptions = current;
+  //   control.setValue([...current]);
+  //   control.markAsTouched();
+  //   control.updateValueAndValidity();
+  // }
 
   isHighlightSelected(option: string): boolean {
     return this.selectedOptions.includes(option);
@@ -647,6 +675,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   // Main method to create room
   async createRoom() {
+    if(this.roomForm.value.confirmPhotos && this.roomForm.value.confirmPhotos.length > 0) {
       try {
         // Get image files
         const files: File[] = this.roomForm.get('confirmPhotos')?.value || [];
@@ -683,6 +712,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       } catch (error) {
         console.error('Error creating room:', error);
       }
+    }else{
+      this.snackBar.showAlert('Please select at least one image', 'error', 3000, 'right','top');
+    }
     
   }
 

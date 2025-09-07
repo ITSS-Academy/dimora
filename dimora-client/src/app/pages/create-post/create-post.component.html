@@ -395,95 +395,35 @@
         <div class="step-five">
           <div id="word-five">
             <!-- Tiêu đề -->
-            <div class="tell-guests">
+
+            
+            <!-- <div class="tell-guests">
               <h1>Tell guests what your place has to offer</h1>
               <span
                 >You can add more amenities after you publish your
                 listing.</span
               >
-            </div>
+            </div> -->
 
             <!-- Guest favorites -->
             <h2 class="title">What about these guest favorites?</h2>
-            <div class="option-menu">
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Wifi')"
-                (click)="toggleAmenity('Wifi')"
-              >
-                <img src="/img/wi-fi-icon.png" alt="" />Wifi
-              </button>
+            <div class="amenities-grid">
 
-              <button
+            @for (amenity of this.amenities$ | async; track amenity.id) {
+                <button
                 type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('TV')"
-                (click)="toggleAmenity('TV')"
+                class="amenity-item"
+                [class.selected]="isAmenitySelected(amenity.id.toString())"
+                (click)="toggleAmenityById(amenity.id.toString())"
               >
-                <img src="/img/monitor.png" alt="" />TV
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Kitchen')"
-                (click)="toggleAmenity('Kitchen')"
-              >
-                <img src="/img/kitchen.png" alt="" />Kitchen
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Washer')"
-                (click)="toggleAmenity('Washer')"
-              >
-                <img src="/img/wash.png" alt="" />Washer
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Free parking on premises')"
-                (click)="toggleAmenity('Free parking on premises')"
-              >
-                <img src="/img/free-parking.png" alt="" />Free parking on
-                premises
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Paid parking on premises')"
-                (click)="toggleAmenity('Paid parking on premises')"
-              >
-                <img src="/img/paid-parking-on-premises.png" alt="" />Paid
-                parking on premises
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Air conditioning')"
-                (click)="toggleAmenity('Air conditioning')"
-              >
-                <img src="/img/air-conditioner.png" alt="" />Air conditioning
-              </button>
-
-              <button
-                type="button"
-                class="option"
-                [class.selected]="isAmenitySelected('Dedicated workspace')"
-                (click)="toggleAmenity('Dedicated workspace')"
-              >
-                <img src="/img/dedicated-workspace.png" alt="" />Dedicated
-                workspace
-              </button>
+                <mat-icon class="material-symbols-rounded">{{amenity.icon_name}}</mat-icon>
+                <span>{{amenity.name}}</span>
+            </button>
+            }
             </div>
 
             <!-- Standout amenities -->
-            <h2 class="title">Do you have any standout amenities?</h2>
+            <!-- <h2 class="title">Do you have any standout amenities?</h2>
             <div class="option-menu">
               <button
                 type="button"
@@ -611,11 +551,11 @@
               >
                 <img src="/img/riad.png" alt="" />Outdoor shower
               </button>
-            </div>
+            </div> -->
 
             <!-- Safety items -->
-            <h2 class="title">Do you have any of these safety items?</h2>
-            <div class="option-menu">
+            <!-- <h2 class="title">Do you have any of these safety items?</h2> -->
+            <!-- <div class="option-menu">
               <button
                 type="button"
                 class="option"
@@ -651,7 +591,7 @@
               >
                 <img src="/img/home.png" alt="" />Carbon monoxide alarm
               </button>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -806,7 +746,6 @@
           <div class="input-section">
             <div class="input-label">
               <label>Tiêu đề *</label>
-              <span class="char-count">{{ roomForm.get("title")?.value?.length || 0 }}/50</span>
             </div>
             <textarea
               formControlName="title"
@@ -870,6 +809,7 @@
                   streetViewControl: false,
                   fullscreenControl: false,
                   zoomControl: true,
+                  scrollwheel: false,
                   styles: [
                     {
                       featureType: 'poi',
