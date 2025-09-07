@@ -26,6 +26,13 @@ mat-stepper {
   justify-content: space-between;
   width: 100%;
 }
+.outline-button-step8 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
 #word-one {
   width: 600px;
   height: 500px;
@@ -101,8 +108,8 @@ mat-stepper {
   background-color: var(--secondary-fixed);
 }
 .container-step-two {
-  width: 1400px;
-  height: 1630px;
+  width: 100%;
+  height: 100%;
 }
 .container {
   height: auto;
@@ -325,55 +332,140 @@ mat-stepper {
   background: #fff;
   cursor: pointer;
   &.selected {
-    border-width: 2px;
-    border-color: var(--shadow);
+    border-width: 1px;
+    border-color: var(--outline);
     background-color: var(--surface);
-    font-weight: 600;
   }
 }
 
 .container-step-five .option:hover {
-  border: 1px solid var(--shadow);
-  border-width: 2px;
+  border: 1px solid var(--outline);
+  border-width: 1px;
   background-color: var(--surface);
-  font-weight: 600;
 }
 .upload-box {
-  margin-top: 30px;
+  margin: 40px auto;
   width: 100%;
-  max-width: 700px;
-  height: 300px;
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  background: #f7f7f7;
+  max-width: 600px;
+  height: 400px;
+  border: 2px dashed #F8F8F8;
+  border-radius: 12px;
+  background: #fafafa;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: #f0f8ff;
+    transform: translateY(-2px);
+
+  }
 }
 
 .upload-label {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
 }
 
 .upload-label img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 10px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  opacity: 0.7;
 }
 
 .add-photo-btn {
-  padding: 8px 16px;
+  padding: 12px 24px;
   border: 1px solid #000;
   background: #fff;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+
 }
 
 .add-photo-btn:hover {
-  background: #f0f0f0;
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Selected photos preview */
+.selected-photos {
+  margin-top: 30px;
+  
+  h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #333;
+  }
+}
+
+.photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  max-width: 630px;
+  margin: 0 auto;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .remove-preview-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #ff4444;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #ff4444;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
 }
 #word-six h1 {
   font-size: 32px;
@@ -396,7 +488,7 @@ mat-stepper {
   margin: 0 auto;
   margin-bottom: 80px;
 }
-.container-step-seven {
+.container-step-photos {
   text-align: center;
   padding: 20px;
 
@@ -410,112 +502,496 @@ mat-stepper {
     font-size: 14px;
   }
 
-  /* Cover photo */
-  .cover-photo {
-    position: relative;
+  /* Upload section */
+  .upload-section {
+    margin: 40px 0;
+  }
+
+  /* Photo management section */
+  .photo-management {
+    margin-top: 30px;
+  }
+
+  /* Main image container */
+  .main-image-container {
     margin: 20px auto;
-    max-width: 800px;
-    border-radius: 12px;
+    max-width: 600px;
+
+    border-radius: 16px;
+
     overflow: hidden;
-    align-items: center;
+  }
+
+  .main-image {
+    position: relative;
+    cursor: move;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      transform: rotate(5deg);
+    }
 
     img {
       width: 100%;
-      height: auto;
+      height: 250px;
       object-fit: cover;
-      border-radius: 12px;
+      display: block;
+    }
+
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px;
     }
 
     .cover-label {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      font-size: 14px;
-      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 10px;
       border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .remove-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--surface-dim);
-      color: var(--shadow);
+      background: var(--surface-container-highest);
+      color: var(--on-surface);
       border: none;
       border-radius: 50%;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       cursor: pointer;
-    }
-  }
-
-  /* Grid ảnh nhỏ */
-  .photo-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); // 2 cột
-    gap: 15px;
-    margin-top: 20px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    align-items: center;
-
-    .photo-item {
-      position: relative;
-      background: #f7f7f7;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--error);
+        color: var(--on-error);
+        transform: scale(1.1);
+      }
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  /* Thumbnail grid */
+  .thumbnail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 600px;
+    border-radius: 16px;
+
+    .thumbnail-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: move;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg) scale(1.05);
+      }
 
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 12px;
+      }
+
+      .thumbnail-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover .thumbnail-overlay {
+        opacity: 1;
       }
 
       .remove-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(255, 0, 0, 0.7);
-        color: #fff;
+        background: var(--surface-container-highest);
+        color: var(--on-surface);
         border: none;
         border-radius: 50%;
         width: 24px;
         height: 24px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--error);
+          color: var(--on-error);
+          transform: scale(1.1);
+        }
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
       }
 
       &.add-more {
+        border: 2px dashed var(--outline);
+        display: flex;
         flex-direction: column;
-        color: #717171;
-        font-size: 14px;
-        cursor: pointer;
         align-items: center;
+        justify-content: center;
+        background: var(--surface-container-low);
+        color: var(--neutral);
+        cursor: pointer;
+        transition: all 0.2s ease;
 
-        span {
-          font-size: 28px;
-          line-height: 1;
+        &:hover {
+          border-color: var(--primary);
+          background: var(--primary-container);
+          color: var(--primary);
+          transform: translateY(-2px);
+        }
+
+        .add-icon {
+          margin-bottom: 8px;
+          
+          mat-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+          }
         }
 
         p {
-          margin: 5px 0 0 0;
-        }
-
-        &:hover {
-          background: #efefef;
+          font-size: 12px;
+          font-weight: 500;
+          margin: 0;
         }
       }
     }
   }
 }
 
+.container-step-seven {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .step-seven {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  #word-seven {
+    text-align: center;
+    margin-bottom: 30px;
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: var(--on-surface);
+    }
+
+    span {
+      font-size: 16px;
+      color: var(--neutral);
+    }
+  }
+
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .input-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      label {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--on-surface);
+      }
+
+      .char-count {
+        font-size: 14px;
+        color: var(--neutral);
+      }
+    }
+
+    .title-input {
+      width: 100%;
+      min-height: 60px;
+      padding: 16px;
+      border: 2px solid var(--outline-variant);
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: none;
+      transition: all 0.2s ease;
+      background: var(--surface-container-lowest);
+      color: var(--on-surface);
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-container);
+      }
+
+      &::placeholder {
+        color: var(--neutral);
+      }
+    }
+
+    .description-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid var(--outline-variant);
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.2s ease;
+      background: var(--surface-container-lowest);
+      color: var(--on-surface);
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-container);
+      }
+
+      &::placeholder {
+        color: var(--neutral);
+      }
+    }
+  }
+}
+
+// Step 8 - Location
 .container-step-eight {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-eight {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.word-eight {
+  padding: 20px 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--on-surface);
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--neutral);
+  }
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-container-low);
+}
+
+.map-background {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  
+  google-map {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+.address-input-overlay {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  z-index: 1000;
+}
+
+.address-inputs {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.address-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .input-icon {
+    color: var(--primary);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .address-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--on-surface);
+    background: transparent;
+
+    &::placeholder {
+      color: var(--neutral);
+    }
+  }
+
+  .address-select {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--on-surface);
+    background: transparent;
+  }
+}
+
+// Override Material Design styles for address inputs
+::ng-deep .address-input-group {
+  .mat-form-field {
+    width: 100%;
+    
+    .mat-form-field-wrapper {
+      padding: 0;
+    }
+    
+    .mat-form-field-flex {
+      border: none;
+      background: transparent;
+    }
+    
+    .mat-form-field-infix {
+      border: none;
+      padding: 0;
+    }
+    
+    .mat-form-field-underline {
+      display: none;
+    }
+    
+    .mat-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+  
+  .mat-select {
+    .mat-select-trigger {
+      border: none;
+      background: transparent;
+    }
+    
+    .mat-select-value {
+      color: var(--on-surface);
+    }
+    
+    .mat-select-placeholder {
+      color: var(--neutral);
+    }
+  }
+}
+
+
+
+
+// Full width form fields
+.full-width {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field.full-width {
+  width: 100%;
+  
+  .mat-form-field-wrapper {
+    width: 100%;
+  }
+  
+  .mat-form-field-flex {
+    width: 100%;
+  }
+  
+  .mat-form-field-infix {
+    width: 100%;
+  }
+}
+
+// Step 9 - Pricing (old step 8)
+.container-step-nine {
   width: 100%;
   min-width: 1200px;
   height: 100%;
@@ -699,4 +1175,154 @@ mat-stepper {
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
+}
+
+// Completion step styles
+.completion-step {
+  padding: 24px;
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--on-surface);
+  }
+}
+
+.summary-card {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  
+  .summary-section {
+    margin-bottom: 24px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    h3 {
+      color: var(--primary);
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+    
+    p {
+      margin: 8px 0;
+      color: var(--on-surface);
+      
+      strong {
+        color: var(--on-surface);
+      }
+    }
+  }
+}
+
+.amenities-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  .amenity-chip {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+}
+
+.form-status {
+  text-align: center;
+  margin-bottom: 24px;
+  
+  .valid-status {
+    color: #4caf50;
+    font-weight: 600;
+  }
+  
+  .invalid-status {
+    color: #f44336;
+    font-weight: 600;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  
+  button {
+    min-width: 120px;
+  }
+}
+
+// Responsive for completion step
+@media (max-width: 768px) {
+  .completion-step {
+    padding: 16px;
+  }
+  
+  .summary-card {
+    padding: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Disable non-accessible steps
+::ng-deep .mat-step-header[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+::ng-deep .mat-step-header[aria-disabled="true"] .mat-step-label {
+  color: var(--neutral) !important;
+}
+
+::ng-deep .mat-step-header[aria-disabled="true"] .mat-step-icon {
+  background-color: var(--surface-container-low) !important;
+  color: var(--neutral) !important;
+}
+
+// Prevent focus loss and maintain stepper state
+::ng-deep .mat-stepper {
+  position: relative;
+  
+  .mat-step-header {
+    &:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  }
+  
+  // Maintain focus on current step
+  .mat-step-header[aria-selected="true"] {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    
+    .mat-step-icon {
+      background-color: var(--primary);
+      color: var(--on-primary);
+    }
+  }
+}
+
+// Prevent accidental clicks outside from affecting stepper
+::ng-deep .mat-stepper-horizontal {
+  .mat-stepper-header-container {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--outline-variant);
+  }
 }
