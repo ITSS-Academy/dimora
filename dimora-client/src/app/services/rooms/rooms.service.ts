@@ -31,9 +31,31 @@ export class RoomsService {
   createRoom(room: any, idToken: string) {
 //create rooms use formData
     const formData = new FormData();
-    Object.keys(room).forEach(key => {
-      formData.append(key, room[key]);
+    console.log(room)
+    formData.append('title', room.title);
+    formData.append('description', room.description);
+    formData.append('room_type_id', room.room_type_id);
+    formData.append('location', room.location);
+    formData.append('address', room.address);
+    formData.append('city', room.city);
+    formData.append('country', room.country);
+    formData.append('latitude', room.latitude);
+    formData.append('longitude', room.longitude);
+    formData.append('max_guests', room.max_guests);
+    formData.append('bedrooms', room.bedrooms);
+    formData.append('beds', room.beds);
+    formData.append('bathrooms', room.bathrooms);
+    formData.append('price_per_night', room.price_per_night);
+    formData.append('amenities', room.amenities);
+    room.images.forEach((element: any) => {
+      formData.append('images', element);
     });
+    formData.append('host_id', room.host_id);
+    formData.append('is_available', room.is_available);
+    formData.append('created_at', room.created_at);
+    formData.append('updated_at', room.updated_at);
+    
+    console.log(formData)
     return this.http.post<RoomModel>(`${environment.apiUrl}rooms`, formData,{
       headers: {
         Authorization: `Bearer ${idToken}`

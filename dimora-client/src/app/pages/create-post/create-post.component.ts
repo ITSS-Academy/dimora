@@ -741,7 +741,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
           price_per_night: this.roomForm.get('basePrice')?.value || 0,
           amenities: this.roomForm.get('amenities')?.value || [],
           images: files, // Mảng File objects
-          host_id: 'current-user-id', // TODO: Get from auth state
+          host_id: this.mineProfile.id, // TODO: Get from auth state
           is_available: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
