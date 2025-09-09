@@ -654,27 +654,30 @@
             <!-- Address Input Overlay -->
             <div class="address-input-overlay">
               <div class="address-inputs">
-                <!-- Thành phố (chọn trước) -->
+                <!-- Tỉnh/Thành phố -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
                   <mat-select
                     formControlName="city"
-                    placeholder="Chọn thành phố"
-                    (selectionChange)="onCityChange($event.value)"
+                    placeholder="Chọn tỉnh/thành phố"
+                    (selectionChange)="onProvinceChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
                     class="address-select"
                   >
-                    <mat-option *ngFor="let city of cities" [value]="city">
-                      {{ city }}
+                    <mat-option
+                      *ngFor="let province of provinces"
+                      [value]="province.province_id"
+                    >
+                      {{ province.province_name }}
                     </mat-option>
                   </mat-select>
                 </div>
 
-                <!-- Quận/Phường/Huyện -->
+                <!-- Quận/Huyện -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
                   <mat-select
-                    formControlName="location"
+                    formControlName="district"
                     placeholder="Chọn quận/huyện"
                     (selectionChange)="onDistrictChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
@@ -682,23 +685,58 @@
                   >
                     <mat-option
                       *ngFor="let district of availableDistricts"
-                      [value]="district"
+                      [value]="district.district_id"
                     >
-                      {{ district }}
+                      {{ district.district_name }}
                     </mat-option>
                   </mat-select>
                 </div>
 
-                <!-- Địa chỉ chi tiết -->
+                <!-- Phường/Xã -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">place</mat-icon>
+                  <mat-select
+                    formControlName="ward"
+                    placeholder="Chọn phường/xã"
+                    (selectionChange)="onWardChange($event.value)"
+                    (keydown.enter)="onSelectEnter($event)"
+                    class="address-select"
+                  >
+                    <mat-option
+                      *ngFor="let ward of availableWards"
+                      [value]="ward.ward_id"
+                    >
+                      {{ ward.ward_name }}
+                    </mat-option>
+                  </mat-select>
+                </div>
+
+                <!-- Hiển thị Location (Phường + Quận) -->
+                <div
+                  class="address-input-group"
+                  *ngIf="roomForm.get('location')?.value"
+                >
+                  <mat-icon class="input-icon">my_location</mat-icon>
+                  <input
+                    matInput
+                    formControlName="location"
+                    placeholder="Vị trí đã chọn"
+                    readonly
+                    class="address-input location-display"
+                  />
+                </div>
+
+                <!-- Địa chỉ cụ thể -->
+                <div class="address-input-group">
+                  <mat-icon class="input-icon">home</mat-icon>
                   <input
                     matInput
                     formControlName="address"
-                    placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường)"
-                    class="address-input"
-                    (blur)="searchAddress()"
+                    placeholder="Nhập địa chỉ cụ thể (số nhà, tên đường...)"
                     (keydown.enter)="onAddressEnter($event)"
+                    (blur)="onAddressBlur()"
+                    (input)="onAddressInput($event)"
+                    class="address-input"
                   />
                 </div>
               </div>

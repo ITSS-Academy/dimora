@@ -889,34 +889,57 @@ mat-stepper {
 
 .address-input-overlay {
   position: absolute;
-  top: 0px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 20px;
+  right: 20px;
   width: 90%;
-  max-width: 500px;
+  max-width: 400px;
   z-index: 1000;
+
+  @media (max-width: 768px) {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: none;
+  }
+
+  @media (max-width: 480px) {
+    top: 5px;
+    right: 5px;
+    left: 5px;
+  }
 }
 
 .address-inputs {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .address-input-group {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--outline-variant);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+
+
 
   .input-icon {
     color: var(--primary);
@@ -928,14 +951,43 @@ mat-stepper {
 
   .address-input {
     flex: 1;
-    border: none;
-    outline: none;
+    border: none !important;
+    outline: none !important;
     font-size: 16px;
     color: var(--on-surface);
-    background: transparent;
+    background: transparent !important;
+    padding: 8px 0;
+    font-family: inherit;
+    box-shadow: none !important;
 
     &::placeholder {
-      color: var(--neutral);
+      color: var(--on-surface-variant);
+      opacity: 0.7;
+    }
+
+    &:focus {
+      outline: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    &:hover {
+      border: none !important;
+      outline: none !important;
+    }
+
+    &.location-display {
+      background: var(--primary-container) !important;
+      color: var(--on-primary-container);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-weight: 500;
+      cursor: default;
+      
+      &::placeholder {
+        color: var(--on-primary-container);
+        opacity: 0.8;
+      }
     }
   }
 
@@ -959,36 +1011,45 @@ mat-stepper {
     }
 
     .mat-form-field-flex {
-      border: none;
-      background: transparent;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
 
     .mat-form-field-infix {
-      border: none;
-      padding: 0;
+      border: none !important;
+      padding: 0 !important;
     }
 
     .mat-form-field-underline {
-      display: none;
+      display: none !important;
     }
 
     .mat-form-field-subscript-wrapper {
-      display: none;
+      display: none !important;
     }
   }
 
   .mat-select {
     .mat-select-trigger {
-      border: none;
-      background: transparent;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
 
     .mat-select-value {
-      color: var(--on-surface);
+      color: var(--on-surface) !important;
+      font-size: 16px;
+      font-family: inherit;
     }
 
     .mat-select-placeholder {
-      color: var(--neutral);
+      color: var(--on-surface-variant) !important;
+      opacity: 0.7;
+    }
+    
+    .mat-select-arrow {
+      color: var(--on-surface-variant);
     }
   }
 }

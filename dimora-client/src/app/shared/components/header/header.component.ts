@@ -1,25 +1,32 @@
-import {Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MaterialModule} from '../../material.module';
-import {ShareModule} from '../../share.module';
-import {FormControl, FormGroup} from '@angular/forms';
-import {provideNativeDateAdapter} from '@angular/material/core';
-import {map, Observable, startWith, Subscription} from 'rxjs';
-import {MatDateRangePicker} from '@angular/material/datepicker';
-import {MatMenuTrigger} from '@angular/material/menu';
-import {Store} from '@ngrx/store';
-import {AuthState} from '../../../ngrx/state/auth.state';
-import {AuthModel} from '../../../models/auth.model';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MaterialModule } from '../../material.module';
+import { ShareModule } from '../../share.module';
+import { FormControl, FormGroup } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { map, Observable, startWith, Subscription } from 'rxjs';
+import { MatDateRangePicker } from '@angular/material/datepicker';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { Store } from '@ngrx/store';
+import { AuthState } from '../../../ngrx/state/auth.state';
+import { AuthModel } from '../../../models/auth.model';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
-import {MatDialog} from '@angular/material/dialog';
-import {Dialog} from '@angular/cdk/dialog';
-import {DialogLoginComponent} from '../dialog-login/dialog-login.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Dialog } from '@angular/cdk/dialog';
+import { DialogLoginComponent } from '../dialog-login/dialog-login.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SearchModel } from '../../../models/search.model';
 import * as SearchActions from '../../../ngrx/actions/search.actions';
 import { RoomModel } from '../../../models/room.model';
 import { SearchState } from '../../../ngrx/state/search.state';
 import { SnackbarService } from '../../../services/snackbar/snackbar.service';
-import {FilterDialogComponent} from '../filter-dialog/filter-dialog.component';
+import { FilterDialogComponent } from '../filter-dialog/filter-dialog.component';
 
 export interface User {
   name: string;
@@ -32,51 +39,47 @@ export interface User {
   styleUrl: './header.component.scss',
   providers: [provideNativeDateAdapter()],
 })
-
-
 export class HeaderComponent implements OnInit, OnDestroy {
   readonly dialog = inject(MatDialog);
-  searchData: SearchModel | null = null
+  searchData: SearchModel | null = null;
   @ViewChild('picker') picker!: MatDateRangePicker<Date>;
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
   @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
-  mineProfile$ !: Observable<AuthModel>;
+  mineProfile$!: Observable<AuthModel>;
   minDate = new Date();
   subscriptions: Subscription[] = [];
-  searchResult$ !: Observable<RoomModel[]>;
+  searchResult$!: Observable<RoomModel[]>;
   isSearchPage: boolean = false;
   options: User[] = [
     {
       name: 'Mary',
-      image:'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
+      image:
+        'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png',
     },
     {
       name: 'Shelley',
-      image:'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+      image:
+        'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D',
     },
     {
       name: 'Igor',
-      image:'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
-    }
+      image:
+        'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg',
+    },
   ];
   filteredOptions!: Observable<User[]>;
   constructor(
     private store: Store<{
-      auth: AuthState,
-      search: SearchState,
+      auth: AuthState;
+      search: SearchState;
     }>,
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: SnackbarService
   ) {
-
     this.mineProfile$ = this.store.select('auth', 'mineProfile');
-    this.searchResult$ = this.store.select('search','searchRooms');
-
+    this.searchResult$ = this.store.select('search', 'searchRooms');
   }
-
-
-
 
   openDialog() {
     this.dialog.open(DialogLoginComponent, {
@@ -86,10 +89,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLocationInputClick() {
-
     // Nếu picker đang mở thì đóng nó trước
     if (this.picker.opened) {
-      
       this.picker.close();
       // Đợi một chút để overlay biến mất hoàn toàn
       setTimeout(() => {
@@ -101,11 +102,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onGuestsInputClick() {
-    
-
     // Đóng date picker nếu đang mở
     if (this.picker.opened) {
-      
       this.picker.close();
     }
   }
@@ -115,12 +113,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Check if we have location from form or from searchData (when navigating from other pages)
     const location = this.range.value.location || this.searchData?.location;
-    
-    if(location){
-      const formattedStartDate = this.formatDateToString(this.range.value.start || new Date());
-      const formattedEndDate = this.formatDateToString(this.range.value.end || null);
-      
-      let newValueGuests = this.range.value.guests?.replace('guests', '').replace('guest', '').trim();
+
+    if (location) {
+      const formattedStartDate = this.formatDateToString(
+        this.range.value.start || new Date()
+      );
+      const formattedEndDate = this.formatDateToString(
+        this.range.value.end || null
+      );
+
+      let newValueGuests = this.range.value.guests
+        ?.replace('guests', '')
+        .replace('guest', '')
+        .trim();
 
       this.searchData = {
         location: location,
@@ -131,20 +136,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
         maxPrice: 0,
       };
 
-      this.store.dispatch(SearchActions.searchRooms({searchParams:this.searchData}));
-      
+      this.store.dispatch(
+        SearchActions.searchRooms({ searchParams: this.searchData })
+      );
+
       // Navigate to search page with query parameters
       this.router.navigate(['/search'], {
         queryParams: {
           location: this.searchData.location,
           checkIn: this.searchData.checkIn,
           checkOut: this.searchData.checkOut,
-          guests: this.searchData.guests
-        }
+          guests: this.searchData.guests,
+        },
       });
-
     } else {
-      this.snackBar.showAlert('Please select a location', 'error', 3000, 'right','top');
+      this.snackBar.showAlert(
+        'Please select a location',
+        'error',
+        3000,
+        'right',
+        'top'
+      );
     }
   }
 
@@ -157,9 +169,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .replace(/\s+/g, '') // Remove all spaces
       .toLowerCase(); // Convert to lowercase
   }
-
-
-
 
   // Format Date to yyyy-mm-dd string
   formatDateToString(date: Date | null): string {
@@ -176,15 +185,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-      
+
       // Use setTimeout to ensure form value is updated
       setTimeout(() => {
         this.onSearch();
       }, 0);
     }
   }
-
-
 
   range = new FormGroup({
     location: new FormControl<string | null>(null),
@@ -207,14 +214,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-   this.subscriptions.push(
-    
-  )
+    this.subscriptions.push();
 
     // Check current route to show/hide filter button
     this.checkCurrentRoute();
-
-
 
     // Subscribe to route changes
     this.subscriptions.push(
@@ -226,15 +229,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.filteredOptions = this.range.controls.location.valueChanges.pipe(
       startWith(''),
-      map(value => {
+      map((value) => {
         const name = typeof value === 'string' ? value : value;
         return name ? this._filter(name as string) : this.options.slice();
-      }),
+      })
     );
 
     // Subscribe to location changes to update searchData
     this.subscriptions.push(
-      this.range.controls.location.valueChanges.subscribe(location => {
+      this.range.controls.location.valueChanges.subscribe((location) => {
         if (location && typeof location === 'string') {
           if (!this.searchData) {
             this.searchData = {} as SearchModel;
@@ -246,25 +249,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Initialize guests display
     this.updateGuestsDisplay();
-    
+
     // Load search params from URL on init - delay to ensure form is ready
     setTimeout(() => {
       this.loadSearchParamsFromURL();
-      
+
       // Debug: Check form values after loading
-    
     }, 100);
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   // Check if current route is search page
   checkCurrentRoute(): void {
     this.isSearchPage = this.router.url.includes('/search');
-    
+
     // Clear form values if not on search page
     if (!this.isSearchPage) {
       this.clearSearchForm();
@@ -278,19 +279,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
         location: '',
         start: null,
         end: null,
-        guests: '1 guest'
+        guests: '1 guest',
       });
-      
+
       // Reset guests display
       this.adults = 1;
       this.children = 0;
       this.infants = 0;
       this.pets = 0;
       this.updateGuestsDisplay();
-      
+
       // Clear searchData
       this.searchData = null;
-      
     }
   }
 
@@ -300,62 +300,69 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.isSearchPage) {
       return;
     }
-    
+
     const queryParams = this.route.snapshot.queryParams;
-    
+
     // Check if form is ready
     if (!this.range || !this.range.controls.location) {
       return;
     }
-    
+
     if (queryParams['location']) {
       // Set location to form control
-      
+
       // Set value as string directly to avoid autocomplete issues
       this.range.controls.location.setValue(queryParams['location']);
-      
+
       // Update searchData with location
       if (!this.searchData) {
         this.searchData = {} as SearchModel;
       }
-      this.searchData = { ...this.searchData, location: queryParams['location'] };
-      
-      
+      this.searchData = {
+        ...this.searchData,
+        location: queryParams['location'],
+      };
     }
-    
+
     if (queryParams['checkIn']) {
       const checkInDate = new Date(queryParams['checkIn']);
       if (!isNaN(checkInDate.getTime())) {
         this.range.controls.start.setValue(checkInDate);
-        
+
         // Update searchData with checkIn
         if (!this.searchData) {
           this.searchData = {} as SearchModel;
         }
-        this.searchData = { ...this.searchData, checkIn: queryParams['checkIn'] };
+        this.searchData = {
+          ...this.searchData,
+          checkIn: queryParams['checkIn'],
+        };
       }
     }
-    
+
     if (queryParams['checkOut']) {
       const checkOutDate = new Date(queryParams['checkOut']);
       if (!isNaN(checkOutDate.getTime())) {
         this.range.controls.end.setValue(checkOutDate);
-        
+
         // Update searchData with checkOut
         queryParams['checkOut'];
         if (!this.searchData) {
           this.searchData = {} as SearchModel;
         }
-        this.searchData = { ...this.searchData, checkOut: queryParams['checkOut'] };
+        this.searchData = {
+          ...this.searchData,
+          checkOut: queryParams['checkOut'],
+        };
       }
     }
-    
+
     if (queryParams['guests']) {
       const guests = Number(queryParams['guests']);
       if (!isNaN(guests)) {
         // Update guests display based on URL params
         this.updateGuestsFromParams(guests);
-        
+
         // Update searchData with guests
         if (!this.searchData) {
           this.searchData = {} as SearchModel;
@@ -372,7 +379,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.children = 0;
     this.infants = 0;
     this.pets = 0;
-    
+
     this.updateGuestsDisplay();
   }
 
@@ -381,21 +388,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(FilterDialogComponent, {
       height: 'fit-content',
       width: '600px',
-      data: { searchData: this.searchData }
+      data: { searchData: this.searchData },
     });
 
     // Handle dialog result
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result && result.filters && this.searchData) {
         // Update searchData with new filters
         const updatedSearchData = {
           ...this.searchData,
-          ...result.filters
+          ...result.filters,
         };
         this.searchData = updatedSearchData;
 
         // Dispatch search action
-        this.store.dispatch(SearchActions.searchRooms({searchParams: updatedSearchData}));
+        this.store.dispatch(
+          SearchActions.searchRooms({ searchParams: updatedSearchData })
+        );
 
         // Update query params
         this.router.navigate(['/search'], {
@@ -405,8 +414,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             checkOut: updatedSearchData.checkOut,
             guests: updatedSearchData.guests,
             minPrice: updatedSearchData.minPrice,
-            maxPrice: updatedSearchData.maxPrice
-          }
+            maxPrice: updatedSearchData.maxPrice,
+          },
         });
       }
     });
@@ -415,7 +424,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private _filter(name: string): User[] {
     const filterValue = name.toLowerCase();
 
-    return this.options.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.options.filter((option) =>
+      option.name.toLowerCase().includes(filterValue)
+    );
   }
 
   updateGuestsDisplay() {
@@ -494,8 +505,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   logout() {
     this.store.dispatch(AuthActions.logout());
   }
@@ -505,9 +514,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToProfile(id: string) {
     this.router.navigate(['/profile', id]);
   }
+  navigateToCreateRoom() {
+    this.router.navigate(['/create-post']);
+  }
 
   clearSearch() {
-    if(!this.isSearchPage) {
+    if (!this.isSearchPage) {
       this.range.controls.location.setValue('');
       this.range.controls.start.setValue(null);
       this.range.controls.end.setValue(null);
