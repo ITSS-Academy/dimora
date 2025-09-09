@@ -621,10 +621,10 @@ body {
       /* Rating stars */
       .rating {
         display: flex;
-        flex-direction: row-reverse; /* để 5 sao hiện bên trái */
+        flex-direction: row; /* để 5 sao hiện bên phải */
         justify-content: flex-start;
         gap: 5px;
-
+        margin-bottom: 0;
         input {
           display: none; /* ẩn input */
         }
@@ -685,4 +685,8 @@ body {
 .reviews {
   display: flex;
   flex-direction: column-reverse;
+}
+/* Tắt resize cho tất cả textarea */
+textarea {
+  resize: none !important;
 }
