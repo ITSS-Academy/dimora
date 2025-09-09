@@ -450,6 +450,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.geocoder.geocode({ address: address }).subscribe(({ results }) => {
       if (results && results.length > 0) {
         const location = results[0].geometry.location;
+        console.log(location)
         this.markerPosition = { lat: location.lat(), lng: location.lng() };
         this.mapCenter = this.markerPosition;
         this.mapZoom = 15;
