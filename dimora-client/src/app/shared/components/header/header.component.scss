@@ -16,7 +16,8 @@
     flex: 0 0 auto;
     cursor: pointer;
     .logo-img {
-      height: 35px;
+      width: 100px;
+      height: auto;
     }
   }
 
@@ -54,11 +55,8 @@
     // Styles for search page
     &.search-page {
       max-width: 950px; // Slightly wider on search page
-      
     }
   }
-
-
 
   .right-section {
     display: flex;
@@ -72,7 +70,7 @@
 
     .globe-button,
     .profile-button {
-      border: 1px solid ;
+      border: 1px solid;
       border-radius: 40px;
       height: 42px;
       width: auto;
@@ -96,7 +94,7 @@
   // Filter button styles
   .filter-button-container {
     margin-left: 8px;
-    
+
     .filter-button {
       background-color: #f7f7f7;
       border: 1px solid #ddd;
@@ -104,12 +102,12 @@
       width: 40px;
       height: 40px;
       transition: all 0.2s ease;
-      
+
       &:hover {
         background-color: #e8e8e8;
         border-color: #ccc;
       }
-      
+
       mat-icon {
         color: #222;
         font-size: 20px;
@@ -150,7 +148,7 @@
   }
 }
 
-.outline-button{
+.outline-button {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -158,19 +156,17 @@
   margin: auto;
 }
 
-
-
-.search-field{
+.search-field {
   width: 250px;
 }
 
-.custom-option{
+.custom-option {
   display: flex;
   align-items: center;
   gap: 10px;
   min-height: 72px;
 }
-.image-options{
+.image-options {
   width: 56px;
   height: 56px;
   object-fit: cover;
@@ -187,7 +183,7 @@
   border-radius: 40px;
 }
 
- ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
@@ -199,21 +195,21 @@ mat-form-field {
   --mdc-outlined-text-field-focus-outline-color: transparent;
   --mdc-outlined-text-field-outline-width: 0px 1px 0px 0px;
   --mdc-outlined-text-field-focus-outline-width: 0px;
-  
+
   // Reduce form field height
   ::ng-deep .mat-mdc-form-field-flex {
     height: 40px !important;
   }
-  
+
   ::ng-deep .mat-mdc-text-field-wrapper {
     height: 40px !important;
   }
-  
+
   ::ng-deep .mat-mdc-form-field-infix {
     min-height: 40px !important;
     padding: 8px 0 !important;
   }
-  
+
   ::ng-deep .mat-mdc-input-element {
     font-size: 14px !important;
   }
@@ -224,7 +220,7 @@ mat-form-field {
   height: 40px !important;
   min-width: 80px !important;
   font-size: 14px !important;
-  
+
   mat-icon {
     font-size: 18px !important;
     width: 18px !important;
@@ -277,8 +273,6 @@ mat-form-field {
           color: var(--on-surface);
           text-decoration: underline;
           font-size: 14px;
-
-
         }
       }
     }
@@ -327,14 +321,14 @@ mat-form-field {
     margin: 0;
   }
 }
-.avatar-img{
+.avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
 
-.button-header{
+.button-header {
   width: 50px;
   height: 50px;
   mat-icon {
@@ -343,8 +337,3 @@ mat-form-field {
     font-size: 34px;
   }
 }
-
-
-
-
-
