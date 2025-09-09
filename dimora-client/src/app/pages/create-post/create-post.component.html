@@ -1,4 +1,9 @@
-<mat-stepper headerPosition="top" #stepper (selectionChange)="onStepChange($event)" (click)="onStepperClick($event); onStepHeaderClick($event)">
+<mat-stepper
+  headerPosition="top"
+  #stepper
+  (selectionChange)="onStepChange($event)"
+  (click)="onStepperClick($event); onStepHeaderClick($event)"
+>
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(0)">
     <ng-template matStepLabel>Started</ng-template>
     <div class="container-step-one" (click)="onStepContentClick($event)">
@@ -19,18 +24,23 @@
           <video
             data-testid="video-player"
             class="video-player"
-            autoplay
+            #videoPlayer
             muted
             playsinline
             preload="auto"
+            class="video-player"
             src="https://stream.media.muscache.com/zFaydEaihX6LP01x8TSCl76WHblb01Z01RrFELxyCXoNek.mp4?v_q=high"
             type="video/mp4"
-          ></video>
+          >
+            >
+          </video>
         </div>
       </div>
       <div class="outline-button">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext (click)="onStepCompleted(0)">Next</button>
+        <button mat-flat-button matStepperNext (click)="onStepCompleted(0)">
+          Next
+        </button>
       </div>
     </div>
   </mat-step>
@@ -45,14 +55,18 @@
             </h2>
             <div class="options-grid">
               @for (roomType of roomTypes$ | async; track roomType.id) {
-                <button 
-                  mat-button 
-                  class="option" 
-                  [class.selected]="isRoomTypeSelected(roomType.id)"
-                  (click)="onRoomTypeSelected(roomType.id)">
-                  <img class="material-symbols-rounded" src="{{roomType.icon}}" />
-                  <span>{{roomType.name}}</span>
-                </button>
+              <button
+                mat-button
+                class="option"
+                [class.selected]="isRoomTypeSelected(roomType.id)"
+                (click)="onRoomTypeSelected(roomType.id)"
+              >
+                <img
+                  class="material-symbols-rounded"
+                  src="{{ roomType.icon }}"
+                />
+                <span>{{ roomType.name }}</span>
+              </button>
               }
             </div>
           </div>
@@ -158,13 +172,11 @@
             description.
           </p>
         </div>
-        <div id="video-five">
+        <div id="video-four">
           <video
-            data-testid="video-player"
-            class="v186kq3t atm_9s_1ulexfb atm_e2_1osqo2v atm_vy_1osqo2v atm_tk_h3zj6i_1jtuioo dir dir-ltr"
-            autoplay=""
-            crossorigin="anonymous"
-            playsinline=""
+            #videoFour
+            muted
+            playsinline
             preload="auto"
             style="object-fit: cover"
           >
@@ -177,7 +189,9 @@
       </div>
       <div class="outline-button">
         <button mat-stroked-button matStepperPrevious>Back</button>
-        <button mat-flat-button matStepperNext (click)="onStepCompleted(3)">Next</button>
+        <button mat-flat-button matStepperNext (click)="onStepCompleted(3)">
+          Next
+        </button>
       </div>
     </div>
   </mat-step>
@@ -189,7 +203,6 @@
           <div id="word-five">
             <!-- Tiêu đề -->
 
-            
             <!-- <div class="tell-guests">
               <h1>Tell guests what your place has to offer</h1>
               <span
@@ -201,18 +214,19 @@
             <!-- Guest favorites -->
             <h2 class="title">What about these guest favorites?</h2>
             <div class="amenities-grid">
-
-            @for (amenity of this.amenities$ | async; track amenity.id) {
-                <button
+              @for (amenity of this.amenities$ | async; track amenity.id) {
+              <button
                 type="button"
                 class="amenity-item"
                 [class.selected]="isAmenitySelected(amenity.id.toString())"
                 (click)="toggleAmenityById(amenity.id.toString())"
               >
-                <mat-icon class="material-symbols-rounded">{{amenity.icon_name}}</mat-icon>
-                <span>{{amenity.name}}</span>
-            </button>
-            }
+                <mat-icon class="material-symbols-rounded">{{
+                  amenity.icon_name
+                }}</mat-icon>
+                <span>{{ amenity.name }}</span>
+              </button>
+              }
             </div>
 
             <!-- Standout amenities -->
@@ -411,7 +425,9 @@
         <div class="step-photos">
           <div class="word-photos">
             <h1>Thêm ảnh cho chỗ ở của bạn</h1>
-            <span>Kéo để sắp xếp lại thứ tự ảnh. Ảnh đầu tiên sẽ là ảnh bìa.</span>
+            <span
+              >Kéo để sắp xếp lại thứ tự ảnh. Ảnh đầu tiên sẽ là ảnh bìa.</span
+            >
           </div>
 
           <!-- Upload section -->
@@ -445,8 +461,8 @@
           <div class="photo-management" *ngIf="previewUrls.length > 0">
             <!-- Ảnh chính (cover) -->
             <div class="main-image-container">
-              <div 
-                class="main-image" 
+              <div
+                class="main-image"
                 [draggable]="true"
                 (dragstart)="onDragStart($event, 0)"
                 (dragover)="onDragOver($event)"
@@ -455,7 +471,11 @@
                 <img [src]="previewUrls[0]" alt="Ảnh bìa" />
                 <div class="image-overlay">
                   <div class="cover-label">Ảnh bìa</div>
-                  <button type="button" class="remove-btn" (click)="removeImage(0)">
+                  <button
+                    type="button"
+                    class="remove-btn"
+                    (click)="removeImage(0)"
+                  >
                     <mat-icon>close</mat-icon>
                   </button>
                 </div>
@@ -486,7 +506,10 @@
               </div>
 
               <!-- Nút thêm ảnh -->
-              <div class="thumbnail-item add-more" (click)="fileInputThumbnail.click()">
+              <div
+                class="thumbnail-item add-more"
+                (click)="fileInputThumbnail.click()"
+              >
                 <div class="add-icon">
                   <mat-icon>add</mat-icon>
                 </div>
@@ -521,7 +544,6 @@
     </form>
   </mat-step>
 
-
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(6)">
     <ng-template matStepLabel>Title & Description</ng-template>
 
@@ -552,7 +574,9 @@
           <div class="input-section">
             <div class="input-label">
               <label>Mô tả chi tiết *</label>
-              <span class="char-count">{{ roomForm.get("description")?.value?.length || 0 }}/500</span>
+              <span class="char-count"
+                >{{ roomForm.get("description")?.value?.length || 0 }}/500</span
+              >
             </div>
             <textarea
               formControlName="description"
@@ -582,7 +606,7 @@
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(7)">
     <ng-template matStepLabel>Location</ng-template>
-    
+
     <form [formGroup]="roomForm">
       <div class="container-step-eight" (click)="onStepContentClick($event)">
         <div class="step-eight">
@@ -613,15 +637,16 @@
                 }"
                 (mapClick)="onMapClick($event)"
                 width="100%"
-                height="100%">
-                
+                height="100%"
+              >
                 <!-- Marker -->
                 <map-marker
                   *ngIf="markerPosition"
                   [position]="markerPosition"
                   [draggable]="true"
                   (mapDragend)="onMarkerDragEnd($event)"
-                  title="Vị trí chỗ ở của bạn">
+                  title="Vị trí chỗ ở của bạn"
+                >
                 </map-marker>
               </google-map>
             </div>
@@ -632,13 +657,17 @@
                 <!-- Tỉnh/Thành phố -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
-                  <mat-select 
-                    formControlName="city" 
+                  <mat-select
+                    formControlName="city"
                     placeholder="Chọn tỉnh/thành phố"
                     (selectionChange)="onProvinceChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
-                    class="address-select">
-                    <mat-option *ngFor="let province of provinces" [value]="province.province_id">
+                    class="address-select"
+                  >
+                    <mat-option
+                      *ngFor="let province of provinces"
+                      [value]="province.province_id"
+                    >
                       {{ province.province_name }}
                     </mat-option>
                   </mat-select>
@@ -647,13 +676,17 @@
                 <!-- Quận/Huyện -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
-                  <mat-select 
-                    formControlName="district" 
+                  <mat-select
+                    formControlName="district"
                     placeholder="Chọn quận/huyện"
                     (selectionChange)="onDistrictChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
-                    class="address-select">
-                    <mat-option *ngFor="let district of availableDistricts" [value]="district.district_id">
+                    class="address-select"
+                  >
+                    <mat-option
+                      *ngFor="let district of availableDistricts"
+                      [value]="district.district_id"
+                    >
                       {{ district.district_name }}
                     </mat-option>
                   </mat-select>
@@ -662,40 +695,49 @@
                 <!-- Phường/Xã -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">place</mat-icon>
-                  <mat-select 
-                    formControlName="ward" 
+                  <mat-select
+                    formControlName="ward"
                     placeholder="Chọn phường/xã"
                     (selectionChange)="onWardChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
-                    class="address-select">
-                    <mat-option *ngFor="let ward of availableWards" [value]="ward.ward_id">
+                    class="address-select"
+                  >
+                    <mat-option
+                      *ngFor="let ward of availableWards"
+                      [value]="ward.ward_id"
+                    >
                       {{ ward.ward_name }}
                     </mat-option>
                   </mat-select>
                 </div>
 
                 <!-- Hiển thị Location (Phường + Quận) -->
-                <div class="address-input-group" *ngIf="roomForm.get('location')?.value">
+                <div
+                  class="address-input-group"
+                  *ngIf="roomForm.get('location')?.value"
+                >
                   <mat-icon class="input-icon">my_location</mat-icon>
-                  <input 
-                    matInput 
-                    formControlName="location" 
+                  <input
+                    matInput
+                    formControlName="location"
                     placeholder="Vị trí đã chọn"
                     readonly
-                    class="address-input location-display">
+                    class="address-input location-display"
+                  />
                 </div>
 
                 <!-- Địa chỉ cụ thể -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">home</mat-icon>
-                  <input 
-                    matInput 
-                    formControlName="address" 
+                  <input
+                    matInput
+                    formControlName="address"
                     placeholder="Nhập địa chỉ cụ thể (số nhà, tên đường...)"
                     (keydown.enter)="onAddressEnter($event)"
                     (blur)="onAddressBlur()"
                     (input)="onAddressInput($event)"
-                    class="address-input">
+                    class="address-input"
+                  />
                 </div>
               </div>
             </div>
@@ -739,13 +781,8 @@
             </mat-form-field>
           </div>
 
-          <div
-            class="price-display"
-            *ngIf="roomForm.get('basePrice')?.value"
-          >
-            <h2>
-              ₫{{ roomForm.get("basePrice")?.value | number : "1.0-0" }}
-            </h2>
+          <div class="price-display" *ngIf="roomForm.get('basePrice')?.value">
+            <h2>₫{{ roomForm.get("basePrice")?.value | number : "1.0-0" }}</h2>
             <p class="guest-price">
               Giá cho khách (trước thuế): ₫{{ guestPrice | number : "1.0-0" }}
             </p>
@@ -843,4 +880,5 @@
       </div>
     </div>
   </mat-step>
-<!-- </mat-stepper> -->
+<-- </mat-stepper> -->
+</mat-stepper>
