@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { SearchGuard } from './guards/search.guard';
+import { DetailGuard } from './guards/detail.guard';
+import { BookingGuard } from './guards/booking.guard';
 
 export const routes: Routes = [
   {
@@ -12,7 +14,8 @@ export const routes: Routes = [
   },
   {
     path:'detail/:id',
-    loadComponent: () => import('../app/pages/detail/detail.component').then(m => m.DetailComponent)
+    loadComponent: () => import('../app/pages/detail/detail.component').then(m => m.DetailComponent),
+    canActivate: [DetailGuard]
   },
   {
     path:'create-post',
@@ -24,8 +27,25 @@ export const routes: Routes = [
     canActivate: [SearchGuard]
   },
   {
+    path:'booking',
+    loadComponent: () => import('../app/pages/booking/booking.component').then(m => m.BookingComponent),
+    canActivate: [BookingGuard]
+  },
+  {
+    path:'update-post',
+    loadComponent: () => import('../app/pages/update-post/update-post.component').then(m => m.UpdatePostComponent)
+  },
+  {
+    path:'not-found',
+    loadComponent: () => import('../app/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
+  },
+  {
     path:'',
     redirectTo:'home',
     pathMatch:'full'
+  },
+  {
+    path:'**',
+    redirectTo:'not-found'
   }
 ];

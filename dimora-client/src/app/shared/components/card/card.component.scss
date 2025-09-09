@@ -1,11 +1,13 @@
 .card-container{
-  width: 250px;
+  width: 200px;
   max-height:400px;
+  cursor: pointer;
+
 }
 
 .image{
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   border-radius: 25px;
 }
 
@@ -38,6 +40,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* tránh bể chữ quá dài */
+  font-size: 16px;
 }
 
 .cost {
@@ -58,60 +61,3 @@
 
 
 
-.card-container-two{
-  width: 250px;
-  max-height:400px;
-  background-color: red;
-}
-
-.image-two{
-  width: 250px;
-  height: 250px;
-  background-color: green;
-  border-radius: 25px;
-}
-
-.discription-two{
-  font-size: 21px;
-}
-.cost-two{
-  font-size: 19px;
-}
-
-.card-container-two {
-  width: 100%;           /* quan trọng: để card chiếm trọn cột grid-auto-columns */
-  box-sizing: border-box;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 12px;
-  background: #fff;
-}
-
-.image-two {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.image img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;     /* tránh bể hình */
-}
-
-.discription-two {
-  font-weight: 600;
-  margin-bottom: 6px;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* tránh bể chữ quá dài */
-}
-
-.cost-two {
-  color: #444;
-  font-size: 14px;
-}

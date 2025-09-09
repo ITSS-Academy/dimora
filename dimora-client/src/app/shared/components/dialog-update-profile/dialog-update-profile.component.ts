@@ -56,7 +56,7 @@ export class DialogUpdateProfileComponent {
         avatar: this.profileForm.value.avatar || this.data.profile.avatar_url,
       };
     console.log('Profile sau khi save:', updatedProfile);
-      this.store.dispatch(AuthActions.updateProfile({profile: updatedProfile, idToken: this.data.idToken}));
+      // this.store.dispatch(AuthActions.updateProfile({profile: updatedProfile, idToken: this.data.idToken}));
     }else{
       this.snackbar.showAlert('Please fill all fields', 'error', 3000, 'right', 'top');
     }
@@ -72,4 +72,4 @@ export class DialogUpdateProfileComponent {
   })
 
 
-}
+} 

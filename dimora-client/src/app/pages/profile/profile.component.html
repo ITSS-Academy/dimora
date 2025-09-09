@@ -15,7 +15,7 @@
           <p class="profile-phone">{{profile.phone}}</p>
           @if(mineProfile.id === profile.id){
           <button mat-stroked-button (click)="openDialog()">
-            <mat-icon>edit</mat-icon>
+            <mat-icon class="material-symbols-rounded">edit</mat-icon>
             Edit Profile
           </button>
           }
@@ -25,14 +25,13 @@
 
       <div class="navigate-container">
         <mat-tab-group class="example-stretched-tabs mat-elevation-z4" mat-stretch-tabs>
-          <mat-tab label="First"> Content 1 </mat-tab>
-          <mat-tab label="Second"> Content 2 </mat-tab>
+          <mat-tab label="Rooms">
+            <app-rooms></app-rooms>
+          </mat-tab>
           <mat-tab label="History">
             <app-history></app-history>
           </mat-tab>
-          <mat-tab label="Schedule">
-            <app-schedule></app-schedule>
-          </mat-tab>
+      
         </mat-tab-group>
       </div>
     </div>

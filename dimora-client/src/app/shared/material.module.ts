@@ -40,6 +40,7 @@ import {MatTreeModule} from '@angular/material/tree';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatSnackBarContainer} from '@angular/material/snack-bar';
 import {MatStepperModule} from '@angular/material/stepper';
+import {TextFieldModule} from '@angular/cdk/text-field';
 
 const materialModules = [
   CdkTreeModule,
@@ -82,6 +83,7 @@ const materialModules = [
   MatSnackBarModule,
   MatSnackBarContainer,
   MatStepperModule,
+  TextFieldModule,
 
 ];
 

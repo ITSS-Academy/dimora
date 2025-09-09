@@ -1,12 +1,12 @@
-<div class="card-container">
+<div class="card-container" (click)="navigateToDetail(hotel.id)">
   <div class="image">
-    <img src="{{hotel.imageUrl}}">
+    <img src="{{hotel.images[0]}}">
   </div>
   <div class="discription">
-    {{hotel.name}}
+    {{hotel.title}}
   </div>
   <div class="cost">
-    {{hotel.price}}
+    {{formatPrice(hotel.price_per_night)}} VNĐ
   </div>
 </div>
 

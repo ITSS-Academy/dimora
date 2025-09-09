@@ -38,5 +38,14 @@ export const searchReducer = createReducer(
             isLoading: false,
             error: error
         }
+    }),
+
+    on(SearchActions.clearSearchState, (state,{type}) =>{
+        console.log(type)
+        return {
+            searchRooms: <RoomModel[]>[],
+            isLoading: false,
+            error: null
+        }
     })
 )

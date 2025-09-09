@@ -67,7 +67,9 @@ export class BookingsService {
       console.log('💰 [BOOKING SERVICE] Total amount calculated:', totalAmount);
 
       const bookingData = {
-        ...createBookingDto,
+        guest_count: createBookingDto.guest_count,
+        guest_notes: createBookingDto.guest_notes,
+        room_id: createBookingDto.room_id,
         user_id: userId,
         host_id: room.host_id,
         total_amount: totalAmount,
@@ -516,6 +518,7 @@ export class BookingsService {
         .rpc('get_user_bookings', { user_uuid: userId });
 
       if (error) {
+        console.log('❌ [BOOKING SERVICE] Database error:', error.message);
         throw new HttpException(
           `Failed to fetch user bookings: ${error.message}`,
           HttpStatus.BAD_REQUEST

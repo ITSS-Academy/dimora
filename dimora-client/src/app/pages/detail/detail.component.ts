@@ -1,26 +1,95 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../shared/material.module';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatDateRangePicker } from '@angular/material/datepicker';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import * as RoomActions from '../../ngrx/actions/room.actions';
+import * as AuthActions from '../../ngrx/actions/auth.actions';
+import { AuthState } from '../../ngrx/state/auth.state';
+import { RoomState } from '../../ngrx/state/room.state';
+import { Store } from '@ngrx/store';
+import { BookingState } from '../../ngrx/state/booking.state';
+import { Observable, Subscription } from 'rxjs';
+import { RoomModel } from '../../models/room.model';
+import { LoadingComponent } from "../../shared/components/loading/loading.component";
+import { SnackbarService } from '../../services/snackbar/snackbar.service';
+import { AuthModel } from '../../models/auth.model';
+import { NotFoundComponent } from "../not-found/not-found.component";
+import { MapComponent } from "../../shared/components/map/map.component";
 
 @Component({
   selector: 'app-detail',
-  imports: [CommonModule, MaterialModule],
+  standalone: true,
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule, LoadingComponent, NotFoundComponent, MapComponent],
   templateUrl: './detail.component.html',
-  styleUrl: './detail.component.scss'
+  styleUrl: './detail.component.scss',
+  providers: [provideNativeDateAdapter()]
 })
-export class DetailComponent {
+export class DetailComponent implements OnInit, OnDestroy {
+  @ViewChild('picker') picker!: MatDateRangePicker<Date>;
+  @ViewChild('guestsMenu') guestsMenu!: MatMenuTrigger;
+
   roomId: string | null = null;
+  hostId: string | null = null;
   roomData: any;
 
-  constructor(private route: ActivatedRoute) {
+  roomData$ !: Observable<RoomModel>;
+  isLoading$ !: Observable<boolean>;
+  subscription: Subscription[] = [];
+  currentUser$ !: Observable<AuthModel>;
+  mineProfile$ !: Observable<AuthModel>;
+  
+  // Form for booking
+  bookingForm = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+    guests: new FormControl<string>('1 guest')
+  });
+
+  // Guest counts
+  adults: number = 1;
+  children: number = 0;
+  infants: number = 0;
+  pets: number = 0;
+  
+  minDate = new Date();
+  
+  // Price calculation
+  totalNights: number = 0;
+  totalPrice: number = 0;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: Store<{auth: AuthState, room: RoomState, booking: BookingState}>,
+    private snackbar: SnackbarService
+  ) {
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.roomId = params['id'];
         console.log('Detail ID:', this.roomId);
+        if (this.roomId) {
+          this.store.dispatch(RoomActions.getRoomById({id: this.roomId}));
+        }
+      }
+    });
 
-        // Fake data (sau này thay bằng API)
-        this.roomData = {
+    this.route.queryParams.subscribe(queryParams => {
+      if (queryParams['hostId']) {
+        this.hostId = queryParams['hostId'];
+        if (this.hostId) {
+          this.store.dispatch(AuthActions.getUserById({id: this.hostId}));
+        }
+
+        console.log('Host ID:', this.hostId);
+      }
+    });
+
+    // Fake data (sau này thay bằng API)
+    this.roomData = {
           title: 'Studio và bồn tắm trong rừng | Bếp riêng, Ban công',
           images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-1353653864064161285/original/736f6de3-2004-4bab-b151-074c43995dd1.jpeg?im_w=720',
@@ -57,7 +126,198 @@ export class DetailComponent {
             }
           ]
         };
+
+    this.roomData$ = this.store.select('room', 'roomDetail');
+    this.isLoading$ = this.store.select('room', 'isLoading');
+    this.currentUser$ = this.store.select('auth', 'currentUser');
+    this.mineProfile$ = this.store.select('auth', 'mineProfile');
+  }
+
+  ngOnInit(): void {
+    this.updateGuestsDisplay();
+    this.subscription.push(
+      this.roomData$.subscribe(roomData => {
+        if (roomData && roomData.id === this.roomId) {
+          console.log('Room data:', roomData);
+          this.roomData = roomData;
+          // Recalculate price when room data is loaded
+          this.calculateTotalPrice();
+        } else if (roomData === null && this.roomId) {
+          // Room not found, redirect to not-found page
+          this.router.navigate(['/not-found']);
+        }
+      })
+    );
+    
+    // Subscribe to form changes to calculate price
+    this.subscription.push(
+      this.bookingForm.valueChanges.subscribe(() => {
+        this.calculateTotalPrice();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.forEach(sub => sub.unsubscribe());
+  }
+
+  // Guest control methods
+  increaseAdults(event?: Event) {
+    if (event) event.stopPropagation();
+    const totalGuests = this.adults + this.children + this.infants;
+    if (totalGuests < (this.roomData?.max_guests || 0)) {
+      this.adults++;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  decreaseAdults(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.adults > 1) {
+      this.adults--;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  increaseChildren(event?: Event) {
+    if (event) event.stopPropagation();
+    const totalGuests = this.adults + this.children + this.infants;
+    if (totalGuests < (this.roomData?.max_guests || 0)) {
+      this.children++;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  decreaseChildren(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.children > 0) {
+      this.children--;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  increaseInfants(event?: Event) {
+    if (event) event.stopPropagation();
+    const totalGuests = this.adults + this.children + this.infants;
+    if (totalGuests < (this.roomData?.max_guests || 0)) {
+      this.infants++;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  decreaseInfants(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.infants > 0) {
+      this.infants--;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  increasePets(event?: Event) {
+    if (event) event.stopPropagation();
+    this.pets++;
+    this.updateGuestsDisplay();
+  }
+
+  decreasePets(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.pets > 0) {
+      this.pets--;
+      this.updateGuestsDisplay();
+    }
+  }
+
+  updateGuestsDisplay() {
+    const total = this.adults + this.children + this.infants;
+    let display = '';
+
+    if (total === 1) {
+      display = '1 guest';
+    } else {
+      display = `${total} guests`;
+    }
+
+    if (this.pets > 0) {
+      display += `, ${this.pets} pet${this.pets > 1 ? 's' : ''}`;
+    }
+
+    this.bookingForm.controls.guests.setValue(display);
+  }
+
+  onBookRoom() {
+    const startDate = this.bookingForm.get('start')?.value;
+    const endDate = this.bookingForm.get('end')?.value;
+    const totalGuests = this.adults + this.children + this.infants;
+    
+    // Validation
+    if (!startDate || !endDate) {
+      this.snackbar.showAlert('Vui lòng chọn ngày check-in và check-out', 'error', 3000, 'right', 'top');
+      return;
+    }
+    
+    if (totalGuests === 0) {
+      this.snackbar.showAlert('Vui lòng chọn số lượng khách', 'error', 3000, 'right', 'top');
+      return;
+    }
+    
+    if (totalGuests > (this.roomData?.max_guests || 0)) {
+      this.snackbar.showAlert(`Số lượng khách không được vượt quá ${this.roomData?.max_guests} người`, 'error', 3000, 'right', 'top');
+      return;
+    }
+    
+    // Format dates
+    const checkInDate = this.formatDateToString(startDate);
+    const checkOutDate = this.formatDateToString(endDate);
+    
+    // Navigate to booking page with query parameters
+    this.router.navigate(['/booking'], {
+      queryParams: {
+        roomId: this.roomId,
+        hostId: this.hostId,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        adults: this.adults,
+        children: this.children,
+        infants: this.infants,
+        totalAmount: this.totalPrice || this.roomData?.price_per_night
       }
     });
+  }
+
+  formatDateToString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  calculateTotalPrice() {
+    const startDate = this.bookingForm.get('start')?.value;
+    const endDate = this.bookingForm.get('end')?.value;
+    
+    if (startDate && endDate && this.roomData && this.roomData.price_per_night) {
+      // Calculate number of nights
+      const timeDiff = endDate.getTime() - startDate.getTime();
+      this.totalNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
+      // Calculate total price (price_per_night is already in VND)
+      const pricePerNight = Number(this.roomData.price_per_night) || 0;
+      this.totalPrice = pricePerNight * this.totalNights;
+      
+      console.log('Price calculation:', {
+        startDate,
+        endDate,
+        totalNights: this.totalNights,
+        pricePerNight,
+        totalPrice: this.totalPrice
+      });
+    } else {
+      this.totalNights = 0;
+      this.totalPrice = 0;
+    }
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('vi-VN').format(price);
   }
 }

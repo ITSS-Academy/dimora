@@ -1,0 +1,159 @@
+@if(isLoading$ | async; as isLoading) {
+  <app-loading></app-loading> 
+} @else if(bookingLoading$ | async) {
+  <app-loading></app-loading> 
+} @else {
+  @if(currentRoom$ | async; as room) {
+  <div class="page">
+    <div class="total-outline">
+      <div class="left-outline">
+            <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="user-information">
+              <div class="header">
+                  User Information
+              </div>
+              <div class="title">
+                "Please complete all required information to confirm your reservation."
+              </div>
+               <div class="name-box">
+                <mat-form-field>
+                  <mat-label>Full name</mat-label>
+                  <input matInput formControlName="fullName" placeholder="Enter your full name">
+                  <mat-error *ngIf="bookingForm.get('fullName')?.hasError('required')">
+                    Full name is required
+                  </mat-error>
+                </mat-form-field>
+                </div>
+  
+              <div class="note">
+                "Please enter your full name as it appears on your ID."
+              </div>
+  
+              <div class="email">
+                <mat-form-field>
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="email" placeholder="Enter your email">
+                  <mat-error *ngIf="bookingForm.get('email')?.hasError('required')">
+                    Email is required
+                  </mat-error>
+                  <mat-error *ngIf="bookingForm.get('email')?.hasError('email')">
+                    Please enter a valid email address
+                  </mat-error>
+                </mat-form-field>
+               
+              </div>
+              <div class="email-note">
+                *Sample: Dimora&#64;gmail.com
+              </div>
+              <div class="phone">
+                <mat-form-field>
+                  <mat-label>Phone number</mat-label>
+                  <input matInput formControlName="phoneNumber" placeholder="Enter your phone number" 
+                         (keypress)="onPhoneKeyPress($event)" maxlength="10">
+                  <mat-error *ngIf="bookingForm.get('phoneNumber')?.hasError('required')">
+                    Phone number is required
+                  </mat-error>
+                  <mat-error *ngIf="bookingForm.get('phoneNumber')?.hasError('pattern')">
+                    Please enter exactly 10 digits
+                  </mat-error>
+                </mat-form-field>
+                
+              </div>
+              <div class="phone-number-note">
+                Please enter exactly 10 digits (e.g., 0123456789)
+              </div>
+  
+  
+              <div class="booking-button">
+                <button mat-flat-button type="submit" class="continue-button">
+                  Continue to payment
+                </button>
+              </div>
+  
+            </form>
+      </div>
+  
+      <div class="right-outline">
+        <div class="booking-confirm">
+            <div class="hotel-information">
+              <div class="name-loca">
+                <div class="name">
+                  {{room.title}}
+                </div>
+                <div class="location">
+                 {{room.address}}, {{room.location}}, {{room.city}}, {{room.country}}
+                </div>
+              </div>
+             
+            </div>
+          <div class="hotel-image-container">
+            <img class="hotel-image" [src]="room.images[0]" [alt]="room.title" loading="lazy">
+          </div>
+          <div class="first-line-container">
+            <div class="first-line"></div>
+          </div>
+          <div class="bottom">
+            <div class="time-container">
+              
+              <div class="left-time-container">
+                <h4>Check-in Date</h4>
+                <mat-chip>{{checkInDate}}</mat-chip>
+              </div>
+             
+              <div class="right-time-container">
+                <h4>Check-out Date</h4>
+                <mat-chip >{{checkOutDate}}</mat-chip>
+              </div>
+  
+            </div>
+  
+          </div>
+          <div class="first-line-container">
+            <div class="first-line"></div>
+          </div>
+          <div class="people-number">
+            <h4 class="number-title">Number of Guests</h4>
+            <div class="chip-set">
+              @if(adults > 0) {
+              <div class="right-people-number">
+                <mat-chip class="kids">{{adults}} Aldults</mat-chip>
+              </div>
+              }
+              @if(children > 0) {
+              <div class="right-people-number">
+                <mat-chip class="kids">{{children}} Children</mat-chip>
+              </div>
+              }
+              @if(infants > 0) {
+              <div class="right-people-number">
+                <mat-chip class="kids">{{infants}} infants</mat-chip>
+              </div>
+              }
+            </div>
+  
+            
+          </div>
+          <div class="first-line-container">
+            <div class="first-line"></div>
+          </div>
+          <div class="cost-information">
+            <div class="cost-detail-left">
+                <h4>Price Details</h4>
+                <h4>Total Price</h4>
+                <h4>Tax(10%)</h4>
+                <h3>Total Amount</h3>
+            </div>
+            <div class="cost-detail-right">
+              <h4>{{formatPrice(room.price_per_night)}}</h4>
+              <h4>{{formatPrice(totalAmount)}} ({{calculateNights()}} đêm) </h4>
+              <h4>{{formatPrice(totalAmount * 0.1)}}</h4>
+              <h3>{{formatPrice(totalAmount + totalAmount * 0.1)}}</h3>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+  }
+  

@@ -25,7 +25,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   mapOptions: google.maps.MapOptions = {
     zoomControl: true,
-    scrollwheel: true,
+    scrollwheel: false,
     disableDoubleClickZoom: false,
     maxZoom: 20,
     minZoom: 15,
