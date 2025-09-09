@@ -83,7 +83,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       this.isCreateRoom$.subscribe((isCreateRoom) => {
         if (isCreateRoom) {
           this.snackBar.showAlert('Room created successfully', 'Close', 3000);
-          this.store.dispatch(RoomActions.clearCreateRoomState());
           this.router.navigate(['/profile', this.mineProfile.id]);
         }
       }),
@@ -110,6 +109,8 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.onDocumentClick.bind(this));
 
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+          this.store.dispatch(RoomActions.clearCreateRoomState());
+
   }
   private playVideo(videoRef: ElementRef<HTMLVideoElement> | undefined) {
     if (videoRef) {
