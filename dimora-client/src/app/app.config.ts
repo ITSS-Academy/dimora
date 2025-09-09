@@ -6,20 +6,22 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import {environment} from '../environments/environment';
-import {authReducer} from './ngrx/reducer/auth.reducer';
+import { environment } from '../environments/environment';
+import { authReducer } from './ngrx/reducer/auth.reducer';
 import * as authEffects from './ngrx/effects/auth.effects';
-import {provideHttpClient} from '@angular/common/http';
-import {searchReducer} from './ngrx/reducer/search.reducer';
+import { provideHttpClient } from '@angular/common/http';
+import { searchReducer } from './ngrx/reducer/search.reducer';
 import * as searchEffects from './ngrx/effects/search.effects';
-import {amenitiesReducer} from './ngrx/reducer/amenities.reducer';
+import { amenitiesReducer } from './ngrx/reducer/amenities.reducer';
 import * as amenitiesEffects from './ngrx/effects/amenities.effects';
 import { roomReducer } from './ngrx/reducer/room.reducer';
 import * as roomEffects from './ngrx/effects/room.effects';
 import { bookingReducer } from './ngrx/reducer/booking.reducer';
-import * as bookingEffects  from './ngrx/effects/booking.effects';
+import * as bookingEffects from './ngrx/effects/booking.effects';
 import { roomTypesReducer } from './ngrx/reducer/room-types.reducer';
 import * as roomTypesEffects from './ngrx/effects/room-types.effects';
+import { reviewReducer } from './ngrx/reducer/review.reducer';
+import * as reviewsEffects from './ngrx/effects/review.effects';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -30,7 +32,8 @@ export const appConfig: ApplicationConfig = {
       amenities: amenitiesReducer,
       room: roomReducer,
       booking: bookingReducer,
-      roomTypes: roomTypesReducer
+      roomTypes: roomTypesReducer,
+      reviews: reviewReducer,
     }),
     provideEffects(
       authEffects,
@@ -38,10 +41,11 @@ export const appConfig: ApplicationConfig = {
       amenitiesEffects,
       roomEffects,
       bookingEffects,
-      roomTypesEffects
+      roomTypesEffects,
+      reviewsEffects
     ),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
-    provideHttpClient()
+    provideHttpClient(),
   ],
 };
