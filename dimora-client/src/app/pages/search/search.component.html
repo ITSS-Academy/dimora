@@ -85,11 +85,11 @@
                     <span class="room-guests">{{ room.max_guests }} guest{{ room.max_guests > 1 ? 's' : '' }}</span>
                   </div>
                   <div class="room-amenities">
-                    @for (amenity of room.amenities.slice(0, 3); track amenity) {
+                    @for (amenity of (room.amenities || []).slice(0, 3); track amenity) {
                       <span class="amenity-tag">{{ amenity.name }}</span>
                     }
-                    @if (room.amenities.length > 3) {
-                      <span class="amenity-more">+{{ room.amenities.length - 3 }} more</span>
+                    @if ((room.amenities || []).length > 3) {
+                      <span class="amenity-more">+{{ (room.amenities || []).length - 3 }} more</span>
                     }
                   </div>
                   <div class="room-price-info">
@@ -172,11 +172,11 @@
                 </div>
   
                 <div class="selected-room-amenities">
-                  @for (amenity of selectedRoom.amenities.slice(0, 5); track amenity) {
+                  @for (amenity of (selectedRoom.amenities || []).slice(0, 5); track amenity) {
                     <span class="amenity-tag">{{ amenity }}</span>
                   }
-                  @if (selectedRoom.amenities.length > 5) {
-                    <span class="amenity-more">+{{ selectedRoom.amenities.length - 5 }} more</span>
+                  @if ((selectedRoom.amenities || []).length > 5) {
+                    <span class="amenity-more">+{{ (selectedRoom.amenities || []).length - 5 }} more</span>
                   }
                 </div>
   
@@ -228,11 +228,11 @@
             </div>
   
             <div class="room-amenities">
-              @for (amenity of dialogRoom.amenities.slice(0, 5); track amenity) {
+              @for (amenity of (dialogRoom.amenities || []).slice(0, 5); track amenity) {
                 <span class="amenity-tag">{{ amenity }}</span>
               }
-              @if (dialogRoom.amenities.length > 5) {
-                <span class="amenity-more">+{{ dialogRoom.amenities.length - 5 }} more</span>
+              @if ((dialogRoom.amenities || []).length > 5) {
+                <span class="amenity-more">+{{ (dialogRoom.amenities || []).length - 5 }} more</span>
               }
             </div>
   
