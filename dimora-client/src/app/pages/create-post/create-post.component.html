@@ -61,11 +61,13 @@
                 [class.selected]="isRoomTypeSelected(roomType.id)"
                 (click)="onRoomTypeSelected(roomType.id)"
               >
-                <img
-                  class="material-symbols-rounded"
-                  src="{{ roomType.icon }}"
-                />
-                <span>{{ roomType.name }}</span>
+                <div class="option-content">
+                  <img
+                    class="material-symbols-rounded"
+                    src="{{ roomType.icon }}"
+                  />
+                  <span>{{ roomType.name }}</span>
+                </div>
               </button>
               }
             </div>
