@@ -1,265 +1,308 @@
 @if(isLoading$ | async) {
-  <app-loading></app-loading>
-} @else {
-  @if(roomData$ | async; as room) {
-    @if(currentUser$ | async; as currentUser) {
-    @if(room?.id) {
-    <div class="container">
-      <div class="title">{{room.title}}</div>
-    
-      <!-- Gallery -->
-            <div class="gallery">
-       @for (image of room.images; track $index) {
-         <img [src]="image" [alt]="'Room image ' + ($index + 1)" [class]="$index === 0 ? 'main' : ''">
-       }
-     </div>
-    
-    
-      <!-- Wrapper chia 2 cột -->
-      <div class="content-wrapper">
-        <div class="left-content">
-          <!-- Thông tin -->
-          <div class="info">
-            <p>{{room.max_guests}} khách · {{room.bedrooms}} phòng ngủ · {{room.beds}} giường · {{room.bathrooms}} phòng tắm</p>
-            <div class="price">Giá đã bao gồm mọi khoản phí</div>
+<app-loading></app-loading>
+} @else { @if(roomData$ | async; as room) { @if(currentUser$ | async; as
+currentUser) { @if(room?.id) {
+<div class="container">
+  <div class="title">{{ room.title }}</div>
+
+  <!-- Gallery -->
+  <div class="gallery">
+    @for (image of room.images; track $index) {
+    <img
+      [src]="image"
+      [alt]="'Room image ' + ($index + 1)"
+      [class]="$index === 0 ? 'main' : ''"
+    />
+    }
+  </div>
+
+  <!-- Wrapper chia 2 cột -->
+  <div class="content-wrapper">
+    <div class="left-content">
+      <!-- Thông tin -->
+      <div class="info">
+        <p>
+          {{ room.max_guests }} khách · {{ room.bedrooms }} phòng ngủ ·
+          {{ room.beds }} giường · {{ room.bathrooms }} phòng tắm
+        </p>
+        <div class="price">Giá đã bao gồm mọi khoản phí</div>
+      </div>
+
+      <!-- Host Section -->
+      <div class="host-section">
+        <div class="host-info">
+          <img
+            [src]="currentUser.avatar_url"
+            alt="Host"
+            class="host-avatar"
+            referrerpolicy="no-referrer"
+          />
+          <div>
+            <p>
+              <strong>Host: {{ currentUser.full_name }}</strong>
+            </p>
           </div>
-    
-          <!-- Host Section -->
-          <div class="host-section">
-            <div class="host-info">
-              <img [src]="currentUser.avatar_url" alt="Host" class="host-avatar" referrerpolicy="no-referrer">
-              <div>
-                <p><strong>Host: {{currentUser.full_name}}</strong></p>
+        </div>
+      </div>
+
+      <!-- Section hiển thị thêm -->
+      <div class="about-section">
+        <div class="more-info">
+          <h3>Giới thiệu về chỗ ở này</h3>
+          <p>
+            Chào mừng bạn đến với P3.1 tại Stardome Dalat – nơi mang đến không
+            gian tiện nghi, ấm cúng và tầm nhìn tuyệt đẹp hướng rừng thông.
+          </p>
+          <p>
+            ✨ Tiện ích nổi bật:<br />
+            • Bồn tắm thư giãn với cửa kính ngắm cảnh ngay từ phòng tắm<br />
+            • Bếp xinh xắn ngoài ban công<br />
+            • Ban công rộng rãi view rừng thông cực chill.<br />
+            • Bãi đậu xe hơi miễn phí<br />
+            👉 Nếu bạn cần 2 giường, vui lòng đặt từ 3 khách trở lên để chúng
+            tôi chuẩn bị.
+          </p>
+          <h3>Chỗ ở</h3>
+          <p>
+            Stardome Dalat là một không gian lưu trú cao cấp nằm trong khu phức
+            hợp DALHA Complex – tọa lạc tại vị trí đắc địa, yên tĩnh nhưng không
+            xa trung tâm thành phố. Chúng tôi mang đến cho bạn những căn hộ có
+            thiết kế hiện đại, đầy đủ tiện nghi, riêng tư và chan hòa cùng thiên
+            nhiên Đà Lạt.
+          </p>
+        </div>
+      </div>
+
+      <!-- Amenities Section -->
+      <div class="amenities-section">
+        <h3>What this place offers</h3>
+        <div class="amenities-grid">
+          @for (amenity of room.amenities; track amenity.id) {
+          <div class="amenity-item">
+            <mat-icon class="material-symbols-rounded">{{
+              amenity.icon_name
+            }}</mat-icon>
+            <span class="amenity-name">{{ amenity.name }}</span>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking -->
+    <div class="booking-container">
+      <form [formGroup]="bookingForm" (ngSubmit)="onBookRoom()">
+        <div class="price-section">
+          <h2 *ngIf="totalNights > 0 && totalPrice > 0">
+            {{ formatPrice(totalPrice) }} VNĐ
+          </h2>
+          <h2 *ngIf="totalNights === 0 && room.price_per_night">
+            {{ formatPrice(room.price_per_night) }} VNĐ
+          </h2>
+          <p *ngIf="totalNights > 0">cho {{ totalNights }} đêm</p>
+          <p *ngIf="totalNights === 0">cho 1 đêm</p>
+        </div>
+        <div class="date-section">
+          <mat-form-field
+            appearance="outline"
+            class="date-field"
+            (click)="picker.open()"
+          >
+            <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+              <input
+                matStartDate
+                formControlName="start"
+                readonly
+                placeholder="Start date"
+              />
+              <input
+                matEndDate
+                formControlName="end"
+                readonly
+                placeholder="End date"
+              />
+            </mat-date-range-input>
+            <mat-icon class="material-symbols-rounded" matSuffix
+              >calendar_month</mat-icon
+            >
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+
+        <div class="guest-section">
+          <mat-form-field
+            appearance="outline"
+            class="guest-field"
+            [matMenuTriggerFor]="guestsMenu"
+          >
+            <mat-label>Guests</mat-label>
+            <input
+              matInput
+              formControlName="guests"
+              readonly
+              placeholder="Who"
+            />
+            <mat-icon class="material-symbols-rounded" matSuffix
+              >person</mat-icon
+            >
+          </mat-form-field>
+
+          <mat-menu #guestsMenu="matMenu" class="guests-menu">
+            <div class="guests-menu-content">
+              <div class="guest-row">
+                <div class="guest-info">
+                  <div class="guest-label">Adults</div>
+                  <div class="guest-subtitle">Ages 13 or above</div>
+                </div>
+                <div class="guest-controls">
+                  <button
+                    mat-icon-button
+                    (click)="decreaseAdults($event)"
+                    [disabled]="adults <= 1"
+                  >
+                    <mat-icon class="material-symbols-rounded">remove</mat-icon>
+                  </button>
+                  <span class="guest-count">{{ adults }}</span>
+                  <button
+                    mat-icon-button
+                    (click)="increaseAdults($event)"
+                    [disabled]="
+                      adults + children + infants >= (room.max_guests || 0)
+                    "
+                  >
+                    <mat-icon class="material-symbols-rounded">add</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="guest-row">
+                <div class="guest-info">
+                  <div class="guest-label">Children</div>
+                  <div class="guest-subtitle">Ages 2-12</div>
+                </div>
+                <div class="guest-controls">
+                  <button
+                    mat-icon-button
+                    (click)="decreaseChildren($event)"
+                    [disabled]="children <= 0"
+                  >
+                    <mat-icon class="material-symbols-rounded">remove</mat-icon>
+                  </button>
+                  <span class="guest-count">{{ children }}</span>
+                  <button
+                    mat-icon-button
+                    (click)="increaseChildren($event)"
+                    [disabled]="
+                      adults + children + infants >= (room.max_guests || 0)
+                    "
+                  >
+                    <mat-icon class="material-symbols-rounded">add</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="guest-row">
+                <div class="guest-info">
+                  <div class="guest-label">Infants</div>
+                  <div class="guest-subtitle">Under 2</div>
+                </div>
+                <div class="guest-controls">
+                  <button
+                    mat-icon-button
+                    (click)="decreaseInfants($event)"
+                    [disabled]="infants <= 0"
+                  >
+                    <mat-icon class="material-symbols-rounded">remove</mat-icon>
+                  </button>
+                  <span class="guest-count">{{ infants }}</span>
+                  <button
+                    mat-icon-button
+                    (click)="increaseInfants($event)"
+                    [disabled]="
+                      adults + children + infants >= (room.max_guests || 0)
+                    "
+                  >
+                    <mat-icon class="material-symbols-rounded">add</mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-    
-          <!-- Section hiển thị thêm -->
-          <div class="about-section">
-            <div class="more-info">
-              <h3>Giới thiệu về chỗ ở này</h3>
-              <p>Chào mừng bạn đến với P3.1 tại Stardome Dalat – nơi mang đến không gian tiện nghi, ấm cúng và tầm nhìn tuyệt đẹp hướng rừng thông.</p>
-              <p>✨ Tiện ích nổi bật:<br>
-                • Bồn tắm thư giãn với cửa kính ngắm cảnh ngay từ phòng tắm<br>
-                • Bếp xinh xắn ngoài ban công<br>
-                • Ban công rộng rãi view rừng thông cực chill.<br>
-                • Bãi đậu xe hơi miễn phí<br>
-                👉 Nếu bạn cần 2 giường, vui lòng đặt từ 3 khách trở lên để chúng tôi chuẩn bị.
-              </p>
-              <h3>Chỗ ở</h3>
-              <p>Stardome Dalat là một không gian lưu trú cao cấp nằm trong khu phức hợp DALHA Complex – tọa lạc tại vị trí đắc địa, yên tĩnh nhưng không xa trung tâm thành phố. Chúng tôi mang đến cho bạn những căn hộ có thiết kế hiện đại, đầy đủ tiện nghi, riêng tư và chan hòa cùng thiên nhiên Đà Lạt.</p>
-            </div>
-          </div>
-
-          <!-- Amenities Section -->
-          <div class="amenities-section">
-            <h3>What this place offers</h3>
-            <div class="amenities-grid">
-              @for (amenity of room.amenities; track amenity.id) {
-                <div class="amenity-item">
-                  <mat-icon class="material-symbols-rounded">{{amenity.icon_name }}</mat-icon>
-                  <span class="amenity-name">{{ amenity.name }}</span>
-                </div>
-              }
-            </div>
-          </div>
+          </mat-menu>
         </div>
-
-        <!-- Booking -->
-        <div class="booking-container">
-          <form [formGroup]="bookingForm" (ngSubmit)="onBookRoom()">
-            <div class="price-section">
-              <h2 *ngIf="totalNights > 0 && totalPrice > 0">{{ formatPrice(totalPrice) }} VNĐ</h2>
-              <h2 *ngIf="totalNights === 0 && room.price_per_night">{{ formatPrice(room.price_per_night) }} VNĐ</h2>
-              <p *ngIf="totalNights > 0">cho {{ totalNights }} đêm</p>
-              <p *ngIf="totalNights === 0">cho 1 đêm</p>
-            </div>
-            <div class="date-section">
-              <mat-form-field appearance="outline" class="date-field" (click)="picker.open()">
-                <mat-date-range-input [rangePicker]="picker" [min]="minDate">
-                  <input matStartDate formControlName="start" readonly placeholder="Start date">
-                  <input matEndDate formControlName="end" readonly placeholder="End date">
-                </mat-date-range-input>
-                <mat-icon class="material-symbols-rounded" matSuffix>calendar_month</mat-icon>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              </mat-form-field>
-            </div>
-            
-            <div class="guest-section">
-              <mat-form-field appearance="outline" class="guest-field" [matMenuTriggerFor]="guestsMenu">
-                <mat-label>Guests</mat-label>
-                <input matInput formControlName="guests" readonly placeholder="Who">
-                <mat-icon class="material-symbols-rounded" matSuffix>person</mat-icon>
-              </mat-form-field>
-              
-              <mat-menu #guestsMenu="matMenu" class="guests-menu">
-                <div class="guests-menu-content">
-                  <div class="guest-row">
-                    <div class="guest-info">
-                      <div class="guest-label">Adults</div>
-                      <div class="guest-subtitle">Ages 13 or above</div>
-                    </div>
-                    <div class="guest-controls">
-                      <button mat-icon-button (click)="decreaseAdults($event)" [disabled]="adults <= 1">
-                        <mat-icon class="material-symbols-rounded">remove</mat-icon>
-                      </button>
-                      <span class="guest-count">{{adults}}</span>
-                      <button mat-icon-button (click)="increaseAdults($event)" [disabled]="(adults + children + infants) >= (room.max_guests || 0)">
-                        <mat-icon class="material-symbols-rounded">add</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div class="guest-row">
-                    <div class="guest-info">
-                      <div class="guest-label">Children</div>
-                      <div class="guest-subtitle">Ages 2-12</div>
-                    </div>
-                    <div class="guest-controls">
-                      <button mat-icon-button (click)="decreaseChildren($event)" [disabled]="children <= 0">
-                        <mat-icon class="material-symbols-rounded">remove</mat-icon>
-                      </button>
-                      <span class="guest-count">{{children}}</span>
-                      <button mat-icon-button (click)="increaseChildren($event)" [disabled]="(adults + children + infants) >= (room.max_guests || 0)">
-                        <mat-icon class="material-symbols-rounded">add</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div class="guest-row">
-                    <div class="guest-info">
-                      <div class="guest-label">Infants</div>
-                      <div class="guest-subtitle">Under 2</div>
-                    </div>
-                    <div class="guest-controls">
-                      <button mat-icon-button (click)="decreaseInfants($event)" [disabled]="infants <= 0">
-                        <mat-icon class="material-symbols-rounded">remove</mat-icon>
-                      </button>
-                      <span class="guest-count">{{infants}}</span>
-                      <button mat-icon-button (click)="increaseInfants($event)" [disabled]="(adults + children + infants) >= (room.max_guests || 0)">
-                        <mat-icon class="material-symbols-rounded">add</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                  
-                </div>
-              </mat-menu>
-            </div>
-            <button mat-flat-button type="submit" class="book-button">Đặt phòng</button>
-          </form>
-      
-        </div>
-      </div>
-    
-    
-    <!-- Modal hiển thị thêm ảnh -->
-    
-    <!-- Map Section -->
-    <div class="map-section">
-      <h3>Vị trí</h3>
-      <app-map 
-        [latitude]="room.latitude" 
-        [longitude]="room.longitude"
-        [zoom]="15"
-        >
-      </app-map>
+        <button mat-flat-button type="submit" class="book-button">
+          Đặt phòng
+        </button>
+      </form>
     </div>
+  </div>
 
-    <div class="reviews">
-      <!-- Review 1 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Danh <span>· 9 tháng hoạt động trên Airbnb</span></h4>
-          <div class="meta">★★★★★ · tháng 4 năm 2025</div>
-          <div class="text">
-            Homestay rất sạch sẽ và đúng như trong mô tả, ngoài ra anh chủ rất thân thiện, luôn hỗ trợ nhiệt tình và nếu sẵn sàng giúp đỡ mọi người trong tầm tay. Ở tại homestay đã nâng tầm trải...
-          </div>
-          <div class="more">Hiển thị thêm</div>
-        </div>
-      </div>
-    
-      <!-- Review 2 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Ngọc Diem <span>· 5 năm hoạt động trên Airbnb</span></h4>
-          <div class="meta">★★★★★ · tháng 6 năm 2025</div>
-          <div class="text">
-            Phòng gọn gàng sạch sẽ, gần trung tâm nhưng yên tĩnh, chủ nhà hỗ trợ rất nhiệt tình. Nếu có dịp sẽ quay lại.
-          </div>
-          <div class="more">Hiển thị thêm</div>
-        </div>
-      </div>
-    
-      <!-- Review 3 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Imogen <span>· 9 năm hoạt động trên Airbnb</span></h4>
-          <div class="meta">★★★★★ · tháng 7 năm 2025</div>
-          <div class="text">
-            Chỗ ở của Vein không thể hoàn hảo hơn, chính xác như mô tả và hình ảnh, các căn hộ rất đẹp và đúng là những gì bạn cần cho kỳ nghỉ của mình ở Đà Lạt...
-          </div>
-          <div class="more">Hiển thị thêm</div>
-        </div>
-      </div>
-    
-      <!-- Review 4 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Trần <span>· 5 năm hoạt động trên Airbnb</span></h4>
-          <div class="meta">★★★★★ · tháng 5 năm 2025</div>
-          <div class="text">
-            Home xinh, rộng rãi vừa đủ. Chủ nhà nhiệt tình còn cho tụi mình check in sớm. Có dịp sẽ quay lại.
-          </div>
-        </div>
-      </div>
-    
-      <!-- Review 5 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Amber <span>· 2 năm hoạt động trên Airbnb</span></h4>
-          <div class="meta">★★★★★ · 1 tuần trước</div>
-          <div class="text">
-            Chỗ ở giống hệt như trong ảnh và là một không gian đáng yêu để thư giãn sau một chiếc xe buýt qua đêm. Viễn nhanh chóng trả lời bất kỳ câu hỏi nào của chúng tôi và để chúng tôi gửi...
-          </div>
-        </div>
-      </div>
-    
-      <!-- Review 6 -->
-      <div class="review-item">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="review-content">
-          <h4>Hiếu <span>· 2 tuần trước</span></h4>
-          <div class="meta">★★★★★ · 2 tuần trước</div>
-          <div class="text">
-            Dễ dọa về tiền. Chỗ ở sạch sẽ và đáng yêu. Chủ nhà siêu thông cảm và hỗ trợ, cho phép tôi để lại hành lý...
-          </div>
-          <div class="more">Hiển thị thêm</div>
+  <!-- Modal hiển thị thêm ảnh -->
+
+  <!-- Map Section -->
+  <div class="map-section">
+    <h3>Vị trí</h3>
+    <app-map
+      [latitude]="room.latitude"
+      [longitude]="room.longitude"
+      [zoom]="15"
+    >
+    </app-map>
+  </div>
+
+  <div class="reviews">
+    <!-- Review 1 -->
+    @for(item of reviewList$ | async; track item.id) {
+    <div class="review-item">
+      <img
+        [src]="item.user_info?.avatar_url"
+        alt="avatar"
+        class="avatar"
+        referrerpolicy="no-referrer"
+      />
+      <div class="review-content">
+        <h4>{{ item.user_info?.full_name }}</h4>
+        <span>{{ item.created_at | date : "short" }}</span>
+
+        <div class="text">
+          {{ item.comment }}
         </div>
       </div>
     </div>
-    <!-- Add Comment Section -->
-    @if(mineProfile$ | async; as mineProfile) {
-      @if(mineProfile.id) {
+    }
+  </div>
+  <!-- Add Comment Section -->
+  @if(mineProfile$ | async; as mineProfile) { @if(mineProfile.id) {
 
-    <div class="add-comment">
-      <div class="comment-box">
-        <img src="https://png.pngtree.com/png-clipart/20210613/original/pngtree-dark-gray-simple-avatar-png-image_6404677.jpg" alt="avatar" class="avatar">
-        <div class="input-area">
-          <!-- Rating stars -->
-          <!-- Textarea -->
-          <mat-form-field appearance="outline" class="comment-textarea">
-            <mat-label>Viết đánh giá của bạn...</mat-label>
-            <textarea matInput rows="2" style="resize: none; overflow-y: auto;"></textarea>
-            <button mat-icon-button matSuffix class="send-btn">
-              <mat-icon>send</mat-icon>
-            </button>
-          </mat-form-field>
-          <!-- <div class="rating">
+  <div class="add-comment">
+    <div class="comment-box">
+      <img
+        [src]="mineProfile.avatar_url"
+        alt="avatar"
+        class="avatar"
+        referrerpolicy="no-referrer"
+      />
+      <form class="input-area" [formGroup]="profileReview">
+        <!-- Rating stars -->
+        <!-- Textarea -->
+        <mat-form-field appearance="outline" class="comment-textarea">
+          <mat-label>Viết đánh giá của bạn...</mat-label>
+          <textarea
+            type="text"
+            matInput
+            rows="2"
+            style="resize: none; overflow-y: auto"
+            formControlName="comment"
+          ></textarea>
+          <button
+            mat-icon-button
+            matSuffix
+            class="send-btn"
+            (click)="onCreateReview()"
+          >
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+        <!-- <div class="rating">
             <input type="radio" id="star5" name="rating" value="5">
             <label for="star5" title="5 sao">★</label>
             <input type="radio" id="star4" name="rating" value="4">
@@ -271,22 +314,15 @@
             <input type="radio" id="star1" name="rating" value="1">
             <label for="star1" title="1 sao">★</label>
           </div> -->
-        </div>
-      </div>
+      </form>
     </div>
-  }
-  }
-
-    </div>
-    } @else {
-      <app-not-found></app-not-found>
-    }
-    } @else {
-      <app-not-found></app-not-found>
-    }
-  } @else {
-    <app-not-found></app-not-found>
-  }
-  
-  
-}
+  </div>
+  } }
+</div>
+} @else {
+<app-not-found></app-not-found>
+} } @else {
+<app-not-found></app-not-found>
+} } @else {
+<app-not-found></app-not-found>
+} }
