@@ -30,7 +30,7 @@ import { AuthModel } from '../../models/auth.model';
 })
 export class CreatePostComponent implements OnInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper;
-  
+
   token$ !: Observable<string>
   amenities$ !: Observable<AmenitiesModel[]>
   subscriptions: Subscription[] = []
@@ -48,7 +48,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       roomTypes: RoomTypesState
     }>,
     private geocoder: MapGeocoder,
-    private snackBar: SnackbarService 
+    private snackBar: SnackbarService
   ){
     this.token$ = this.store.select('auth', 'idToken')
     this.amenities$ = this.store.select('amenities', 'amenities')
@@ -78,9 +78,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         }
       })
     )
-   
-   
-    
+
+
+
   }
 
   ngOnDestroy(): void {
@@ -102,36 +102,36 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   // Single unified form for all steps
   roomForm = new FormGroup({
     // Step 1 - Basic info
-    
+
     // Step 2 - Room type
     propertyType: new FormControl(''),
     room_type_id: new FormControl('', Validators.required),
-    
+
     // Step 3 - Capacity
     guests: new FormControl(0, [Validators.required, Validators.min(0)]),
     bedrooms: new FormControl(0, [Validators.required, Validators.min(0)]),
     beds: new FormControl(0, [Validators.required, Validators.min(0)]),
     bathrooms: new FormControl(0, [Validators.required, Validators.min(0)]),
-    
+
     // Step 4 - Location (placeholder)
-    
+
     // Step 5 - Amenities
     amenities: new FormControl<string[]>([], Validators.required),
-    
+
     // Step 6 - Photos (placeholder)
     photos: new FormControl<File[]>([], Validators.required),
-    
+
     // Step 7 - Confirm photos
     confirmPhotos: new FormControl<File[]>([], [Validators.required, Validators.minLength(5)]),
-    
+
     // Step 8 - Title
     title: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-    
+
     // Step 9 - Highlights
-    
+
     // Step 10 - Price
     basePrice: new FormControl(null, [Validators.required, Validators.min(50000)]),
-    
+
     // Additional fields for room creation
     description: new FormControl('', [Validators.required, Validators.minLength(50)]),
     address: new FormControl('', Validators.required),
@@ -154,10 +154,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   previewUrls: string[] = [];
   taxRate = 0.14;
   guestPrice = 0;
-  
+
   // Drag & drop variables
   draggedIndex: number | null = null;
-  
+
   // Step navigation control
   currentStepIndex = 0;
   completedSteps: number[] = [];
@@ -263,7 +263,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   availableDistricts: string[] = [];
   selectedCity = '';
   selectedDistrict = '';
-  
+
   // Google Maps
   mapCenter: google.maps.LatLngLiteral = { lat: 10.8231, lng: 106.6297 }; // Hồ Chí Minh
   mapZoom = 12;
@@ -355,7 +355,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     // Sử dụng method updatePreviewUrls để cập nhật preview
     this.updatePreviewUrls(updatedFiles);
-    
+
   }
 
   removeImage(index: number): void {
@@ -365,10 +365,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     // Cập nhật cả photos và confirmPhotos
     this.roomForm.get('photos')?.setValue(currentFiles);
     this.roomForm.get('confirmPhotos')?.setValue(currentFiles);
-    
+
     // Sử dụng method updatePreviewUrls để cập nhật preview
     this.updatePreviewUrls(currentFiles);
-    
+
   }
 
   canGoToStepEight(): boolean {
@@ -393,20 +393,20 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     return this.currentStepIndex === 9; // Step 10 (index 9) is the last step
   }
 
-  
+
 
   // Location methods
   onCityChange(city: string): void {
     this.selectedCity = city;
     this.roomForm.get('city')?.setValue(city);
-    
+
     // Update available districts based on selected city
     this.availableDistricts = this.districts[city] || [];
-    
+
     // Reset district selection
     this.selectedDistrict = '';
     this.roomForm.get('location')?.setValue('');
-    
+
     // Enable/disable location field based on available districts
     if (this.availableDistricts.length === 0) {
       this.roomForm.get('location')?.disable();
@@ -439,7 +439,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     const address = this.roomForm.get('address')?.value || '';
     const city = this.roomForm.get('city')?.value || '';
     const location = this.roomForm.get('location')?.value || '';
-    
+
     if (address && city && location) {
       const fullAddress = `${address}, ${location}, ${city}, Việt Nam`;
       this.geocodeAddress(fullAddress);
@@ -453,7 +453,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         this.markerPosition = { lat: location.lat(), lng: location.lng() };
         this.mapCenter = this.markerPosition;
         this.mapZoom = 15;
-        
+
         // Update coordinates in form
         this.roomForm.get('latitude')?.setValue(location.lat());
         this.roomForm.get('longitude')?.setValue(location.lng());
@@ -480,7 +480,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       if (results && results.length > 0) {
         const result = results[0];
         this.parseAddressComponents(result.address_components);
-        
+
         // Update coordinates in form
         this.roomForm.get('latitude')?.setValue(latLng.lat());
         this.roomForm.get('longitude')?.setValue(latLng.lng());
@@ -495,15 +495,15 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     components.forEach(component => {
       const types = component.types;
-      
+
       if (types.includes('street_number') || types.includes('route')) {
         address = component.long_name + ' ' + address;
       }
-      
+
       if (types.includes('administrative_area_level_1')) {
         city = component.long_name;
       }
-      
+
       if (types.includes('administrative_area_level_2')) {
         district = component.long_name;
       }
@@ -513,11 +513,11 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     if (address.trim()) {
       this.roomForm.get('address')?.setValue(address.trim());
     }
-    
+
     if (city && this.cities.includes(city)) {
       this.onCityChange(city);
     }
-    
+
     if (district && this.availableDistricts.includes(district)) {
       this.onDistrictChange(district);
     }
@@ -532,10 +532,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   isStepAccessible(stepIndex: number): boolean {
     // Step 0 is always accessible
     if (stepIndex === 0) return true;
-    
+
     // Allow access to all previous steps (back navigation)
     if (stepIndex < this.currentStepIndex) return true;
-    
+
     // For forward navigation, previous step must be completed
     return this.isStepCompleted(stepIndex - 1);
   }
@@ -546,20 +546,20 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   onStepChange(event: any): void {
     const targetStepIndex = event.selectedIndex;
-    
+
     // Allow back navigation (going to previous steps)
     if (targetStepIndex < this.currentStepIndex) {
       this.currentStepIndex = targetStepIndex;
       this.isManualClick = false;
       return;
     }
-    
+
     // Only prevent forward navigation if it's a manual click on step header
     // Allow programmatic navigation (like Next button)
     if (!this.canNavigateToStep(targetStepIndex) && this.isManualClick) {
       // Set navigating flag to prevent infinite loops
       this.isNavigating = true;
-      
+
       // Reset to current step using ViewChild reference
       setTimeout(() => {
         try {
@@ -578,7 +578,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       }, 0);
       return;
     }
-    
+
     this.currentStepIndex = targetStepIndex;
     this.isManualClick = false;
   }
@@ -642,10 +642,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   // Handle clicks outside stepper
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
-    
+
     // Check if click is outside stepper by looking for stepper class
     const stepperElement = document.querySelector('mat-stepper');
-    
+
     // If click is outside stepper and not navigating, maintain current step focus
     if (stepperElement && !stepperElement.contains(target) && !this.isNavigating) {
       // Only maintain focus if it's not a button click (Next/Back buttons)
@@ -653,7 +653,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         this.maintainStepFocus();
       }
     }
-    
+
     // Reset manual click flag for any document click
     this.isManualClick = false;
   }
@@ -693,7 +693,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   // Method to handle image uploads and convert to URLs
   async processImages(files: File[]): Promise<string[]> {
     const imageUrls: string[] = [];
-    
+
     for (const file of files) {
       try {
         // Convert file to base64 or upload to server
@@ -703,7 +703,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         console.error('Error processing image:', error);
       }
     }
-    
+
     return imageUrls;
   }
 
@@ -722,7 +722,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       try {
         // Get image files
         const files: File[] = this.roomForm.get('confirmPhotos')?.value || [];
-        
+
         // Prepare room data
         const roomData: any = {
           title: this.roomForm.get('title')?.value || undefined,
@@ -748,17 +748,17 @@ export class CreatePostComponent implements OnInit, OnDestroy {
         };
 
         console.log('Creating room with data:', roomData);
-        
+
         // Dispatch action to create room
-        this.store.dispatch(RoomActions.createRoom({ room: roomData, idToken: this.idToken }));
-        
+        // this.store.dispatch(RoomActions.createRoom({ room: roomData, idToken: this.idToken }));
+
       } catch (error) {
         console.error('Error creating room:', error);
       }
     }else{
       this.snackBar.showAlert('Please select at least one image', 'error', 3000, 'right','top');
     }
-    
+
   }
 
   private markFormGroupTouched() {
@@ -804,7 +804,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   onDrop(event: DragEvent, dropIndex: number): void {
     event.preventDefault();
-    
+
     if (this.draggedIndex === null || this.draggedIndex === dropIndex) {
       this.draggedIndex = null;
       return;
@@ -812,31 +812,31 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     // Lấy mảng files hiện tại
     const currentFiles: File[] = this.roomForm.get('photos')?.value || [];
-    
+
     // Tạo mảng mới với vị trí đã thay đổi
     const newFiles = [...currentFiles];
     const draggedFile = newFiles[this.draggedIndex];
-    
+
     // Xóa file ở vị trí cũ
     newFiles.splice(this.draggedIndex, 1);
-    
+
     // Điều chỉnh dropIndex nếu cần
     let adjustedDropIndex = dropIndex;
     if (this.draggedIndex < dropIndex) {
       adjustedDropIndex = dropIndex - 1;
     }
-    
+
     // Thêm file vào vị trí mới
     newFiles.splice(adjustedDropIndex, 0, draggedFile);
-    
+
     // Cập nhật cả photos và confirmPhotos
     this.roomForm.get('photos')?.setValue(newFiles);
     this.roomForm.get('confirmPhotos')?.setValue(newFiles);
-    
+
     // Cập nhật preview URLs
     this.updatePreviewUrls(newFiles);
-    
-    
+
+
     // Reset dragged index
     this.draggedIndex = null;
   }

@@ -45,9 +45,9 @@
             </h2>
             <div class="options-grid">
               @for (roomType of roomTypes$ | async; track roomType.id) {
-                <button 
-                  mat-button 
-                  class="option" 
+                <button
+                  mat-button
+                  class="option"
                   [class.selected]="isRoomTypeSelected(roomType.id)"
                   (click)="onRoomTypeSelected(roomType.id)">
                   <img class="material-symbols-rounded" src="{{roomType.icon}}" />
@@ -189,7 +189,7 @@
           <div id="word-five">
             <!-- Tiêu đề -->
 
-            
+
             <!-- <div class="tell-guests">
               <h1>Tell guests what your place has to offer</h1>
               <span
@@ -445,8 +445,8 @@
           <div class="photo-management" *ngIf="previewUrls.length > 0">
             <!-- Ảnh chính (cover) -->
             <div class="main-image-container">
-              <div 
-                class="main-image" 
+              <div
+                class="main-image"
                 [draggable]="true"
                 (dragstart)="onDragStart($event, 0)"
                 (dragover)="onDragOver($event)"
@@ -582,7 +582,7 @@
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(7)">
     <ng-template matStepLabel>Location</ng-template>
-    
+
     <form [formGroup]="roomForm">
       <div class="container-step-eight" (click)="onStepContentClick($event)">
         <div class="step-eight">
@@ -602,7 +602,6 @@
                   streetViewControl: false,
                   fullscreenControl: false,
                   zoomControl: true,
-                  scrollwheel: false,
                   styles: [
                     {
                       featureType: 'poi',
@@ -614,7 +613,7 @@
                 (mapClick)="onMapClick($event)"
                 width="100%"
                 height="100%">
-                
+
                 <!-- Marker -->
                 <map-marker
                   *ngIf="markerPosition"
@@ -632,8 +631,8 @@
                 <!-- Thành phố (chọn trước) -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
-                  <mat-select 
-                    formControlName="city" 
+                  <mat-select
+                    formControlName="city"
                     placeholder="Chọn thành phố"
                     (selectionChange)="onCityChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
@@ -647,8 +646,8 @@
                 <!-- Quận/Phường/Huyện -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">location_city</mat-icon>
-                  <mat-select 
-                    formControlName="location" 
+                  <mat-select
+                    formControlName="location"
                     placeholder="Chọn quận/huyện"
                     (selectionChange)="onDistrictChange($event.value)"
                     (keydown.enter)="onSelectEnter($event)"
@@ -662,9 +661,9 @@
                 <!-- Địa chỉ chi tiết -->
                 <div class="address-input-group">
                   <mat-icon class="input-icon">place</mat-icon>
-                  <input 
-                    matInput 
-                    formControlName="address" 
+                  <input
+                    matInput
+                    formControlName="address"
                     placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường)"
                     class="address-input"
                     (blur)="searchAddress()"
@@ -736,6 +735,7 @@
             Create Room
           </button>
         </div>
+
       </div>
     </form>
   </mat-step>
@@ -756,13 +756,13 @@
       </div>
     </mat-step>
   </mat-step>
-  
+
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(9)">
     <ng-template matStepLabel>Hoàn thành</ng-template>
-    
+
     <div class="completion-step" (click)="onStepContentClick($event)">
       <h2>Xem lại thông tin phòng của bạn</h2>
-      
+
       <div class="summary-card">
         <div class="summary-section">
           <h3>Thông tin cơ bản</h3>
@@ -770,7 +770,7 @@
           <p><strong>Loại phòng:</strong> {{ roomForm.get('room_type_id')?.value || 'Chưa chọn' }}</p>
           <p><strong>Giá/đêm:</strong> {{ formatPrice(roomForm.get('price_per_night')?.value || 0) }}</p>
         </div>
-        
+
         <div class="summary-section">
           <h3>Thông tin chỗ ở</h3>
           <p><strong>Khách tối đa:</strong> {{ roomForm.get('max_guests')?.value || 0 }} khách</p>
@@ -778,7 +778,7 @@
           <p><strong>Giường:</strong> {{ roomForm.get('beds')?.value || 0 }}</p>
           <p><strong>Phòng tắm:</strong> {{ roomForm.get('bathrooms')?.value || 0 }}</p>
         </div>
-        
+
         <div class="summary-section">
           <h3>Tiện nghi</h3>
           <div class="amenities-summary">
@@ -787,13 +787,13 @@
             </span>
           </div>
         </div>
-        
+
         <div class="summary-section">
           <h3>Hình ảnh</h3>
           <p><strong>Số ảnh:</strong> {{ roomForm.get('images')?.value?.length || 0 }} ảnh</p>
         </div>
       </div>
-      
+
       <div class="form-status">
         <p *ngIf="isFormValid()" class="valid-status">
           ✅ Tất cả thông tin đã được điền đầy đủ
@@ -802,12 +802,12 @@
           ❌ Vui lòng kiểm tra lại các thông tin còn thiếu
         </p>
       </div>
-      
+
       <div class="action-buttons">
         <button mat-button matStepperPrevious>Quay lại</button>
-        <button 
-          mat-flat-button 
-          color="primary" 
+        <button
+          mat-flat-button
+          color="primary"
           (click)="onConfirm()"
           [disabled]="!isFormValid()">
           <mat-icon>check</mat-icon>

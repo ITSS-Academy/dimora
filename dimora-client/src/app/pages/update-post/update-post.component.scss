@@ -5,7 +5,7 @@
   justify-content: center;
   .skeleton{
     width: 771px ;
-    height: 1357px;
+    height: 2357px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -40,9 +40,11 @@
 
 .image-collection{
   width: 759px ;
-  height: 244px ;
+  min-height: 244px ;
+  height: auto ;
   border-radius: 25px ;
   border: 0.2px solid var(--outline);
+  background-color: #fff;
   .title{
     font-size: 16px;
     font-weight: 600;
@@ -55,9 +57,12 @@
     margin-top: -20px;
   }
   .images{
-      display: flex;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    max-width: 720px;
+    margin: 0 auto;
     .upload-img{
       width: 128px;
       height: 128px;
@@ -65,8 +70,6 @@
       background-color: #c4c4c4;
       display: inline-block;
       margin: 8px;
-      //object-fit: cover;     /* tránh bể hình */
-      //object-position: center;
     }
     .add-img{
       width: 128px;
@@ -182,7 +185,7 @@
 
 .fourth{
   width: 759px ;
-  height: 160px ;
+  height: 773px ;
   border-radius: 25px ;
   border: 0.2px solid var(--outline);
   margin-top: 30px;
@@ -203,11 +206,23 @@
   .fourth-container{
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
     .fourth-input{
       width: 700px;
       height: 50px;
     }
   }
+  .google-map-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+  }
+
+
+
+
 }
 
 .fifth{
@@ -228,10 +243,15 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
     h3{
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 800;
-      margin-left: 22px;
+    }
+    .guest-control{
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
   .box-two{
@@ -243,10 +263,15 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
     h3{
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 800;
-      margin-left: 14px;
+    }
+    .rooms-control{
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
   .box-three{
@@ -258,10 +283,15 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
     h3{
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 800;
-      margin-left: 18px;
+    }
+    .beds-control{
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
   .box-four{
@@ -273,42 +303,222 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
     h3{
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 800;
-      margin-left: 18px;
+    }
+    .bathrooms-control{
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
 }
 
-.sixth{
-  width: 759px ;
-  height: 154px ;
-  border-radius: 25px ;
+.sixth {
+  width: 759px;
+  height: 254px;
+  border-radius: 25px;
   border: 0.2px solid var(--outline);
   margin-top: 30px;
-  .title{
+  .title {
     font-size: 16px;
     font-weight: 600;
     margin: 20px;
   }
-  .guide{
+  .guide {
     font-size: 11px;
     color: gray;
     margin-left: 20px;
     margin-top: -20px;
   }
-     .slider-container{
-       display: flex;
-       justify-content: center;
-       .example-margin{
-         width: 600px;
-       }
-     }
-  .example-label-container{
+  .slider-container {
     display: flex;
-    font-size: 12px;
-    color: gray;
+    flex-direction: column;
     align-items: center;
+    padding: 24px 0 16px 0;
+    width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    .example-margin {
+      width: 100%;
+    }
+    .example-value-label {
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .example-label-container {
+      display: flex;
+      font-size: 12px;
+      color: gray;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
+
+
+}
+
+
+.place-one{
+  width: 700px ;
+  height: 50px ;
+  border-radius: 20px ;
+}
+
+
+
+.address-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .input-icon {
+    color: var(--primary);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .address-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--on-surface);
+    background: transparent;
+
+    &::placeholder {
+      color: var(--neutral);
+    }
+  }
+
+  .address-select {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--on-surface);
+    background: transparent;
   }
 }
+
+.address-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--on-surface);
+  background: transparent;
+
+  &::placeholder {
+    color: var(--neutral);
+  }
+}
+
+
+::ng-deep .address-input-group {
+  .mat-form-field {
+    width: 100%;
+
+    .mat-form-field-wrapper {
+      padding: 0;
+    }
+
+    .mat-form-field-flex {
+      border: none;
+      background: transparent;
+    }
+
+    .mat-form-field-infix {
+      border: none;
+      padding: 0;
+    }
+
+    .mat-form-field-underline {
+      display: none;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+
+  .mat-select {
+    .mat-select-trigger {
+      border: none;
+      background: transparent;
+    }
+
+    .mat-select-value {
+      color: var(--on-surface);
+    }
+
+    .mat-select-placeholder {
+      color: var(--neutral);
+    }
+  }
+}
+
+.address-inputs {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.map-background {
+  width: 100%;
+  height: 100%;
+
+  google-map {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+
+  }
+}
+
+.lastest-button{
+  width: 780px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  .confirm-button{
+    width: 700px ;
+    height: 60px ;
+    background-color: var(--primary);
+    border-radius: 30px ;
+    color: white;
+    font-size: 18px ;
+    font-weight: 600 ;
+    border: none ;
+    cursor: pointer ;
+    margin-top: 25px ;
+    margin-left: 27px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    &:hover {
+      background-color: #a32727; /* Darker shade on hover */
+    }
+  }
+}
+.skeleton{
+  display: flex;
+  align-items: center;
+}
+
+

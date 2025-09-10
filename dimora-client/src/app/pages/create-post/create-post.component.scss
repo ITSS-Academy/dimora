@@ -110,9 +110,9 @@ mat-stepper {
 
 .option.selected {
   background-color: var(--primary-container);
-  
 
-  
+
+
 
 }
 .container-step-two {
@@ -308,11 +308,11 @@ mat-stepper {
   gap: 16px;
   max-width: 900px;
   margin: 0 auto;
-  
+
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
@@ -340,25 +340,25 @@ mat-stepper {
   color: var(--on-surface);
   min-height: 100px;
   text-align: center;
-  
+
   &:hover {
     border-color: var(--primary);
     background: var(--primary-container);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   &.selected {
     border-color: var(--primary);
     background: var(--primary);
     color: var(--on-primary);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    
+
     mat-icon {
       color: var(--on-primary);
     }
   }
-  
+
   mat-icon {
     font-size: 24px;
     width: 24px;
@@ -366,7 +366,7 @@ mat-stepper {
     color: var(--on-surface-variant);
     transition: color 0.2s ease;
   }
-  
+
   span {
     font-weight: 500;
     text-align: center;
@@ -374,7 +374,7 @@ mat-stepper {
     word-break: break-word;
     font-size: 13px;
   }
-  
+
   &:focus {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
@@ -438,7 +438,7 @@ mat-stepper {
 /* Selected photos preview */
 .selected-photos {
   margin-top: 30px;
-  
+
   h3 {
     font-size: 18px;
     margin-bottom: 16px;
@@ -726,7 +726,7 @@ mat-stepper {
 
         .add-icon {
           margin-bottom: 8px;
-          
+
           mat-icon {
             font-size: 32px;
             width: 32px;
@@ -889,7 +889,7 @@ mat-stepper {
   width: 100%;
   height: 100%;
   position: relative;
-  
+
   google-map {
     width: 100%;
     height: 100%;
@@ -963,40 +963,40 @@ mat-stepper {
 ::ng-deep .address-input-group {
   .mat-form-field {
     width: 100%;
-    
+
     .mat-form-field-wrapper {
       padding: 0;
     }
-    
+
     .mat-form-field-flex {
       border: none;
       background: transparent;
     }
-    
+
     .mat-form-field-infix {
       border: none;
       padding: 0;
     }
-    
+
     .mat-form-field-underline {
       display: none;
     }
-    
+
     .mat-form-field-subscript-wrapper {
       display: none;
     }
   }
-  
+
   .mat-select {
     .mat-select-trigger {
       border: none;
       background: transparent;
     }
-    
+
     .mat-select-value {
       color: var(--on-surface);
     }
-    
+
     .mat-select-placeholder {
       color: var(--neutral);
     }
@@ -1013,15 +1013,15 @@ mat-stepper {
 
 ::ng-deep .mat-form-field.full-width {
   width: 100%;
-  
+
   .mat-form-field-wrapper {
     width: 100%;
   }
-  
+
   .mat-form-field-flex {
     width: 100%;
   }
-  
+
   .mat-form-field-infix {
     width: 100%;
   }
@@ -1214,7 +1214,7 @@ mat-stepper {
 // Completion step styles
 .completion-step {
   padding: 24px;
-  
+
   h2 {
     text-align: center;
     margin-bottom: 32px;
@@ -1228,24 +1228,24 @@ mat-stepper {
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  
+
   .summary-section {
     margin-bottom: 24px;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     h3 {
       color: var(--primary);
       margin-bottom: 12px;
       font-size: 18px;
     }
-    
+
     p {
       margin: 8px 0;
       color: var(--on-surface);
-      
+
       strong {
         color: var(--on-surface);
       }
@@ -1257,7 +1257,7 @@ mat-stepper {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  
+
   .amenity-chip {
     background: var(--primary-container);
     color: var(--on-primary-container);
@@ -1270,12 +1270,12 @@ mat-stepper {
 .form-status {
   text-align: center;
   margin-bottom: 24px;
-  
+
   .valid-status {
     color: #4caf50;
     font-weight: 600;
   }
-  
+
   .invalid-status {
     color: #f44336;
     font-weight: 600;
@@ -1286,7 +1286,7 @@ mat-stepper {
   display: flex;
   justify-content: center;
   gap: 16px;
-  
+
   button {
     min-width: 120px;
   }
@@ -1297,14 +1297,14 @@ mat-stepper {
   .completion-step {
     padding: 16px;
   }
-  
+
   .summary-card {
     padding: 16px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
-    
+
     button {
       width: 100%;
     }
@@ -1330,19 +1330,19 @@ mat-stepper {
 // Prevent focus loss and maintain stepper state
 ::ng-deep .mat-stepper {
   position: relative;
-  
+
   .mat-step-header {
     &:focus {
       outline: 2px solid var(--primary);
       outline-offset: 2px;
     }
   }
-  
+
   // Maintain focus on current step
   .mat-step-header[aria-selected="true"] {
     background-color: var(--primary-container);
     color: var(--on-primary-container);
-    
+
     .mat-step-icon {
       background-color: var(--primary);
       color: var(--on-primary);

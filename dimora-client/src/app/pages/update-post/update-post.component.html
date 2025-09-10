@@ -44,7 +44,7 @@
       </div>
     </div>
     <div class="third">
-      <div class="title"> <h2>Discription</h2></div>
+      <div class="title"> <h2>Description</h2></div>
       <div class="guide"> <h3>Name the accommodation you are offering for rent</h3></div>
       <form class="third-container">
         <mat-form-field class="third-input" appearance="fill">
@@ -53,55 +53,65 @@
         </mat-form-field>
       </form>
     </div>
-    <div class="fourth">
-      <div class="title"> <h2>Location</h2></div>
-      <div class="guide"> <h3>The address of your accommodation so that guests can easily find it</h3></div>
-      <form class="fourth-container">
-        <mat-form-field class="fourth-input" appearance="fill">
-          <mat-label>Describe Your Accommodation</mat-label>
-          <input matInput placeholder="Ex: Address, City, Ward, Street,.." >
-        </mat-form-field>
-      </form>
-    </div>
+
     <div class="fifth">
         <div class="box-one">
           <h3>Guest</h3>
-          <mat-form-field>
-            <mat-label>Quantity</mat-label>
-            <input matInput placeholder="Length" type="number" [(ngModel)]="Guests">
-          </mat-form-field>
+          <div class="guest-control">
+            <button mat-icon-button (click)="decrementGuests()" [disabled]="Guests <= 1">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="guest-value">{{ Guests }}</span>
+            <button mat-icon-button (click)="incrementGuests()" [disabled]="Guests >= 20">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
         </div>
       <div class="box-two">
         <h3>Rooms</h3>
-        <mat-form-field>
-          <mat-label>Quantity</mat-label>
-          <input matInput placeholder="Length" type="number" [(ngModel)]="Rooms">
-        </mat-form-field>
+        <div class="rooms-control">
+          <button mat-icon-button (click)="decrementRooms()" [disabled]="Rooms <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="rooms-value">{{ Rooms }}</span>
+          <button mat-icon-button (click)="incrementRooms()" [disabled]="Rooms >= 20">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </div>
       <div class="box-three">
         <h3>Beds</h3>
-        <mat-form-field>
-          <mat-label>Quantity</mat-label>
-          <input matInput placeholder="Length" type="number" [(ngModel)]="Beds">
-        </mat-form-field>
+        <div class="beds-control">
+          <button mat-icon-button (click)="decrementBeds()" [disabled]="Beds <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="beds-value">{{ Beds }}</span>
+          <button mat-icon-button (click)="incrementBeds()" [disabled]="Beds >= 20">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </div>
       <div class="box-four">
         <h3>Bathrooms</h3>
-        <mat-form-field>
-          <mat-label>Quantity</mat-label>
-          <input matInput placeholder="Length" type="number" [(ngModel)]="Bathrooms">
-        </mat-form-field>
+        <div class="bathrooms-control">
+          <button mat-icon-button (click)="decrementBathrooms()" [disabled]="Bathrooms <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="bathrooms-value">{{ Bathrooms }}</span>
+          <button mat-icon-button (click)="incrementBathrooms()" [disabled]="Bathrooms >= 20">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </div>
 
     </div>
     <div class="sixth">
       <div class="title"> <h2>Price per night</h2></div>
       <div class="guide"> <h3>Please set the rules for your rental property</h3></div>
-
       <div class="slider-container">
-        <div class="example-label-container">
-          <label id="example-name-label" class="example-name-label">$</label>
-          <label class="example-value-label">{{slider.value}}</label>
+        <div class="price-value-row">
+          <label class="example-value-label">{{formatPrice(Number(slider.value))}}</label>
+          <label id="example-name-label" class="example-name-label">VNĐ</label>
         </div>
         <mat-slider
           class="example-margin"
@@ -115,6 +125,97 @@
         </mat-slider>
       </div>
 
+    </div>
+    <div class="fourth">
+      <div class="title"> <h2>Location</h2></div>
+      <div class="guide"> <h3>The address of your accommodation so that guests can easily find it</h3></div>
+      <form class="fourth-container" [formGroup]="roomForm">
+        <div class="address-inputs">
+
+          <div class="address-input-group">
+            <mat-icon class="input-icon">location_city</mat-icon>
+            <mat-select
+              formControlName="city"
+              placeholder="Chọn thành phố"
+              (selectionChange)="onCityChange($event.value)"
+              (keydown.enter)="onSelectEnter($event)"
+              class="address-select">
+              <mat-option *ngFor="let city of cities" [value]="city">
+                {{ city }}
+              </mat-option>
+            </mat-select>
+          </div>
+
+
+        <!-- Quận/Phường/Huyện -->
+        <div class="address-input-group">
+          <mat-icon class="input-icon">location_city</mat-icon>
+          <mat-select
+            formControlName="location"
+            placeholder="Chọn quận/huyện"
+            (selectionChange)="onDistrictChange($event.value)"
+            (keydown.enter)="onSelectEnter($event)"
+            class="address-select">
+            <mat-option *ngFor="let district of availableDistricts" [value]="district">
+              {{ district }}
+            </mat-option>
+          </mat-select>
+        </div>
+
+
+        <div class="address-input-group">
+          <mat-icon class="input-icon">place</mat-icon>
+          <input
+            matInput
+            formControlName="address"
+            placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường)"
+            class="address-input"
+            (blur)="searchAddress()"
+            (keydown.enter)="onAddressEnter($event)">
+        </div>
+
+        <div class="map-background">
+          <google-map
+            width ="100%"
+            height="500px"
+            [center]="mapCenter"
+            [zoom]="mapZoom"
+            [options]="{
+                  mapTypeControl: false,
+                  streetViewControl: false,
+                  fullscreenControl: false,
+                  zoomControl: true,
+                  scrollwheel: false,
+                  styles: [
+                    {
+                      featureType: 'poi',
+                      elementType: 'labels',
+                      stylers: [{ visibility: 'off' }]
+                    }
+                  ]
+                }"
+            (mapClick)="onMapClick($event)"
+            >
+
+            <!-- Marker -->
+            <map-marker
+              *ngIf="markerPosition"
+              [position]="markerPosition"
+              [draggable]="true"
+              (mapDragend)="onMarkerDragEnd($event)"
+              title="Vị trí chỗ ở của bạn">
+            </map-marker>
+          </google-map>
+
+        </div>
+        </div>
+      </form>
+      <div
+
+        class="lastest-button">
+        <button
+          class="confirm-button">Confirm</button>
+      </div>
     </div>
   </div>
 </div>
