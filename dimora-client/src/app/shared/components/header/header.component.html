@@ -22,7 +22,7 @@
           type="text"
           matInput
           formControlName="location"
-          placeholder="Where are you going?"
+          placeholder="Bạn muốn đi đâu?"
         />
         <!-- <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
         @for (option of filteredOptions | async; track option) {
@@ -47,13 +47,13 @@
             matStartDate
             formControlName="start"
             readonly
-            placeholder="Start date"
+            placeholder="Ngày bắt đầu"
           />
           <input
             matEndDate
             formControlName="end"
             readonly
-            placeholder="End date"
+            placeholder="Ngày kết thúc"
           />
         </mat-date-range-input>
         <mat-icon matSuffix>calendar_month</mat-icon>
@@ -111,15 +111,15 @@
     <mat-menu #profileMenuLogined="matMenu">
       <button mat-menu-item (click)="navigateToCreateRoom()">
         <mat-icon class="material-symbols-rounded">create</mat-icon>
-        <span>Create room</span>
+        <span>Tạo phòng</span>
       </button>
       <button mat-menu-item (click)="navigateToProfile(profile.id)">
         <mat-icon class="material-symbols-rounded">person</mat-icon>
-        <span>Profile</span>
+        <span>Hồ sơ</span>
       </button>
       <button mat-menu-item (click)="logout()">
         <mat-icon class="material-symbols-rounded">logout</mat-icon>
-        <span>Log out</span>
+        <span>Đăng xuất</span>
       </button>
     </mat-menu>
     } @else {
