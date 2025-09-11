@@ -29,6 +29,7 @@ mat-stepper {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  min-width: 1400px;
 }
 .outline-button-step8 {
   display: flex;
@@ -84,7 +85,7 @@ mat-stepper {
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
-  width: 1400px;
+  width: 1600px;
 }
 .option {
   width: 202px;
@@ -154,8 +155,8 @@ mat-stepper {
 }
 
 .step-three #title h1 {
-  font-size: 32px;
-  width: 630px;
+  font-size: 28px;
+  width: 700px;
   height: 36px;
   margin: 0 0 8px 0;
   text-align: left;
@@ -164,7 +165,7 @@ mat-stepper {
 
 .step-three #title p {
   font-size: 18px;
-  width: 354px;
+  width: 700px;
   height: 23px;
   color: #717171;
   margin: 0px;
@@ -237,22 +238,33 @@ mat-stepper {
 }
 .container-step-four {
   width: 100%;
-  max-width: 1300px;
+  min-width: 1400px;
   min-height: 500px;
   margin: 0 auto;
+  .outline-button {
+    min-width: 1400px;
+    width: 100%;
+  }
 }
 
 .step-four {
+  width: 100%;
+  margin: 0 auto;
+  min-width: 1400px;
   max-height: 500px;
   display: flex;
   justify-content: space-between;
   align-items: center; /* căn giữa chữ và video theo chiều dọc */
-  gap: 40px; /* khoảng cách giữa chữ và video */
+  gap: 20px; /* khoảng cách giữa chữ và video */
+  margin: 50px 0 150px 0;
 }
 
 #word-four {
   flex: 1;
-  max-width: 500px;
+  max-width: 600px;
+  text-align: justify;
+  align-items: center;
+  margin-left: 150px;
 }
 
 #word-four h4 {
@@ -286,9 +298,15 @@ mat-stepper {
 }
 .container-step-five {
   width: 100%;
-  max-width: 1303px;
+  min-width: 1400px;
   height: auto;
   margin: 0 auto;
+  .title {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
 }
 .tell-guests {
   margin-bottom: 32px;
@@ -750,7 +768,10 @@ mat-stepper {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-
+  .outline-button {
+    width: 100%;
+    max-width: 800px;
+  }
   .step-seven {
     display: flex;
     flex-direction: column;
@@ -1087,7 +1108,7 @@ mat-stepper {
 // Step 9 - Pricing (old step 8)
 .container-step-nine {
   width: 100%;
-  height: 80vh;
+  height: 75vh;
   padding: 24px;
   display: flex;
   flex-direction: column;
