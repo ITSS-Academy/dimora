@@ -2,6 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import { RoomModel } from "../../models/room.model";
 import { RoomState } from "../state/room.state";
 import * as RoomActions from '../actions/room.actions';
+import { AvailabilityDateModel } from "../../models/availability-date.model";
 
 export const initialState: RoomState = {
     roomList: <RoomModel[]>[],
@@ -158,5 +159,6 @@ export const roomReducer = createReducer(
             error: null
         }
     }),
+    
 
 )

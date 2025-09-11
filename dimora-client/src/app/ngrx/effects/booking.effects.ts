@@ -29,3 +29,16 @@ export const createBookingEffects = createEffect(
     },
     {functional: true}
 )
+
+export const getAvailabilityDatesEffects = createEffect(
+    (actions$ = inject(Actions), bookingService = inject(BookingService)) => {
+        return actions$.pipe(
+            ofType(BookingActions.getAvailabilityDates),
+            switchMap((action) => bookingService.getAvailabilityDates(action.roomId, action.idToken, action.startDate, action.endDate, action.hostId).pipe(
+                map((availabilityDates) => BookingActions.getAvailabilityDatesSuccess({availabilityDates})),
+                catchError((error) => of(BookingActions.getAvailabilityDatesFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)

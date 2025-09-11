@@ -1,5 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { BookingModel } from "../../models/booking.model";
+import { AvailabilityDateModel } from "../../models/availability-date.model";
 
 export const getBooking = createAction(
     '[Booking] Get Booking',
@@ -35,4 +36,20 @@ export const createBookingFailure = createAction(
 //clear booking state
 export const clearBookingState = createAction(
     '[Booking] Clear Booking State'
+)
+
+
+export const getAvailabilityDates = createAction(
+    '[Booking] Get Availability Dates',
+    props<{roomId: string, idToken: string, startDate: string, endDate: string, hostId: string}>()
+)
+
+export const getAvailabilityDatesSuccess = createAction(
+    '[Booking] Get Availability Dates Success',
+    props<{availabilityDates: AvailabilityDateModel}>()
+)
+
+export const getAvailabilityDatesFailure = createAction(
+    '[Booking] Get Availability Dates Failure',
+    props<{error: any}>()
 )
