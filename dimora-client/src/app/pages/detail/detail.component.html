@@ -57,7 +57,7 @@ currentUser) { @if(room?.id) {
 
       <!-- Amenities Section -->
       <div class="amenities-section">
-        <h3>What this place offers</h3>
+        <h3>Nơi này cung cấp những gì</h3>
         <div class="amenities-grid">
           @for (amenity of room.amenities; track amenity.id) {
           <div class="amenity-item">
@@ -95,13 +95,13 @@ currentUser) { @if(room?.id) {
                 matStartDate
                 formControlName="start"
                 readonly
-                placeholder="Start date"
+                placeholder="Ngày bắt đầu"
               />
               <input
                 matEndDate
                 formControlName="end"
                 readonly
-                placeholder="End date"
+                placeholder="Ngày kết thúc"
               />
             </mat-date-range-input>
             <mat-icon class="material-symbols-rounded" matSuffix
@@ -117,7 +117,7 @@ currentUser) { @if(room?.id) {
             class="guest-field"
             [matMenuTriggerFor]="guestsMenu"
           >
-            <mat-label>Guests</mat-label>
+            <mat-label>Khách</mat-label>
             <input
               matInput
               formControlName="guests"
