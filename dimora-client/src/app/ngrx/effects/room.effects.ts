@@ -3,6 +3,7 @@ import { RoomsService } from "../../services/rooms/rooms.service";
 import { inject } from "@angular/core";
 import { catchError, map, of, switchMap } from "rxjs";
 import * as RoomActions from "../actions/room.actions";
+import {RoomModel} from '../../models/room.model';
 
 export const roomEffects = createEffect(
     (actions$ = inject(Actions), roomsService = inject(RoomsService)) => {
@@ -52,6 +53,20 @@ export const createRoomEffects = createEffect(
             switchMap((action) => roomsService.createRoom(action.room, action.idToken).pipe(
                 map((room) => RoomActions.createRoomSuccess({room})),
                 catchError((error) => of(RoomActions.createRoomFailure({error})))
+            ))
+        )
+    },
+    {functional: true}
+)
+
+
+export const deleteRoomEffects = createEffect(
+    (actions$ = inject(Actions), roomsService = inject(RoomsService)) => {
+        return actions$.pipe(
+            ofType(RoomActions.deleteRoom),
+            switchMap((action) => roomsService.deleteRoom(action.roomId, action.idToken, action.hostId).pipe(
+                map((rooms:RoomModel[]) => RoomActions.deleteRoomSuccess({rooms: rooms})),
+                catchError((error) => of(RoomActions.deleteRoomFailure({error})))
             ))
         )
     },

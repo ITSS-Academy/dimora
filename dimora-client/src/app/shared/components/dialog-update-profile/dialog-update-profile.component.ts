@@ -1,8 +1,13 @@
-import {Component, inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {MaterialModule} from '../../material.module';
-import {FormControl, FormGroup, FormsModule, Validators} from '@angular/forms';
-import {ShareModule} from '../../share.module';
+import { Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MaterialModule } from '../../material.module';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
+import { ShareModule } from '../../share.module';
 import * as AuthActions from '../../../ngrx/actions/auth.actions';
 import { Store } from '@ngrx/store';
 import { AuthState } from '../../../ngrx/state/auth.state';
@@ -12,18 +17,17 @@ import { SnackbarService } from '../../../services/snackbar/snackbar.service';
   selector: 'app-dialog-update-profile',
   imports: [MaterialModule, FormsModule, ShareModule],
   templateUrl: './dialog-update-profile.component.html',
-  styleUrl: './dialog-update-profile.component.scss'
+  styleUrl: './dialog-update-profile.component.scss',
 })
 export class DialogUpdateProfileComponent {
   data = inject(MAT_DIALOG_DATA);
   profile: any;
   constructor(
     private snackbar: SnackbarService,
-    private store: Store<{
-      auth: AuthState,
-    }>
+    private store: Store<{ auth: AuthState }>,
+    private dialogRef: MatDialogRef<DialogUpdateProfileComponent>
   ) {
-  console.log(this.data.profile);
+    console.log(this.data.profile);
   }
 
   previewUrl: string | ArrayBuffer | null = null;
@@ -50,26 +54,33 @@ export class DialogUpdateProfileComponent {
     if (this.profileForm.valid) {
       const updatedProfile = {
         id: this.data.profile.id,
-        full_name: this.profileForm.value.full_name || this.data.profile.full_name,
+        full_name:
+          this.profileForm.value.full_name || this.data.profile.full_name,
         email: this.profileForm.value.email || this.data.profile.email,
         phone: this.profileForm.value.phone || this.data.profile.phone,
         avatar: this.profileForm.value.avatar || this.data.profile.avatar_url,
       };
-    console.log('Profile sau khi save:', updatedProfile);
+      console.log('Profile sau khi save:', updatedProfile);
       // this.store.dispatch(AuthActions.updateProfile({profile: updatedProfile, idToken: this.data.idToken}));
-    }else{
-      this.snackbar.showAlert('Please fill all fields', 'error', 3000, 'right', 'top');
+    } else {
+      this.snackbar.showAlert(
+        'Vui lòng điền đầy đủ thông tin hợp lệ',
+        'error',
+        3000,
+        'right',
+        'top'
+      );
     }
 
     // TODO: gọi API update
   }
 
   profileForm = new FormGroup({
-    full_name : new FormControl(this.data.profile.full_name, [Validators.required]),
-    email : new FormControl(this.data.profile.email, [Validators.required]),
-    phone : new FormControl(this.data.profile.phone, [Validators.required]),
-    avatar : new FormControl<File | null>(null),
-  })
-
-
-} 
+    full_name: new FormControl(this.data.profile.full_name, [
+      Validators.required,
+    ]),
+    email: new FormControl(this.data.profile.email, [Validators.required]),
+    phone: new FormControl(this.data.profile.phone, [Validators.required]),
+    avatar: new FormControl<File | null>(null),
+  });
+}

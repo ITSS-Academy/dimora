@@ -16,7 +16,7 @@ export const initialState: RoomState = {
 
 export const roomReducer = createReducer(
     initialState,
-   
+
 
     on(RoomActions.getRoomList, (state,{type}) =>{
         console.log(type)
@@ -160,5 +160,33 @@ export const roomReducer = createReducer(
         }
     }),
     
+
+  on(RoomActions.deleteRoom, (state,{type}) =>{
+    console.log(type)
+    return {
+        ...state,
+        isLoading: true,
+        error: null
+    }
+  }),
+
+  on(RoomActions.deleteRoomSuccess, (state,{rooms, type}) =>{
+    console.log(type)
+    return {
+        ...state,
+      roomListByHostId: rooms,
+        isLoading: false,
+        error: null
+    }
+  }),
+
+  on(RoomActions.deleteRoomFailure, (state,{type, error}) =>{
+    console.log(type)
+    return {
+        ...state,
+        isLoading: false,
+        error: error
+    }
+  })
 
 )

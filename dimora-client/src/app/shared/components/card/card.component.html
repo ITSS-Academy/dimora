@@ -1,11 +1,18 @@
-<div class="card-container" (click)="navigateToDetail(hotel.id)">
+<div class="card-container">
   <div class="image">
-    <img src="{{hotel.images[0]}}">
+    @if(canDelete){
+      <div class="delete-button-container" (click)="openDialog(hotel.id, hotel.host_id)">
+        <mat-icon class="delete-btn">delete</mat-icon>
+
+      </div>
+    }
+    <img src="{{hotel.images[0]}}" (click)="navigateToDetail(hotel.id)">
+
   </div>
-  <div class="discription">
+  <div class="discription" (click)="navigateToDetail(hotel.id)">
     {{hotel.title}}
   </div>
-  <div class="cost">
+  <div class="cost" (click)="navigateToDetail(hotel.id)">
     {{formatPrice(hotel.price_per_night)}} VNĐ
   </div>
 </div>

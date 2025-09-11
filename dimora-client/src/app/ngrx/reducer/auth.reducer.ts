@@ -165,6 +165,16 @@ export const authReducer = createReducer(
     }
   }),
 
+  on(AuthActions.clearCurrentUser, (state,{type})=>{
+    console.log(type);
+    return {
+      ...state,
+      currentUser: <AuthModel>{},
+      isLoading: false,
+    }
+  }),
+
+
   //update profile
   on(AuthActions.updateProfile, (state,{type})=>{
     console.log(type);

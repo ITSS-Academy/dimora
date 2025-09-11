@@ -10,67 +10,71 @@ export const initialState: BookingState = {
     availabilityDates: <AvailabilityDateModel>{},
     isGettingAvailabilityDates: false,
     isLoading: false,
+    bookingSuccess: false,
     error: null
 }
 
 export const bookingReducer = createReducer(
-    initialState,
+  initialState,
 
-    on(BookingActions.getBooking, (state,{type}) => {
-        console.log(type)
-        return {
-            ...state,
-            isLoading: true,
-            error: null
-        }
-    }),
+  on(BookingActions.getBooking, (state, { type }) => {
+    console.log(type);
+    return {
+      ...state,
+      isLoading: true,
+      error: null,
+    };
+  }),
 
-    on(BookingActions.getBookingSuccess, (state,{type,bookingList}) => {
-        console.log(type)
-        return {
-            ...state,
-            bookingList: bookingList,
-            isLoading: false,
-            error: null
-        }
-    }),
+  on(BookingActions.getBookingSuccess, (state, { type, bookingList }) => {
+    console.log(type);
+    return {
+      ...state,
+      bookingList: bookingList,
+      isLoading: false,
+      error: null,
+    };
+  }),
 
-    on(BookingActions.getBookingFailure, (state,{type,error}) => {
-        console.log(type)
-        return {
-            ...state,
-            isLoading: false,
-            error: error
-        }
-    }),
+  on(BookingActions.getBookingFailure, (state, { type, error }) => {
+    console.log(type);
+    return {
+      ...state,
+      isLoading: false,
+      error: error,
+    };
+  }),
 
-    on(BookingActions.createBooking, (state,{type}) => {
-        console.log(type)
-        return {
-            ...state,
-            isLoading: true,
-            error: null
-        }
-    }),
+  on(BookingActions.createBooking, (state, { type }) => {
+    console.log(type);
+    return {
+      ...state,
+      isLoading: true,
+      error: null,
+      bookingSuccess: false,
+    };
+  }),
 
-    on(BookingActions.createBookingSuccess, (state,{type,booking}) => {
-        console.log(type)
-        return {
-            ...state,
-            bookingDetail: booking,
-            isLoading: false,
-            error: null
-        }
-    }),
+  on(BookingActions.createBookingSuccess, (state, { type, booking }) => {
+    console.log(type);
+    return {
+      ...state,
+      bookingDetail: booking,
+      isLoading: false,
+      bookingSuccess: true,
+      error: null,
+    };
+  }),
 
-    on(BookingActions.createBookingFailure, (state,{type,error}) => {
-        console.log(type)
-        return {
-            ...state,
-            isLoading: false,
-            error: error
-        }
-    }),
+  on(BookingActions.createBookingFailure, (state, { type, error }) => {
+    console.log(type);
+    return {
+      ...state,
+      isLoading: false,
+      bookingSuccess: false,
+      error: error,
+    };
+  }),
 
     on(BookingActions.clearBookingState, (state,{type}) => {
         console.log(type)
@@ -80,6 +84,7 @@ export const bookingReducer = createReducer(
             bookingList: <BookingModel[]>[],
             isLoading: false,
             isGettingAvailabilityDates: false,
+            bookingSuccess: false,
             error: null
         }
     }),
@@ -107,6 +112,7 @@ export const bookingReducer = createReducer(
         return {
             ...state,
             isGettingAvailabilityDates: false,
+            bookingSuccess: false,
             error: error
         }
     })

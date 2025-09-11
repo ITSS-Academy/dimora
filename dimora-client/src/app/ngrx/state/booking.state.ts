@@ -5,6 +5,7 @@ export interface BookingState {
     bookingDetail: BookingModel;
     isLoading: boolean;
     isGettingAvailabilityDates: boolean;
+    bookingSuccess: boolean;
     error: any;
     availabilityDates: AvailabilityDateModel;
 

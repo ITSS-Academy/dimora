@@ -214,7 +214,7 @@ export class RoomsController {
   @Delete()
   async remove(
     @Query('id') id: string,
-    @Query('host_id') hostId?: string
+    @Query('host_id') hostId: string
   ) {
     try {
       return await this.roomsService.remove(id, hostId);

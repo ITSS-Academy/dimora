@@ -32,7 +32,7 @@ export const routes: Routes = [
     canActivate: [BookingGuard]
   },
   {
-    path:'update-post',
+    path:'update-post/:id',
     loadComponent: () => import('../app/pages/update-post/update-post.component').then(m => m.UpdatePostComponent)
   },
   {
