@@ -5,75 +5,88 @@
   </div>
 
   @if(bookingList.length === 0) {
-    <div class="empty-state">
-      <div class="empty-icon">
-        <mat-icon class="material-symbols-rounded">hotel</mat-icon>
-      </div>
-      <h3>Chưa có lịch sử đặt phòng</h3>
-      <p>Bạn chưa có chuyến đi nào. Hãy khám phá và đặt phòng ngay!</p>
-      <button mat-flat-button class="explore-button">
-        <mat-icon class="material-symbols-rounded">search</mat-icon>
-        Khám phá ngay
-      </button>
+  <div class="empty-state">
+    <div class="empty-icon">
+      <mat-icon class="material-symbols-rounded">hotel</mat-icon>
     </div>
+    <h3>Chưa có lịch sử đặt phòng</h3>
+    <p>Bạn chưa có chuyến đi nào. Hãy khám phá và đặt phòng ngay!</p>
+    <button mat-flat-button class="explore-button" [routerLink]="['/home']">
+      <mat-icon class="material-symbols-rounded">search</mat-icon>
+      Khám phá ngay
+    </button>
+  </div>
   } @else {
-    <div class="booking-list">
-      @for (booking of bookingList; track booking.id) {
-        <div class="booking-card">
-          <div class="booking-image">
-            <img [src]="booking.rooms.images[0]" [alt]="booking.rooms.title" loading="lazy">
-            <div class="booking-status" [class]="getStatusClass(booking.status)">
-              {{ getStatusText(booking.status) }}
-            </div>
-          </div>
-          
-          <div class="booking-content">
-            <div class="booking-header">
-              <h3 class="room-title">{{ booking.rooms.title }}</h3>
-            </div>
-            
-            <div class="booking-details">
-              <div class="detail-item">
-                <mat-icon class="material-symbols-rounded">location_on</mat-icon>
-                <span>{{ booking.rooms.city }} , {{booking.rooms.country}}</span>
-              </div>
-              
-             
-              
-              <div class="detail-item">
-                <mat-icon class="material-symbols-rounded">group</mat-icon>
-                <span>{{ booking.guest_count }} khách</span>
-              </div>
+  <div class="booking-list">
+    @for (booking of bookingList; track booking.id) {
+    <div class="booking-card">
+      <div class="booking-image">
+        <img
+          [src]="booking.rooms.images[0]"
+          [alt]="booking.rooms.title"
+          loading="lazy"
+        />
+        <div class="booking-status" [class]="getStatusClass(booking.status)">
+          {{ getStatusText(booking.status) }}
+        </div>
+      </div>
 
-              <div class="detail-item">
-                <mat-icon class="material-symbols-rounded">calendar_month</mat-icon>
-                <span>{{ booking.check_in_date }} - {{ booking.check_out_date }}</span>
-              </div>
-              
-              <div class="detail-item">
-                <mat-icon class="material-symbols-rounded">nights_stay</mat-icon>
-                <span>{{ calculateNights(booking.check_in_date, booking.check_out_date) }} đêm</span>
-              </div>
-            </div>
-            
-            <div class="booking-footer">
-              <div class="price-info">
-                <span class="total-price">{{ formatPrice(booking.total_amount) }}</span>
-                <span class="price-detail">đã bao gồm thuế</span>
-              </div>
-              
-              <div class="booking-actions">
-                <button mat-stroked-button class="action-button" (click)="viewDetails(booking)">
-                  <mat-icon class="material-symbols-rounded">visibility</mat-icon>
-                  Chi tiết
-                </button>
-                
-               
-              </div>
-            </div>
+      <div class="booking-content">
+        <div class="booking-header">
+          <h3 class="room-title">{{ booking.rooms.title }}</h3>
+        </div>
+
+        <div class="booking-details">
+          <div class="detail-item">
+            <mat-icon class="material-symbols-rounded">location_on</mat-icon>
+            <span>{{ booking.rooms.city }} , {{ booking.rooms.country }}</span>
+          </div>
+
+          <div class="detail-item">
+            <mat-icon class="material-symbols-rounded">group</mat-icon>
+            <span>{{ booking.guest_count }} khách</span>
+          </div>
+
+          <div class="detail-item">
+            <mat-icon class="material-symbols-rounded">calendar_month</mat-icon>
+            <span
+              >{{ booking.check_in_date }} - {{ booking.check_out_date }}</span
+            >
+          </div>
+
+          <div class="detail-item">
+            <mat-icon class="material-symbols-rounded">nights_stay</mat-icon>
+            <span
+              >{{
+                calculateNights(booking.check_in_date, booking.check_out_date)
+              }}
+              đêm</span
+            >
           </div>
         </div>
-      }
+
+        <div class="booking-footer">
+          <div class="price-info">
+            <span class="total-price">{{
+              formatPrice(booking.total_amount)
+            }}</span>
+            <span class="price-detail">đã bao gồm thuế</span>
+          </div>
+
+          <div class="booking-actions">
+            <button
+              mat-stroked-button
+              class="action-button"
+              (click)="viewDetails(booking)"
+            >
+              <mat-icon class="material-symbols-rounded">visibility</mat-icon>
+              Chi tiết
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+    }
+  </div>
   }
 </div>
