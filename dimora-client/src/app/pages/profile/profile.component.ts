@@ -69,6 +69,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.mineProfile$ = this.store.select('auth','mineProfile')
   }
 
+
   ngOnInit() {
     this.subscription.push(
       this.currentProfile$.subscribe(profile => {
@@ -85,10 +86,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }),
       this.mineProfile$.subscribe(mineProfile => {
         if (mineProfile.id) {
+          console.log("mine profile",mineProfile);
           this.mineProfile = mineProfile;
         }
       }),
-      
+
     )
 
   }

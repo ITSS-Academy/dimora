@@ -1,9 +1,13 @@
-import { Component, inject, ViewChild, OnInit, OnDestroy, HostListener } from '@angular/core';
 import {
-  FormGroup,
-  FormControl,
-  Validators,
-} from '@angular/forms';
+  Component,
+  inject,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MaterialModule } from '../../shared/material.module';
 import { ShareModule } from '../../shared/share.module';
 import { RoomModel } from '../../models/room.model';
@@ -13,7 +17,7 @@ import { RoomState } from '../../ngrx/state/room.state';
 import { AuthState } from '../../ngrx/state/auth.state';
 import { Observable, Subscription } from 'rxjs';
 import { MatStepper } from '@angular/material/stepper';
-import { GoogleMap, MapGeocoder, MapMarker } from "@angular/google-maps";
+import { GoogleMap, MapGeocoder, MapMarker } from '@angular/google-maps';
 import { AmenitiesState } from '../../ngrx/state/amenities.state';
 import { AmenitiesModel } from '../../models/amenities.model';
 import { SnackbarService } from '../../services/snackbar/snackbar.service';
@@ -21,6 +25,13 @@ import { RoomTypeModel } from '../../models/room_type.model';
 import { RoomTypesState } from '../../ngrx/state/room-types.state';
 import { Router } from '@angular/router';
 import { AuthModel } from '../../models/auth.model';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import {
+  LocationService,
+  Province,
+  District,
+  Ward,
+} from '../../services/location/location.service';
 
 @Component({
   selector: 'app-create-post',
@@ -30,68 +41,93 @@ import { AuthModel } from '../../models/auth.model';
 })
 export class CreatePostComponent implements OnInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper;
+  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoFour') videoFour!: ElementRef<HTMLVideoElement>;
 
-  token$ !: Observable<string>
-  amenities$ !: Observable<AmenitiesModel[]>
-  subscriptions: Subscription[] = []
-  roomTypes$ !: Observable<RoomTypeModel[]>
-  idToken: string = ''
-  isCreateRoom$ !: Observable<boolean>
-  mineProfile$ !: Observable<AuthModel>
+  token$!: Observable<string>;
+  amenities$!: Observable<AmenitiesModel[]>;
+  subscriptions: Subscription[] = [];
+  roomTypes$!: Observable<RoomTypeModel[]>;
+  idToken: string = '';
+  isCreateRoom$!: Observable<boolean>;
+  mineProfile$!: Observable<AuthModel>;
   mineProfile: AuthModel = <AuthModel>{};
   constructor(
     private router: Router,
     private store: Store<{
-      room: RoomState,
-      auth: AuthState,
-      amenities: AmenitiesState,
-      roomTypes: RoomTypesState
+      room: RoomState;
+      auth: AuthState;
+      amenities: AmenitiesState;
+      roomTypes: RoomTypesState;
     }>,
+
     private geocoder: MapGeocoder,
-    private snackBar: SnackbarService
-  ){
-    this.token$ = this.store.select('auth', 'idToken')
-    this.amenities$ = this.store.select('amenities', 'amenities')
-    this.roomTypes$ = this.store.select('roomTypes', 'roomTypes')
-    this.isCreateRoom$ = this.store.select('room', 'isCreatingRoom')
-    this.mineProfile$ = this.store.select('auth', 'mineProfile')
+    private snackBar: SnackbarService,
+    private locationService: LocationService
+  ) {
+    this.token$ = this.store.select('auth', 'idToken');
+    this.amenities$ = this.store.select('amenities', 'amenities');
+    this.roomTypes$ = this.store.select('roomTypes', 'roomTypes');
+    this.isCreateRoom$ = this.store.select('room', 'isCreatingRoom');
+    this.mineProfile$ = this.store.select('auth', 'mineProfile');
   }
 
   ngOnInit(): void {
     // Add document click listener to maintain stepper focus
     document.addEventListener('click', this.onDocumentClick.bind(this));
-    this.subscriptions.push(
 
-      this.isCreateRoom$.subscribe(isCreateRoom => {
+    // Load provinces data
+    this.loadProvinces();
+
+    this.subscriptions.push(
+      this.isCreateRoom$.subscribe((isCreateRoom) => {
         if (isCreateRoom) {
-          this.snackBar.showAlert('Room created successfully', 'Close', 3000)
-          this.store.dispatch(RoomActions.clearCreateRoomState())
-          // this.router.navigate(['/profile', this.mineProfile.id])
+          this.snackBar.showAlert('Room created successfully', 'Close', 3000);
+          this.router.navigate(['/profile', this.mineProfile.id]);
         }
       }),
-      this.token$.subscribe(token => {
-        this.idToken = token
+      this.token$.subscribe((token) => {
+        this.idToken = token;
       }),
-      this.mineProfile$.subscribe(mineProfile => {
+      this.mineProfile$.subscribe((mineProfile) => {
         if (mineProfile.id) {
-          this.mineProfile = mineProfile
+          this.mineProfile = mineProfile;
         }
       })
-    )
+    );
+  }
 
-
-
+  // Load provinces data
+  loadProvinces(): void {
+    this.locationService.getProvinces().subscribe((provinces) => {
+      this.provinces = provinces;
+    });
   }
 
   ngOnDestroy(): void {
     // Remove document click listener
     document.removeEventListener('click', this.onDocumentClick.bind(this));
 
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+          this.store.dispatch(RoomActions.clearCreateRoomState());
+
+  }
+  private playVideo(videoRef: ElementRef<HTMLVideoElement> | undefined) {
+    if (videoRef) {
+      const videoEl = videoRef.nativeElement;
+      videoEl.currentTime = 0;
+      videoEl.play().catch((err) => {
+        console.warn('Autoplay bị chặn:', err);
+      });
+    }
   }
 
   ngAfterViewInit(): void {
     // Component initialized
+    setTimeout(() => {
+      this.playVideo(this.videoPlayer);
+      this.playVideo(this.videoFour);
+    }, 300);
   }
 
   @HostListener('document:click', ['$event'])
@@ -122,7 +158,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     photos: new FormControl<File[]>([], Validators.required),
 
     // Step 7 - Confirm photos
-    confirmPhotos: new FormControl<File[]>([], [Validators.required, Validators.minLength(5)]),
+    confirmPhotos: new FormControl<File[]>(
+      [],
+      [Validators.required, Validators.minLength(5)]
+    ),
 
     // Step 8 - Title
     title: new FormControl('', [Validators.required, Validators.maxLength(50)]),
@@ -130,20 +169,40 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     // Step 9 - Highlights
 
     // Step 10 - Price
-    basePrice: new FormControl(null, [Validators.required, Validators.min(50000)]),
+    basePrice: new FormControl(null, [
+      Validators.required,
+      Validators.min(50000),
+    ]),
 
     // Additional fields for room creation
-    description: new FormControl('', [Validators.required, Validators.minLength(50)]),
-    address: new FormControl('', Validators.required),
-    location: new FormControl('', Validators.required),
+    description: new FormControl('', [
+      Validators.required,
+      Validators.minLength(50),
+    ]),
+    address: new FormControl('', Validators.required), // Địa chỉ cụ thể
+    location: new FormControl(
+      { value: '', disabled: true },
+      Validators.required
+    ), // Phường + Quận (tự động)
+    district: new FormControl(
+      { value: '', disabled: true },
+      Validators.required
+    ), // Quận/Huyện selection
+    ward: new FormControl({ value: '', disabled: true }, Validators.required), // Phường/Xã selection
     city: new FormControl('', Validators.required),
     country: new FormControl('Việt Nam', Validators.required),
     latitude: new FormControl(0, Validators.required),
     longitude: new FormControl(0, Validators.required),
     max_guests: new FormControl(0, [Validators.required, Validators.min(1)]),
-    price_per_night: new FormControl(0, [Validators.required, Validators.min(50000)]),
-    images: new FormControl<string[]>([], [Validators.required, Validators.minLength(5)]),
-    is_available: new FormControl(true)
+    price_per_night: new FormControl(0, [
+      Validators.required,
+      Validators.min(50000),
+    ]),
+    images: new FormControl<string[]>(
+      [],
+      [Validators.required, Validators.minLength(5)]
+    ),
+    is_available: new FormControl(true),
   });
 
   // UI state variables
@@ -164,105 +223,13 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   isNavigating = false;
   isManualClick = false;
 
-  // Location data
-  cities = [
-    'Hồ Chí Minh',
-    'Hà Nội',
-    'Đà Nẵng',
-    'Cần Thơ',
-    'Hải Phòng',
-    'An Giang',
-    'Bà Rịa - Vũng Tàu',
-    'Bắc Giang',
-    'Bắc Kạn',
-    'Bạc Liêu',
-    'Bắc Ninh',
-    'Bến Tre',
-    'Bình Định',
-    'Bình Dương',
-    'Bình Phước',
-    'Bình Thuận',
-    'Cà Mau',
-    'Cao Bằng',
-    'Đắk Lắk',
-    'Đắk Nông',
-    'Điện Biên',
-    'Đồng Nai',
-    'Đồng Tháp',
-    'Gia Lai',
-    'Hà Giang',
-    'Hà Nam',
-    'Hà Tĩnh',
-    'Hải Dương',
-    'Hậu Giang',
-    'Hòa Bình',
-    'Hưng Yên',
-    'Khánh Hòa',
-    'Kiên Giang',
-    'Kon Tum',
-    'Lai Châu',
-    'Lâm Đồng',
-    'Lạng Sơn',
-    'Lào Cai',
-    'Long An',
-    'Nam Định',
-    'Nghệ An',
-    'Ninh Bình',
-    'Ninh Thuận',
-    'Phú Thọ',
-    'Phú Yên',
-    'Quảng Bình',
-    'Quảng Nam',
-    'Quảng Ngãi',
-    'Quảng Ninh',
-    'Quảng Trị',
-    'Sóc Trăng',
-    'Sơn La',
-    'Tây Ninh',
-    'Thái Bình',
-    'Thái Nguyên',
-    'Thanh Hóa',
-    'Thừa Thiên Huế',
-    'Tiền Giang',
-    'Trà Vinh',
-    'Tuyên Quang',
-    'Vĩnh Long',
-    'Vĩnh Phúc',
-    'Yên Bái'
-  ];
-
-  districts: { [key: string]: string[] } = {
-    'Hồ Chí Minh': [
-      'Quận 1', 'Quận 2', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7', 'Quận 8', 'Quận 9', 'Quận 10',
-      'Quận 11', 'Quận 12', 'Quận Thủ Đức', 'Quận Gò Vấp', 'Quận Bình Thạnh', 'Quận Tân Bình', 'Quận Tân Phú',
-      'Quận Phú Nhuận', 'Quận Bình Tân', 'Huyện Củ Chi', 'Huyện Hóc Môn', 'Huyện Bình Chánh', 'Huyện Nhà Bè', 'Huyện Cần Giờ'
-    ],
-    'Hà Nội': [
-      'Quận Ba Đình', 'Quận Hoàn Kiếm', 'Quận Tây Hồ', 'Quận Long Biên', 'Quận Cầu Giấy', 'Quận Đống Đa',
-      'Quận Hai Bà Trưng', 'Quận Hoàng Mai', 'Quận Thanh Xuân', 'Huyện Sóc Sơn', 'Huyện Đông Anh', 'Huyện Gia Lâm',
-      'Quận Nam Từ Liêm', 'Huyện Thanh Trì', 'Quận Bắc Từ Liêm', 'Huyện Mê Linh', 'Huyện Hà Đông', 'Quận Hà Đông',
-      'Thị xã Sơn Tây', 'Huyện Ba Vì', 'Huyện Phúc Thọ', 'Huyện Đan Phượng', 'Huyện Hoài Đức', 'Huyện Quốc Oai',
-      'Huyện Thạch Thất', 'Huyện Chương Mỹ', 'Huyện Thanh Oai', 'Huyện Thường Tín', 'Huyện Phú Xuyên', 'Huyện Ứng Hòa',
-      'Huyện Mỹ Đức'
-    ],
-    'Đà Nẵng': [
-      'Quận Hải Châu', 'Quận Thanh Khê', 'Quận Sơn Trà', 'Quận Ngũ Hành Sơn', 'Quận Liên Chiểu', 'Quận Cẩm Lệ',
-      'Huyện Hòa Vang', 'Huyện Hoàng Sa'
-    ],
-    'Cần Thơ': [
-      'Quận Ninh Kiều', 'Quận Ô Môn', 'Quận Bình Thủy', 'Quận Cái Răng', 'Quận Thốt Nốt', 'Huyện Vĩnh Thạnh',
-      'Huyện Cờ Đỏ', 'Huyện Phong Điền', 'Huyện Thới Lai'
-    ],
-    'Hải Phòng': [
-      'Quận Hồng Bàng', 'Quận Ngô Quyền', 'Quận Lê Chân', 'Quận Hải An', 'Quận Kiến An', 'Quận Đồ Sơn',
-      'Quận Dương Kinh', 'Huyện Thuỷ Nguyên', 'Huyện An Dương', 'Huyện An Lão', 'Huyện Kiến Thuỵ', 'Huyện Tiên Lãng',
-      'Huyện Vĩnh Bảo', 'Huyện Cát Hải', 'Huyện Bạch Long Vĩ'
-    ]
-  };
-
-  availableDistricts: string[] = [];
-  selectedCity = '';
-  selectedDistrict = '';
+  // Location data using LocationService
+  provinces: Province[] = [];
+  availableDistricts: District[] = [];
+  availableWards: Ward[] = [];
+  selectedProvince: Province | null = null;
+  selectedDistrict: District | null = null;
+  selectedWard: Ward | null = null;
 
   // Google Maps
   mapCenter: google.maps.LatLngLiteral = { lat: 10.8231, lng: 106.6297 }; // Hồ Chí Minh
@@ -355,7 +322,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     // Sử dụng method updatePreviewUrls để cập nhật preview
     this.updatePreviewUrls(updatedFiles);
-
   }
 
   removeImage(index: number): void {
@@ -368,7 +334,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     // Sử dụng method updatePreviewUrls để cập nhật preview
     this.updatePreviewUrls(currentFiles);
-
   }
 
   canGoToStepEight(): boolean {
@@ -383,48 +348,138 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   }
 
   canGoToStepTen(): boolean {
-    const address = this.roomForm.get('address')?.value || '';
-    const city = this.roomForm.get('city')?.value || '';
-    const location = this.roomForm.get('location')?.value || '';
-    return address.length > 0 && city.length > 0 && location.length > 0;
+    return (
+      this.selectedProvince !== null &&
+      this.selectedDistrict !== null &&
+      this.selectedWard !== null &&
+      this.roomForm.get('address')?.value?.trim() !== ''
+    );
   }
 
   isLastStep(): boolean {
     return this.currentStepIndex === 9; // Step 10 (index 9) is the last step
   }
 
+  // Location methods using LocationService
+  onProvinceChange(provinceId: string): void {
+    const province = this.provinces.find((p) => p.province_id === provinceId);
+    if (province) {
+      this.selectedProvince = province;
+      // Set the province_id as value (not province_name)
+      this.roomForm.get('city')?.setValue(provinceId);
 
+      // Load districts for selected province
+      this.locationService
+        .getDistrictsByProvince(provinceId)
+        .subscribe((districts) => {
+          this.availableDistricts = districts;
+          // Enable district control when districts are available
+          if (districts.length > 0) {
+            this.roomForm.get('district')?.enable();
+          } else {
+            this.roomForm.get('district')?.disable();
+          }
+        });
 
-  // Location methods
-  onCityChange(city: string): void {
-    this.selectedCity = city;
-    this.roomForm.get('city')?.setValue(city);
-
-    // Update available districts based on selected city
-    this.availableDistricts = this.districts[city] || [];
-
-    // Reset district selection
-    this.selectedDistrict = '';
-    this.roomForm.get('location')?.setValue('');
-
-    // Enable/disable location field based on available districts
-    if (this.availableDistricts.length === 0) {
-      this.roomForm.get('location')?.disable();
-    } else {
-      this.roomForm.get('location')?.enable();
+      // Reset district and ward selection
+      this.selectedDistrict = null;
+      this.selectedWard = null;
+      this.availableWards = [];
+      this.roomForm.get('district')?.setValue('');
+      this.roomForm.get('location')?.setValue('');
+      this.roomForm.get('ward')?.setValue('');
+      this.roomForm.get('ward')?.disable();
+      this.roomForm.get('address')?.setValue('');
     }
   }
 
-  onDistrictChange(district: string): void {
-    this.selectedDistrict = district;
-    this.roomForm.get('location')?.setValue(district);
-    this.searchAddress();
+  onDistrictChange(districtId: string): void {
+    if (this.selectedProvince) {
+      const district = this.availableDistricts.find(
+        (d) => d.district_id === districtId
+      );
+      if (district) {
+        this.selectedDistrict = district;
+
+        // Update location field with district name only (ward will be added later)
+        this.updateLocationField();
+
+        // Load wards for selected district
+        this.locationService
+          .getWardsByDistrict(districtId)
+          .subscribe((wards) => {
+            this.availableWards = wards;
+            // Enable ward control when wards are available
+            if (wards.length > 0) {
+              this.roomForm.get('ward')?.enable();
+            } else {
+              this.roomForm.get('ward')?.disable();
+            }
+          });
+
+        // Set district form control with district_id
+        this.roomForm.get('district')?.setValue(districtId);
+
+        // Reset ward selection
+        this.selectedWard = null;
+        this.roomForm.get('ward')?.setValue('');
+        this.roomForm.get('address')?.setValue('');
+      }
+    }
+  }
+
+  onWardChange(wardId: string): void {
+    if (this.selectedDistrict) {
+      const ward = this.availableWards.find((w) => w.ward_id === wardId);
+      if (ward) {
+        this.selectedWard = ward;
+
+        // Update location field with ward + district
+        this.updateLocationField();
+
+        // Set ward form control with ward_id
+        this.roomForm.get('ward')?.setValue(wardId);
+
+        // Clear address field for user to input specific address
+        this.roomForm.get('address')?.setValue('');
+        // Don't search yet - wait for user to input address
+      }
+    }
   }
 
   onAddressEnter(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
     this.searchAddress();
+  }
+
+  onAddressBlur(): void {
+    // Search when user finishes typing and leaves the field
+    const address = this.roomForm.get('address')?.value?.trim();
+    if (
+      address &&
+      this.selectedWard &&
+      this.selectedDistrict &&
+      this.selectedProvince
+    ) {
+      this.searchAddress();
+    }
+  }
+
+  onAddressInput(event: any): void {
+    // Optional: You can add debouncing here if needed
+    // For now, we'll just let the user type and search on blur
+  }
+
+  // Update location field with ward + district (for display only)
+  updateLocationField(): void {
+    if (this.selectedWard && this.selectedDistrict) {
+      const location = `${this.selectedWard.ward_name}, ${this.selectedDistrict.district_name}`;
+      this.roomForm.get('location')?.setValue(location);
+    } else {
+      // Clear location field when no ward selected
+      this.roomForm.get('location')?.setValue('');
+    }
   }
 
   onSelectEnter(event: Event): void {
@@ -436,12 +491,15 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   // Search and geocoding methods
   searchAddress(): void {
-    const address = this.roomForm.get('address')?.value || '';
-    const city = this.roomForm.get('city')?.value || '';
-    const location = this.roomForm.get('location')?.value || '';
+    const specificAddress = this.roomForm.get('address')?.value || '';
+    const wardName = this.selectedWard?.ward_name || '';
+    const districtName = this.selectedDistrict?.district_name || '';
+    const provinceName = this.selectedProvince?.province_name || '';
 
-    if (address && city && location) {
-      const fullAddress = `${address}, ${location}, ${city}, Việt Nam`;
+    if (wardName && districtName && provinceName) {
+      // Use specific address if provided, otherwise use ward name
+      const addressPart = specificAddress || wardName;
+      const fullAddress = `${addressPart}, ${districtName}, ${provinceName}, Việt Nam`;
       this.geocodeAddress(fullAddress);
     }
   }
@@ -450,6 +508,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.geocoder.geocode({ address: address }).subscribe(({ results }) => {
       if (results && results.length > 0) {
         const location = results[0].geometry.location;
+        console.log(location);
         this.markerPosition = { lat: location.lat(), lng: location.lng() };
         this.mapCenter = this.markerPosition;
         this.mapZoom = 15;
@@ -463,14 +522,20 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   onMapClick(event: google.maps.MapMouseEvent): void {
     if (event.latLng) {
-      this.markerPosition = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+      this.markerPosition = {
+        lat: event.latLng.lat(),
+        lng: event.latLng.lng(),
+      };
       this.reverseGeocode(event.latLng);
     }
   }
 
   onMarkerDragEnd(event: google.maps.MapMouseEvent): void {
     if (event.latLng) {
-      this.markerPosition = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+      this.markerPosition = {
+        lat: event.latLng.lat(),
+        lng: event.latLng.lng(),
+      };
       this.reverseGeocode(event.latLng);
     }
   }
@@ -488,12 +553,14 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     });
   }
 
-  parseAddressComponents(components: google.maps.GeocoderAddressComponent[]): void {
+  parseAddressComponents(
+    components: google.maps.GeocoderAddressComponent[]
+  ): void {
     let address = '';
     let city = '';
     let district = '';
 
-    components.forEach(component => {
+    components.forEach((component) => {
       const types = component.types;
 
       if (types.includes('street_number') || types.includes('route')) {
@@ -514,15 +581,24 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       this.roomForm.get('address')?.setValue(address.trim());
     }
 
-    if (city && this.cities.includes(city)) {
-      this.onCityChange(city);
+    // Find province by name and set it
+    if (city) {
+      const province = this.provinces.find((p) => p.province_name === city);
+      if (province) {
+        this.onProvinceChange(province.province_id);
+      }
     }
 
-    if (district && this.availableDistricts.includes(district)) {
-      this.onDistrictChange(district);
+    // Find district by name and set it
+    if (district && this.selectedProvince) {
+      const districtObj = this.availableDistricts.find(
+        (d) => d.district_name === district
+      );
+      if (districtObj) {
+        this.onDistrictChange(districtObj.district_id);
+      }
     }
   }
-
 
   // Step navigation control methods
   isStepCompleted(stepIndex: number): boolean {
@@ -546,41 +622,18 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   onStepChange(event: any): void {
     const targetStepIndex = event.selectedIndex;
-
-    // Allow back navigation (going to previous steps)
-    if (targetStepIndex < this.currentStepIndex) {
-      this.currentStepIndex = targetStepIndex;
-      this.isManualClick = false;
-      return;
-    }
-
-    // Only prevent forward navigation if it's a manual click on step header
-    // Allow programmatic navigation (like Next button)
-    if (!this.canNavigateToStep(targetStepIndex) && this.isManualClick) {
-      // Set navigating flag to prevent infinite loops
-      this.isNavigating = true;
-
-      // Reset to current step using ViewChild reference
-      setTimeout(() => {
-        try {
-          if (this.stepper && this.stepper.selectedIndex !== this.currentStepIndex) {
-            this.stepper.selectedIndex = this.currentStepIndex;
-          }
-        } catch (error) {
-          console.warn('Could not reset stepper index:', error);
-        } finally {
-          // Reset navigating flag after a short delay
-          setTimeout(() => {
-            this.isNavigating = false;
-            this.isManualClick = false;
-          }, 100);
-        }
-      }, 0);
-      return;
-    }
-
     this.currentStepIndex = targetStepIndex;
     this.isManualClick = false;
+
+    // Step 1: play videoPlayer
+    if (targetStepIndex === 0) {
+      this.playVideo(this.videoPlayer);
+    }
+
+    // Step 4: play videoFour
+    if (targetStepIndex === 3) {
+      this.playVideo(this.videoFour);
+    }
   }
 
   markStepAsCompleted(stepIndex: number): void {
@@ -632,7 +685,10 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     if (this.stepper && !this.isNavigating) {
       // Only maintain focus if user clicked outside stepper, not when navigating
       setTimeout(() => {
-        if (this.stepper.selectedIndex !== this.currentStepIndex && !this.isNavigating) {
+        if (
+          this.stepper.selectedIndex !== this.currentStepIndex &&
+          !this.isNavigating
+        ) {
           this.stepper.selectedIndex = this.currentStepIndex;
         }
       }, 0);
@@ -647,9 +703,16 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     const stepperElement = document.querySelector('mat-stepper');
 
     // If click is outside stepper and not navigating, maintain current step focus
-    if (stepperElement && !stepperElement.contains(target) && !this.isNavigating) {
+    if (
+      stepperElement &&
+      !stepperElement.contains(target) &&
+      !this.isNavigating
+    ) {
       // Only maintain focus if it's not a button click (Next/Back buttons)
-      if (!target.closest('button[matStepperNext]') && !target.closest('button[matStepperPrevious]')) {
+      if (
+        !target.closest('button[matStepperNext]') &&
+        !target.closest('button[matStepperPrevious]')
+      ) {
         this.maintainStepFocus();
       }
     }
@@ -712,13 +775,16 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   }
 
   // Main method to create room
   async createRoom() {
-    if(this.roomForm.value.confirmPhotos && this.roomForm.value.confirmPhotos.length > 0) {
+    if (
+      this.roomForm.value.confirmPhotos &&
+      this.roomForm.value.confirmPhotos.length > 0
+    ) {
       try {
         // Get image files
         const files: File[] = this.roomForm.get('confirmPhotos')?.value || [];
@@ -728,9 +794,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
           title: this.roomForm.get('title')?.value || undefined,
           description: this.roomForm.get('description')?.value || undefined,
           room_type_id: this.roomForm.get('room_type_id')?.value || undefined,
-          location: this.roomForm.get('location')?.value || undefined,
-          address: this.roomForm.get('address')?.value || undefined,
-          city: this.roomForm.get('city')?.value || undefined,
+          location: this.roomForm.get('location')?.value || undefined, // Phường + Quận
+          address: this.roomForm.get('address')?.value || undefined, // Địa chỉ cụ thể
+          city: this.selectedProvince?.province_name || undefined,
           country: this.roomForm.get('country')?.value || undefined,
           latitude: this.roomForm.get('latitude')?.value || 0,
           longitude: this.roomForm.get('longitude')?.value || 0,
@@ -744,25 +810,31 @@ export class CreatePostComponent implements OnInit, OnDestroy {
           host_id: this.mineProfile.id, // TODO: Get from auth state
           is_available: true,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         console.log('Creating room with data:', roomData);
 
         // Dispatch action to create room
-        // this.store.dispatch(RoomActions.createRoom({ room: roomData, idToken: this.idToken }));
-
+        this.store.dispatch(
+          RoomActions.createRoom({ room: roomData, idToken: this.idToken })
+        );
       } catch (error) {
         console.error('Error creating room:', error);
       }
-    }else{
-      this.snackBar.showAlert('Please select at least one image', 'error', 3000, 'right','top');
+    } else {
+      this.snackBar.showAlert(
+        'Please select at least one image',
+        'error',
+        3000,
+        'right',
+        'top'
+      );
     }
-
   }
 
   private markFormGroupTouched() {
-    Object.keys(this.roomForm.controls).forEach(key => {
+    Object.keys(this.roomForm.controls).forEach((key) => {
       const control = this.roomForm.get(key);
       control?.markAsTouched();
     });
@@ -782,7 +854,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   formatPrice(price: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price);
   }
 
@@ -835,7 +907,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
     // Cập nhật preview URLs
     this.updatePreviewUrls(newFiles);
-
 
     // Reset dragged index
     this.draggedIndex = null;

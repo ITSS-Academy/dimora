@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MaterialModule} from '../../shared/material.module';
-import {max, min} from 'rxjs';
+import {max, min, Observable, Subscription} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {RootCommands} from '@angular/cli/src/commands/command-config';
 import {NgForOf} from '@angular/common';
 import {GoogleMap, MapGeocoder, MapMarker} from '@angular/google-maps';
 import {ShareModule} from '../../shared/share.module';
 import {createRoom} from '../../ngrx/actions/room.actions';
+import {RoomModel} from '../../models/room.model';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {RoomState} from '../../ngrx/state/room.state';
+import * as RoomActions from '../../ngrx/actions/room.actions';
+import {LoadingComponent} from '../../shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-update-post',
@@ -17,15 +23,73 @@ import {createRoom} from '../../ngrx/actions/room.actions';
     GoogleMap,
     ReactiveFormsModule,
     ShareModule,
-    MapMarker
+    MapMarker,
+    LoadingComponent
   ],
   templateUrl: './update-post.component.html',
   styleUrl: './update-post.component.scss'
 })
-export class UpdatePostComponent {
+export class UpdatePostComponent implements OnInit , OnDestroy{
 
-  constructor(    private geocoder: MapGeocoder,
+  roomDetail$!:Observable<RoomModel>
+  subscriptions:Subscription[]= []
+  roomDetail!:RoomModel
+  isLoading$!:Observable<Boolean>
+
+  constructor(
+    private store: Store<{
+      room: RoomState,
+    }>,
+    private geocoder: MapGeocoder,
+    private route : ActivatedRoute,
+
   ) {
+    let{id} = this.route.snapshot.params;
+    console.log(id)
+    this.store.dispatch(RoomActions.getRoomById({id:id}))
+    this.roomDetail$ = this.store.select('room','roomDetail')
+    this.isLoading$ = this.store.select('room','isLoading')
+
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.roomDetail$.subscribe(roomDetails => {
+        if (roomDetails.id){
+          this.roomDetail = roomDetails;
+          console.log(this.roomDetail);
+          this.roomForm.patchValue({
+            title: roomDetails.title,
+            description: roomDetails.description,
+            address: roomDetails.address,
+            location: roomDetails.location,
+            city: roomDetails.city,
+            country: roomDetails.country,
+            latitude: roomDetails.latitude,
+            longitude: roomDetails.longitude,
+            max_guests: roomDetails.max_guests,
+            price_per_night: roomDetails.price_per_night,
+            images: roomDetails.images,
+            is_available: roomDetails.is_available,
+            room_type_id: roomDetails.room_type_id,
+            bedrooms: roomDetails.bedrooms,
+            beds: roomDetails.beds,
+            bathrooms: roomDetails.bathrooms
+          });
+          this.Rooms = roomDetails.bedrooms;
+          this.Beds = roomDetails.beds;
+          this.Bathrooms = roomDetails.bathrooms;
+          this.Guests = roomDetails.max_guests;
+          this.value = roomDetails.price_per_night;
+          this.selectedCity = roomDetails.city;
+          this.availableDistricts = this.districts[this.selectedCity] || [];
+          this.selectedDistrict = roomDetails.location;
+        }
+      })
+    )
   }
 
   mapCenter: google.maps.LatLngLiteral = { lat: 10.8231, lng: 106.6297 }; // Hồ Chí Minh
@@ -43,7 +107,7 @@ export class UpdatePostComponent {
     { value: 'resort', viewValue: 'Resort' }
   ];
   formatLabel: ((value: number) => string) | undefined;
-  disabled: unknown;
+  disabled: boolean = false;
 
 
   max = 10000000;
@@ -164,6 +228,7 @@ export class UpdatePostComponent {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+      this.roomForm.patchValue({ photos: Array.from(input.files) });
       Array.from(input.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = (e: any) => {
@@ -220,6 +285,9 @@ export class UpdatePostComponent {
     this.selectedDistrict = '';
   }
   formatPrice(price: number): string {
+    this.roomForm.patchValue(
+      { price_per_night: price }
+    )
     return price.toLocaleString('vi-VN');
   }
 
@@ -291,7 +359,7 @@ export class UpdatePostComponent {
     country: new FormControl('Việt Nam', Validators.required),
     latitude: new FormControl(0, Validators.required),
     longitude: new FormControl(0, Validators.required),
-    max_guests: new FormControl(0, [Validators.required, Validators.min(1)]),
+    max_guests: new FormControl(this.Guests, [Validators.required, Validators.min(1)]),
     price_per_night: new FormControl(0, [Validators.required, Validators.min(50000)]),
     images: new FormControl<string[]>([], [Validators.required, Validators.minLength(5)]),
     is_available: new FormControl(true)
@@ -403,7 +471,41 @@ export class UpdatePostComponent {
     }
   }
 
+  updateRoom(){
+    console.log("run")
+    let newRoomData : any = {
+      title: this.roomForm.get('title')?.value || '',
+      description: this.roomForm.get('description')?.value || '',
+      address: this.roomForm.get('address')?.value || '',
+      location: this.roomForm.get('location')?.value || '',
+      city: this.roomForm.get('city')?.value || '',
+      country: this.roomForm.get('country')?.value || 'Việt Nam',
+      latitude: this.roomForm.get('latitude')?.value || 0,
+      longitude: this.roomForm.get('longitude')?.value || 0,
+      max_guests: this.Guests,
+      price_per_night: this.roomForm.get('price_per_night')?.value || 50000,
+      images: this.roomForm.get('photos')?.value || [],
+      is_available: this.roomForm.get('is_available')?.value || true,
+      // amenities: this.roomForm.get('amenities')?.value || [],
+      room_type_id: this.roomForm.get('room_type_id')?.value || '',
+      bedrooms: this.Rooms,
+      beds: this.Beds,
+      bathrooms: this.Bathrooms
+    }
+    console.log(newRoomData)
+
+  }
+
   protected readonly createRoom = createRoom;
+  onPriceSliderChange(event: any) {
+    const price = event.value;
+    this.roomForm.get('price_per_night')?.setValue(price);
+  }
+
+  removeImage(index: number): void {
+    this.uploadedImages.splice(index, 1);
+    // Do not patch photos form control with base64 strings
+  }
+
+
 }
-
-

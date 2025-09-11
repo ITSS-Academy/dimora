@@ -1,17 +1,30 @@
 <!-- header.component.html -->
-<mat-toolbar class="airbnb-header" >
+<mat-toolbar class="airbnb-header">
   <!-- Logo -->
   <div class="logo" (click)="navigateToHome()">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb Logo" class="logo-img">
+    <img src="/img/dimora-tach-nen.png" alt="Airbnb Logo" class="logo-img" />
   </div>
 
-
   <!-- Search Bar -->
-  <div class="search-bar" [ngClass]="{'search-page': isSearchPage}">
-    <form class="search-container" [formGroup]="range" (keydown)="onFormKeyDown($event)">
-      <mat-form-field appearance="outline" class="search-field" (click)="onLocationInputClick()">
-      <input #locationInput type="text" matInput formControlName="location" placeholder="Where are you going?"  >
-      <!-- <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
+  <div class="search-bar" [ngClass]="{ 'search-page': isSearchPage }">
+    <form
+      class="search-container"
+      [formGroup]="range"
+      (keydown)="onFormKeyDown($event)"
+    >
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        (click)="onLocationInputClick()"
+      >
+        <input
+          #locationInput
+          type="text"
+          matInput
+          formControlName="location"
+          placeholder="Where are you going?"
+        />
+        <!-- <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  >
         @for (option of filteredOptions | async; track option) {
           <mat-option [value]="option" >
             <div class="custom-option">
@@ -24,21 +37,37 @@
       </mat-autocomplete> -->
       </mat-form-field>
 
-
-
-
-      <mat-form-field appearance="outline" class="search-field" (click)="picker.open()">
-        <mat-date-range-input  [rangePicker]="picker" [min]="minDate" >
-          <input matStartDate formControlName="start"  readonly placeholder="Start date"  >
-          <input matEndDate formControlName="end" readonly placeholder="End date"  >
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        (click)="picker.open()"
+      >
+        <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+          <input
+            matStartDate
+            formControlName="start"
+            readonly
+            placeholder="Start date"
+          />
+          <input
+            matEndDate
+            formControlName="end"
+            readonly
+            placeholder="End date"
+          />
         </mat-date-range-input>
         <mat-icon matSuffix>calendar_month</mat-icon>
 
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="search-field" [matMenuTriggerFor]="guestsMenu" (click)="onGuestsInputClick()">
-        <input matInput formControlName="guests" readonly placeholder="Who" >
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        [matMenuTriggerFor]="guestsMenu"
+        (click)="onGuestsInputClick()"
+      >
+        <input matInput formControlName="guests" readonly placeholder="Who" />
         <mat-icon matSuffix>person</mat-icon>
       </mat-form-field>
 
@@ -50,46 +79,59 @@
       </div>
 
       <!-- Filter Button - Only show on search page -->
-
-
     </form>
     <div class="filter-button-container" *ngIf="isSearchPage">
-      <button mat-icon-button class="filter-button" (click)="openFilterDialog()" matTooltip="Filters">
+      <button
+        mat-icon-button
+        class="filter-button"
+        (click)="openFilterDialog()"
+        matTooltip="Filters"
+      >
         <mat-icon class="material-symbols-rounded">tune</mat-icon>
       </button>
     </div>
-
-
   </div>
 
   <!-- Right Side -->
   <div class="right-section">
-
-    @if (mineProfile$|async; as profile){
-      @if (profile.id) {
-        <button mat-icon-button [matMenuTriggerFor]="profileMenuLogined" class="button-header" aria-label="Example icon-button with a menu">
-          <img class="avatar-img" [src]="profile.avatar_url" alt="" referrerpolicy="no-referrer">
-        </button>
-        <mat-menu #profileMenuLogined="matMenu">
-          <button mat-menu-item (click)='navigateToProfile(profile.id)'>
-            <mat-icon class="material-symbols-rounded">person</mat-icon>
-            <span>Profile</span>
-          </button>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon class="material-symbols-rounded">logout</mat-icon>
-            <span>Log out</span>
-          </button>
-        </mat-menu>
-      } @else {
-        <button mat-icon-button (click)="openDialog()" class="button-header" aria-label="Example icon-button with a menu">
-          <mat-icon class="material-symbols-rounded">account_circle</mat-icon>
-        </button>
-      }
-
-
-    }
-
-
+    @if (mineProfile$|async; as profile){ @if (profile.id) {
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="profileMenuLogined"
+      class="button-header"
+      aria-label="Example icon-button with a menu"
+    >
+      <img
+        class="avatar-img"
+        [src]="profile.avatar_url"
+        alt=""
+        referrerpolicy="no-referrer"
+      />
+    </button>
+    <mat-menu #profileMenuLogined="matMenu">
+      <button mat-menu-item (click)="navigateToCreateRoom()">
+        <mat-icon class="material-symbols-rounded">create</mat-icon>
+        <span>Create room</span>
+      </button>
+      <button mat-menu-item (click)="navigateToProfile(profile.id)">
+        <mat-icon class="material-symbols-rounded">person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon class="material-symbols-rounded">logout</mat-icon>
+        <span>Log out</span>
+      </button>
+    </mat-menu>
+    } @else {
+    <button
+      mat-icon-button
+      (click)="openDialog()"
+      class="button-header"
+      aria-label="Example icon-button with a menu"
+    >
+      <mat-icon class="material-symbols-rounded">account_circle</mat-icon>
+    </button>
+    } }
 
     <!-- Guests Menu -->
     <mat-menu #guestsMenu="matMenu" class="guests-menu">
@@ -100,10 +142,14 @@
             <div class="guest-description">Ages 13 or above</div>
           </div>
           <div class="guest-controls" (click)="$event.stopPropagation()">
-            <button mat-icon-button (click)="decreaseAdults($event)" [disabled]="adults <= 1">
+            <button
+              mat-icon-button
+              (click)="decreaseAdults($event)"
+              [disabled]="adults <= 1"
+            >
               <mat-icon class="material-symbols-rounded">remove</mat-icon>
             </button>
-            <span class="guest-count">{{adults}}</span>
+            <span class="guest-count">{{ adults }}</span>
             <button mat-icon-button (click)="increaseAdults($event)">
               <mat-icon class="material-symbols-rounded">add</mat-icon>
             </button>
@@ -118,10 +164,14 @@
             <div class="guest-description">Ages 2 – 12</div>
           </div>
           <div class="guest-controls" (click)="$event.stopPropagation()">
-            <button mat-icon-button (click)="decreaseChildren($event)" [disabled]="children <= 0">
+            <button
+              mat-icon-button
+              (click)="decreaseChildren($event)"
+              [disabled]="children <= 0"
+            >
               <mat-icon class="material-symbols-rounded">remove</mat-icon>
             </button>
-            <span class="guest-count">{{children}}</span>
+            <span class="guest-count">{{ children }}</span>
             <button mat-icon-button (click)="increaseChildren($event)">
               <mat-icon class="material-symbols-rounded">add</mat-icon>
             </button>
@@ -136,20 +186,20 @@
             <div class="guest-description">Under 2</div>
           </div>
           <div class="guest-controls" (click)="$event.stopPropagation()">
-            <button mat-icon-button (click)="decreaseInfants($event)" [disabled]="infants <= 0">
+            <button
+              mat-icon-button
+              (click)="decreaseInfants($event)"
+              [disabled]="infants <= 0"
+            >
               <mat-icon class="material-symbols-rounded">remove</mat-icon>
             </button>
-            <span class="guest-count">{{infants}}</span>
+            <span class="guest-count">{{ infants }}</span>
             <button mat-icon-button (click)="increaseInfants($event)">
               <mat-icon class="material-symbols-rounded">add</mat-icon>
             </button>
           </div>
         </div>
-
-
-
       </div>
     </mat-menu>
   </div>
 </mat-toolbar>
-

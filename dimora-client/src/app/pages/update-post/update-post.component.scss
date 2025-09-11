@@ -5,7 +5,7 @@
   justify-content: center;
   .skeleton{
     width: 771px ;
-    height: 2357px;
+    height: 3357px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -61,8 +61,10 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-start;
-    max-width: 720px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
+    /* Remove max-width and center margin */
+    /* Adjust negative margin to compensate for child margins if needed */
     .upload-img{
       width: 128px;
       height: 128px;
@@ -80,6 +82,38 @@
       justify-content: center;
       display: flex;
       align-items: center;
+    }
+    .img-wrapper {
+      position: relative;
+      display: inline-block;
+      margin: 8px;
+      .delete-img-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.85);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        z-index: 2;
+        padding: 0;
+        transition: background 0.2s;
+      }
+      .delete-img-btn:hover {
+        background: #ffeaea;
+      }
+      .delete-img-btn mat-icon {
+        font-size: 18px;
+        color: #d32f2f;
+      }
     }
   }
 }
@@ -520,5 +554,3 @@
   display: flex;
   align-items: center;
 }
-
-

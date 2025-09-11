@@ -21,18 +21,27 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  async create(@Body() createReviewDto: CreateReviewDto, @Request() req) {
+  async create(@Body() createReviewDto: CreateReviewDto) {
     try {
       // TODO: Lấy userId từ JWT token
-      const userId = req.user?.id || 'temp-user-id';
-      return await this.reviewsService.create(createReviewDto, userId);
+      if (!createReviewDto.user_id) {
+        throw new HttpException(
+          'User ID is required to create a review',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return await this.reviewsService.create(
+        createReviewDto,
+        createReviewDto.user_id,
+      );
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       throw new HttpException(
         'Internal server error while creating review',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -47,7 +56,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while fetching reviews',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -62,7 +71,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while fetching reviews by room',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -77,7 +86,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while fetching reviews by user',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -92,7 +101,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while getting room rating stats',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -107,13 +116,16 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while fetching review',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateReviewDto: UpdateReviewDto,
+  ) {
     try {
       return await this.reviewsService.update(id, updateReviewDto);
     } catch (error) {
@@ -122,7 +134,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while updating review',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -137,7 +149,7 @@ export class ReviewsController {
       }
       throw new HttpException(
         'Internal server error while deleting review',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

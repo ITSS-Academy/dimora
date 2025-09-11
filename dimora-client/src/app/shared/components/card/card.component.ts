@@ -10,9 +10,15 @@ import { Router } from '@angular/router';
   styleUrl: './card.component.scss'
 })
 export class CardComponent {
-
-constructor(private router: Router) {}
-
+  isProfilePage = false;
+constructor(private router: Router) {
+  this.isProfilePage = this.router.url.includes('/profile');
+}
+  get canDelete(): boolean {
+    return this.currentUserId === this.profileId;
+  }
+  @Input() currentUserId: string = '';
+  @Input() profileId: string = '';
   @Input() hotel: RoomModel = {} as RoomModel
   formatPrice(price: number): string {
     return price.toLocaleString('vi-VN');
@@ -24,6 +30,9 @@ constructor(private router: Router) {}
         hostId: this.hotel.host_id
       }
     });
+  }
+
+  deleteRoom(id: string) {
   }
 
 }
