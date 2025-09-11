@@ -1,6 +1,9 @@
 <div class="container">
     @for (room of roomListByHostId; track room.id) {
-        <app-card [hotel]="room"></app-card>
+        <app-card
+          [hotel]="room"
+          [currentUserId]="currentUserId"
+          [profileId]="profileId"
+        ></app-card>
     }
-
 </div>

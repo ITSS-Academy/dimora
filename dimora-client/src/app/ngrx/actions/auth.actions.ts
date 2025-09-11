@@ -75,6 +75,8 @@ export const updateProfileFailure = createAction(
 
 export const clearAuthState = createAction('[Auth] Clear Auth State');
 
-export function updateUser(arg0: { user: AuthModel; idToken: string }): any {
-  throw new Error('Function not implemented.');
-}
+
+
+export const clearCurrentUser = createAction(
+  '[Auth] Clear Current User',
+)

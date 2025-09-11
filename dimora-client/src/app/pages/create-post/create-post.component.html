@@ -622,7 +622,7 @@
           <!-- Map Container with Address Inputs -->
           <div class="map-container">
             <!-- Google Maps -->
-            <div class="map-Background">
+            <div class="map-Background" style="height: 100%; width: 100%">
               <google-map
                 [center]="mapCenter"
                 [zoom]="mapZoom"
@@ -631,7 +631,6 @@
                   streetViewControl: false,
                   fullscreenControl: false,
                   zoomControl: true,
-                  scrollwheel: false,
                   styles: [
                     {
                       featureType: 'poi',
@@ -805,6 +804,7 @@
             Tạo phòng
           </button>
         </div>
+
       </div>
     </form>
   </mat-step>
@@ -825,13 +825,13 @@
         </div>
       </mat-step>
     </mat-step>
-    
+
     <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(9)">
       <ng-template matStepLabel>Hoàn thành</ng-template>
-      
+
       <div class="completion-step" (click)="onStepContentClick($event)">
         <h2>Xem lại thông tin phòng của bạn</h2>
-        
+
         <div class="summary-card">
           <div class="summary-section">
             <h3>Thông tin cơ bản</h3>
@@ -839,7 +839,7 @@
             <p><strong>Loại phòng:</strong> {{ roomForm.get('room_type_id')?.value || 'Chưa chọn' }}</p>
             <p><strong>Giá/đêm:</strong> {{ formatPrice(roomForm.get('price_per_night')?.value || 0) }}</p>
           </div>
-          
+
           <div class="summary-section">
             <h3>Thông tin chỗ ở</h3>
             <p><strong>Khách tối đa:</strong> {{ roomForm.get('max_guests')?.value || 0 }} khách</p>
@@ -847,7 +847,7 @@
             <p><strong>Giường:</strong> {{ roomForm.get('beds')?.value || 0 }}</p>
             <p><strong>Phòng tắm:</strong> {{ roomForm.get('bathrooms')?.value || 0 }}</p>
           </div>
-          
+
           <div class="summary-section">
             <h3>Tiện nghi</h3>
             <div class="amenities-summary">
@@ -856,13 +856,13 @@
               </span>
             </div>
           </div>
-          
+
           <div class="summary-section">
             <h3>Hình ảnh</h3>
             <p><strong>Số ảnh:</strong> {{ roomForm.get('images')?.value?.length || 0 }} ảnh</p>
           </div>
         </div>
-        
+
         <div class="form-status">
           <p *ngIf="isFormValid()" class="valid-status">
             ✅ Tất cả thông tin đã được điền đầy đủ
@@ -871,12 +871,12 @@
             ❌ Vui lòng kiểm tra lại các thông tin còn thiếu
           </p>
         </div>
-        
+
         <div class="action-buttons">
           <button mat-button matStepperPrevious>Quay lại</button>
-          <button 
-            mat-flat-button 
-            color="primary" 
+          <button
+            mat-flat-button
+            color="primary"
             (click)="onConfirm()"
             [disabled]="!isFormValid()">
             <mat-icon>check</mat-icon>

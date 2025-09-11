@@ -56,9 +56,17 @@ export class RoomsService {
     formData.append('is_available', room.is_available);
     formData.append('created_at', room.created_at);
     formData.append('updated_at', room.updated_at);
-    
+
     console.log(formData)
     return this.http.post<RoomModel>(`${environment.apiUrl}rooms`, formData,{
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+  }
+
+  deleteRoom(roomId: string, idToken: string, hostId: string){
+    return this.http.delete<RoomModel[]>(`${environment.apiUrl}rooms?id=${roomId}&host_id=${hostId}`,{
       headers: {
         Authorization: `Bearer ${idToken}`
       }

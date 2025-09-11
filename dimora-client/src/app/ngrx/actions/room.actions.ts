@@ -72,3 +72,18 @@ export const clearRoomState = createAction(
 export const clearCreateRoomState = createAction(
     '[Room] Clear Create Room State'
 )
+
+export const deleteRoom = createAction(
+    '[Room] Delete Room',
+    props<{roomId: string, idToken: string, hostId: string}>()
+)
+
+export const deleteRoomSuccess = createAction(
+    '[Room] Delete Room Success',
+    props<{rooms: RoomModel[]}>()
+)
+
+export const deleteRoomFailure = createAction(
+    '[Room] Delete Room Failure',
+    props<{error: any}>()
+)

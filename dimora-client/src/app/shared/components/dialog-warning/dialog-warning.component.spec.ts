@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UpdatePostComponent } from './update-post.component';
+import { DialogWarningComponent } from './dialog-warning.component';
 
-
-describe('UpdatePostComponent', () => {
-  let component: UpdatePostComponent;
-  let fixture: ComponentFixture<UpdatePostComponent>;
+describe('DialogWarningComponent', () => {
+  let component: DialogWarningComponent;
+  let fixture: ComponentFixture<DialogWarningComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpdatePostComponent]
+      imports: [DialogWarningComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(UpdatePostComponent);
+    fixture = TestBed.createComponent(DialogWarningComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -22,9 +21,3 @@ describe('UpdatePostComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
-
-
-
-
-
