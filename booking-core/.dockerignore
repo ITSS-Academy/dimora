@@ -1,0 +1,67 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+coverage
+*.tsbuildinfo
+
+# Environment files
+.env 
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs
+
+# Test files
+test
+coverage
+*.spec.ts
+*.test.ts
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Postman collections
+*.postman_collection.json
+
+# SQL files (if not needed in container)
+*.sql
+
+# Temporary files
+tmp
+temp
