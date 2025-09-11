@@ -1,7 +1,7 @@
 @if (isLoading$ | async) {
-  <app-loading></app-loading>
+<app-loading></app-loading>
 }@else {
-  <mat-stepper
+<mat-stepper
   headerPosition="top"
   #stepper
   (selectionChange)="onStepChange($event)"
@@ -12,15 +12,15 @@
     <div class="container-step-one" (click)="onStepContentClick($event)">
       <div class="step-one">
         <div id="word-one">
-          <h4>Step 1</h4>
-          <h1>Tell us about your place</h1>
+          <h4>Bước 1</h4>
+          <h1>Hãy cho chúng tôi biết về chỗ nghỉ của bạn</h1>
           <p>
-            In this step, we'll ask you which type of property you have and if
+            Ở bước này, chúng tôi sẽ hỏi bạn loại hình chỗ nghỉ và liệu
             <br />
-            guests will book the entire place or just a room. Then let us know
-            the
+            khách sẽ đặt toàn bộ chỗ nghỉ hay chỉ một phòng. Sau đó, hãy cho
+            chúng tôi biết vị
             <br />
-            location and how many guests can stay.
+            trí và số lượng khách có thể lưu trú.
           </p>
         </div>
         <div id="video">
@@ -54,7 +54,7 @@
         <div id="word-two">
           <div class="container">
             <h2 class="title">
-              Which of the following best describes your place?
+              Câu nào sau đây mô tả đúng nhất về nơi ở của bạn?
             </h2>
             <div class="options-grid">
               @for (roomType of roomTypes$ | async; track roomType.id) {
@@ -94,15 +94,15 @@
     <ng-template matStepLabel>Floor Plan</ng-template>
     <div class="container-step-three" (click)="onStepContentClick($event)">
       <div class="step-three">
-        <div id="word-four">
+        <div id="word-three">
           <div id="title">
-            <h1>Share some basics about your place</h1>
-            <p>You'll add more details later, like bed types.</p>
+            <h1>Chia sẻ một số thông tin cơ bản về chỗ nghỉ của bạn</h1>
+            <p>Bạn sẽ thêm nhiều chi tiết hơn sau, như loại giường.</p>
           </div>
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Guests</p>
+              <p>Khách</p>
               <div class="quantity">
                 <button (click)="decrease('guests')">-</button>
                 <span>{{ roomForm.get("guests")?.value }}</span>
@@ -113,7 +113,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Bedrooms</p>
+              <p>Phòng ngủ</p>
               <div class="quantity">
                 <button (click)="decrease('bedrooms')">-</button>
                 <span>{{ roomForm.get("bedrooms")?.value }}</span>
@@ -124,7 +124,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Beds</p>
+              <p>Giường</p>
               <div class="quantity">
                 <button (click)="decrease('beds')">-</button>
                 <span>{{ roomForm.get("beds")?.value }}</span>
@@ -135,7 +135,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Bathrooms</p>
+              <p>Phòng tắm</p>
               <div class="quantity">
                 <button (click)="decrease('bathrooms')">-</button>
                 <span>{{ roomForm.get("bathrooms")?.value }}</span>
@@ -165,16 +165,16 @@
     <div class="container-step-four" (click)="onStepContentClick($event)">
       <div class="step-four">
         <div id="word-four">
-          <h4>Step 2</h4>
+          <h4>Bước 2</h4>
           <h1>
-            Make your place <br />
-            stand out
+            Làm cho chỗ nghỉ của bạn <br />
+            nổi bật
           </h1>
           <p>
-            In this step, you’ll add some of the amenities your place
+            Ở bước này, bạn sẽ thêm một số tiện nghi mà chỗ nghỉ của bạn
             <br />
-            offers, plus 5 or more photos. Then, you’ll create a title and the
-            description.
+            cung cấp, cùng với 5 ảnh trở lên. Sau đó, bạn sẽ tạo tiêu đề và mô
+            tả.
           </p>
         </div>
         <div id="video-four">
@@ -217,7 +217,7 @@
               </div> -->
 
             <!-- Guest favorites -->
-            <h2 class="title">What about these guest favorites?</h2>
+            <h2 class="title">Những tiện ích mà khách hàng yêu thích?</h2>
             <div class="amenities-grid">
               @for (amenity of this.amenities$ | async; track amenity.id) {
               <button
@@ -578,7 +578,7 @@
           <!-- Ô nhập mô tả -->
           <div class="input-section">
             <div class="input-label">
-              <label>Mô tả chi tiết *</label>
+              <label>Mô tả chi tiết </label>
               <span class="char-count"
                 >{{ roomForm.get("description")?.value?.length || 0 }}/500</span
               >
