@@ -46,7 +46,9 @@ export class RoomsService {
     formData.append('beds', room.beds);
     formData.append('bathrooms', room.bathrooms);
     formData.append('price_per_night', room.price_per_night);
-    formData.append('amenities', room.amenities);
+    room.amenities.forEach((element: any) => {
+      formData.append('amenities', element);
+    });
     room.images.forEach((element: any) => {
       formData.append('images', element);
     });

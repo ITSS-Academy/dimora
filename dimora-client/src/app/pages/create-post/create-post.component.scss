@@ -20,16 +20,16 @@ mat-stepper {
   flex-direction: column;
   justify-content: space-between !important;
 }
-::ng-deep .mat-step-header {
-  pointer-events: none !important;
-}
+// ::ng-deep .mat-step-header {
+//   pointer-events: none !important;
+// }
 
 .outline-button {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  min-width: 1400px;
+  min-width: 760px;
 }
 .outline-button-step8 {
   display: flex;
@@ -769,13 +769,14 @@ mat-stepper {
   margin: 0 auto;
   padding: 20px;
   .outline-button {
+    max-width: 600px;
     width: 100%;
-    max-width: 800px;
   }
   .step-seven {
     display: flex;
     flex-direction: column;
     gap: 30px;
+    margin-bottom: 200px;
   }
 
   #word-seven {
@@ -808,11 +809,6 @@ mat-stepper {
         font-size: 16px;
         font-weight: 500;
         color: var(--on-surface);
-      }
-
-      .char-count {
-        font-size: 14px;
-        color: var(--neutral);
       }
     }
 
@@ -1170,10 +1166,11 @@ mat-stepper {
 
 .char-count {
   position: absolute;
-  bottom: 10px;
-  right: 14px;
+  bottom: 250px;
+  right: 480px;
   font-size: 13px;
-  color: #777;
+  font-size: 14px;
+  color: var(--neutral);
 }
 
 #word-nine {
