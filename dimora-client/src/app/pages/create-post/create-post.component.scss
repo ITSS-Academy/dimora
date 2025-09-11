@@ -20,9 +20,9 @@ mat-stepper {
   flex-direction: column;
   justify-content: space-between !important;
 }
-// ::ng-deep .mat-step-header {
-//   pointer-events: none !important;
-// }
+::ng-deep .mat-step-header {
+  pointer-events: none !important;
+}
 
 .outline-button {
   display: flex;
