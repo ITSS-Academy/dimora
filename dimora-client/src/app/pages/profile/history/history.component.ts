@@ -6,47 +6,43 @@ import { BookingModel } from '../../../models/booking.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-history',
-  imports: [MaterialModule, CommonModule],
+  imports: [MaterialModule, CommonModule, RouterLink],
   templateUrl: './history.component.html',
-  styleUrl: './history.component.scss'
+  styleUrl: './history.component.scss',
 })
 export class HistoryComponent implements OnInit, OnDestroy {
-
-
-  bookingList$ !: Observable<any[]>;
+  bookingList$!: Observable<any[]>;
   bookingList: any[] = [];
 
   constructor(
     private router: Router,
-    private store: Store<{booking: BookingState}>) {
+    private store: Store<{ booking: BookingState }>
+  ) {
     this.bookingList$ = this.store.select('booking', 'bookingList');
   }
-
 
   subscription: Subscription[] = [];
 
   ngOnInit(): void {
     this.subscription.push(
-      this.bookingList$.subscribe(bookingList => {
-        if(bookingList.length > 0){
+      this.bookingList$.subscribe((bookingList) => {
+        if (bookingList.length > 0) {
           this.bookingList = bookingList;
           console.log(this.bookingList);
         }
       })
-    )
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscription.forEach(subscription => subscription.unsubscribe());
+    this.subscription.forEach((subscription) => subscription.unsubscribe());
   }
 
   // Helper methods for template
-
-
-
 
   getRoomLocation(booking: BookingModel): string {
     // TODO: Get room location from room data
@@ -59,10 +55,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'confirmed': 'Đã xác nhận',
-      'completed': 'Hoàn thành',
-      'cancelled': 'Đã hủy',
-      'pending': 'Chờ xác nhận'
+      confirmed: 'Đã xác nhận',
+      completed: 'Hoàn thành',
+      cancelled: 'Đã hủy',
+      pending: 'Chờ xác nhận',
     };
     return statusMap[status] || status;
   }
@@ -72,14 +68,14 @@ export class HistoryComponent implements OnInit, OnDestroy {
     return date.toLocaleDateString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   }
 
   formatPrice(price: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price);
   }
 
@@ -96,10 +92,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
     console.log(booking.rooms.id);
     console.log(booking.host_id);
     // TODO: Navigate to details with params is room id and query params is hostId=host_id
-    
-    this.router.navigate(['/detail', booking.rooms.id], { queryParams: { hostId: booking.host_id } });
+
+    this.router.navigate(['/detail', booking.rooms.id], {
+      queryParams: { hostId: booking.host_id },
+    });
     // TODO: Navigate to details with params id is room id and query params is hostId=host_id
-    
   }
 
   contactHost(booking: BookingModel): void {

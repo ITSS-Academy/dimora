@@ -1,8 +1,9 @@
-import { BookingModel } from "../../models/booking.model";
+import { BookingModel } from '../../models/booking.model';
 
 export interface BookingState {
-    bookingList: BookingModel[] ;
-    bookingDetail: BookingModel;
-    isLoading: boolean;
-    error: any;
+  bookingList: BookingModel[];
+  bookingDetail: BookingModel;
+  isLoading: boolean;
+  bookingSuccess: boolean;
+  error: any;
 }

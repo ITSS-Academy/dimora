@@ -2,7 +2,12 @@
   <!-- Avatar -->
   <div class="avatar-wrapper">
     <div class="avatar-ring">
-      <img [src]="previewUrl || this.data.profile.avatar_url" alt="avatar" class="avatar" referrerpolicy="no-referrer" />
+      <img
+        [src]="previewUrl || this.data.profile.avatar_url"
+        alt="avatar"
+        class="avatar"
+        referrerpolicy="no-referrer"
+      />
     </div>
 
     <!-- Label + input để trigger khi click vào camera -->
@@ -14,7 +19,12 @@
       hidden
     />
 
-    <button mat-mini-fab color="primary" type="button" (click)="fileInput.click()">
+    <button
+      mat-mini-fab
+      color="primary"
+      type="button"
+      (click)="fileInput.click()"
+    >
       <mat-icon class="material-symbols-rounded">camera_alt</mat-icon>
     </button>
   </div>
@@ -22,27 +32,37 @@
   <!-- Info -->
   <form class="form-section" [formGroup]="profileForm">
     <mat-form-field appearance="outline">
-      <mat-label>Full Name</mat-label>
-      <input matInput formControlName="full_name" placeholder="Full Name" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" >
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email" placeholder="Email" readonly  />
+      <mat-label>Họ và tên</mat-label>
+      <input matInput formControlName="full_name" placeholder="Họ và tên" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" placeholder="Phone" />
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="Email" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Số điện thoại</mat-label>
+      <input matInput formControlName="phone" placeholder="Số điện thoại" />
     </mat-form-field>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="center" class="actions">
-  <button mat-stroked-button color="primary" mat-dialog-close class="btn-cancel">
-    Cancel
+  <button
+    mat-stroked-button
+    color="primary"
+    mat-dialog-close
+    class="btn-cancel"
+  >
+    Bỏ qua
   </button>
-  <button mat-flat-button color="primary" (click)="saveProfile()" class="btn-save">
-    Save Changes
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="saveProfile()"
+    class="btn-save"
+  >
+    Lưu thay đổi
   </button>
 </mat-dialog-actions>
