@@ -8,7 +8,7 @@ export const initialState: RoomState = {
     roomDetail: <RoomModel>{},
     roomListByHostId: <RoomModel[]>[],
     isLoading: false,
-    isCreatingRoom: false,
+    isCreatingSuccess: false,
     error: null
 }
 
@@ -109,7 +109,8 @@ export const roomReducer = createReducer(
         console.log(type)
         return{
             ...state,
-            isCreatingRoom: true,
+            isLoading: true,
+            isCreatingSuccess: false,
             error: null
         }
     }),
@@ -119,7 +120,8 @@ export const roomReducer = createReducer(
         return{
             ...state,
             roomList: [...state.roomList, room],
-            isCreatingRoom: false,
+            isCreatingSuccess: true,
+            isLoading: false,
             error: null
         }
     }),
@@ -129,7 +131,8 @@ export const roomReducer = createReducer(
         console.log(error)
         return{
             ...state,
-            isCreatingRoom: false,
+            isLoading: false,
+            isCreatingSuccess: false,
             error: error
         }
     }),
@@ -141,7 +144,7 @@ export const roomReducer = createReducer(
             roomList: <RoomModel[]>[],
             roomDetail: <RoomModel>{},
             roomListByHostId: <RoomModel[]>[],
-            isCreatingRoom: false,
+            isCreatingSuccess: false,
             error: null
         }
     }),
@@ -150,7 +153,8 @@ export const roomReducer = createReducer(
         console.log(type)
         return{
             ...state,
-            isCreatingRoom: false,
+            isCreatingSuccess: false,
+            isLoading: false,
             error: null
         }
     }),

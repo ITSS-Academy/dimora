@@ -11,6 +11,7 @@ import { LoadingComponent } from "../../shared/components/loading/loading.compon
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchModel } from '../../models/search.model';
 import * as SearchActions from '../../ngrx/actions/search.actions';
+import { MaterialModule } from '../../shared/material.module';
 
 interface Location {
   lat: number;
@@ -25,7 +26,8 @@ interface Location {
     GoogleMap,
     MapMarker,
     AsyncPipe,
-    LoadingComponent
+    LoadingComponent,
+    MaterialModule
 ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
@@ -611,6 +613,23 @@ export class SearchComponent {
       queryParams: queryParams,
       queryParamsHandling: 'merge'
     });
+  }
+
+  // Navigate to detail page
+  navigateToDetail(roomId: string, event: Event): void {
+    event.stopPropagation(); // Prevent card click event
+    
+    // Find the room to get host_id
+    const room = this.rooms.find(r => r.id === roomId);
+    if (room) {
+      this.router.navigate(['/detail', roomId], {
+        queryParams: {
+          hostId: room.host_id
+        }
+      });
+    } else {
+      console.error('Room not found:', roomId);
+    }
   }
 
   // Cleanup subscriptions when component is destroyed

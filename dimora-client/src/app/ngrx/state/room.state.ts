@@ -4,6 +4,6 @@ export interface RoomState {
     roomDetail: RoomModel;
     roomListByHostId: RoomModel[];
     isLoading: boolean;
-    isCreatingRoom: boolean;
+    isCreatingSuccess: boolean;
     error: any;
 }
