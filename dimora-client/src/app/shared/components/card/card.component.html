@@ -1,8 +1,9 @@
 <div class="card-container">
   <div class="image">
     @if(canDelete){
-      <div class="delete-button-container">
+      <div class="delete-button-container" (click)="openDialog(hotel.id, hotel.host_id)">
         <mat-icon class="delete-btn">delete</mat-icon>
+
       </div>
     }
     <img src="{{hotel.images[0]}}" (click)="navigateToDetail(hotel.id)">

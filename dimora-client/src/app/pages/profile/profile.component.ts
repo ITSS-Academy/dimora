@@ -97,6 +97,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.forEach(subscription => subscription.unsubscribe());
+    this.store.dispatch(AuthActions.clearCurrentUser())
+
   }
 
 

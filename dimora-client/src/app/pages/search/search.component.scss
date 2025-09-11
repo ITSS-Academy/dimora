@@ -88,20 +88,30 @@ $header-height: 80px;
 
 .rooms-list {
   padding: 16px;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  justify-content: space-evenly;
+  justify-items: center;
 }
 
 .room-card {
   padding: 0;
-  border-bottom: 1px solid #e0e0e0;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   transition: all 0.2s ease;
-  width: 250px;
+  width: 100%;
+  max-width: 300px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 500px; // Fixed height for all cards
   
   &:hover {
     cursor: pointer !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
   }
   
   // Cross-platform cursor support
@@ -117,7 +127,7 @@ $header-height: 80px;
 .room-image {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 200px;
   overflow: hidden;
   cursor: pointer;
   cursor: -webkit-pointer; // Safari/Chrome on Mac
@@ -128,7 +138,6 @@ $header-height: 80px;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-    border-radius: 16px;
   }
   
 
@@ -166,10 +175,13 @@ $header-height: 80px;
 }
 
 .room-info {
-  padding: 16px 0;
+  padding: 16px;
   cursor: pointer;
   cursor: -webkit-pointer; // Safari/Chrome on Mac
   cursor: -moz-pointer; // Firefox
+  display: flex;
+  flex-direction: column;
+  flex: 1; // Take remaining space
   
   .room-header {
     display: flex;
@@ -197,6 +209,12 @@ $header-height: 80px;
     color: #222;
     font-size: 14px;
     line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .room-details {
@@ -212,23 +230,35 @@ $header-height: 80px;
   
   .room-amenities {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: nowrap; // Prevent wrapping
+    gap: 8px;
     margin-bottom: 12px;
+    min-height: 32px; // Fixed height for amenities
+    overflow: hidden; // Hide overflow
+    align-items: center;
     
     .amenity-tag {
       background: #f0f0f0;
       color: #222;
-      padding: 4px 8px;
-      border-radius: 12px;
+      padding: 6px 12px;
+      border-radius: 16px;
       font-size: 12px;
       font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0; // Prevent shrinking
+      border: 1px solid #e0e0e0;
     }
     
     .amenity-more {
       color: #717171;
       font-size: 12px;
       font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0; // Prevent shrinking
+      background: #f8f8f8;
+      padding: 6px 12px;
+      border-radius: 16px;
+      border: 1px solid #e0e0e0;
     }
   }
   
@@ -254,6 +284,23 @@ $header-height: 80px;
     .room-distance {
       color: #717171;
       font-size: 14px;
+    }
+  }
+  
+  .room-actions {
+    margin-top: auto; // Push button to bottom
+    padding-top: 12px;
+    
+    .view-detail-btn {
+      width: 100%;
+      font-size: 14px;
+      font-weight: 600;
+      height: 40px;
+      
+      // Override Material button styles if needed
+      ::ng-deep .mat-mdc-button-base {
+        width: 100%;
+      }
     }
   }
 }
@@ -523,6 +570,14 @@ $header-height: 80px;
   .map-container {
     width: calc(100% - 350px);
   }
+  
+  .rooms-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .room-card {
+    height: 480px; // Slightly smaller for tablet
+  }
 }
 
 @media (max-width: 768px) {
@@ -544,6 +599,15 @@ $header-height: 80px;
     height: 50vh;
     position: relative;
     top: 0;
+  }
+  
+  .rooms-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .room-card {
+    height: auto; // Auto height for mobile
+    max-height: 500px;
   }
   
   .selected-room-overlay {

@@ -145,7 +145,7 @@ export class RoomsService {
           return updatedRoom;
         } catch (uploadError) {
           // Nếu upload thất bại, xóa room đã tạo
-          await this.remove(createdRoom.id);
+          // await this.remove(createdRoom.id);
           throw new HttpException(
             `Failed to upload images: ${uploadError.message}`,
             HttpStatus.BAD_REQUEST
@@ -359,7 +359,7 @@ export class RoomsService {
     }
   }
 
-  async remove(id: string, hostId?: string): Promise<void> {
+  async remove(id: string, hostId: string): Promise<Room[]> {
     try {
       // Kiểm tra ownership nếu có hostId
       if (hostId) {
@@ -392,6 +392,11 @@ export class RoomsService {
         HttpStatus.BAD_REQUEST
       );
     }
+
+
+    let data = this.findByHost(hostId)
+
+    return data
   }
 
   async findByHost(hostId: string): Promise<Room[]> {

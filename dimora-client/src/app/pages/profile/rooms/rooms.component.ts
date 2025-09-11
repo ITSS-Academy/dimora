@@ -6,6 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import {AuthModel} from '../../../models/auth.model';
 import {AuthState} from '../../../ngrx/state/auth.state';
+import * as AuthActions from '../../../ngrx/actions/auth.actions';
 
 @Component({
   selector: 'app-rooms',
@@ -54,6 +55,9 @@ export class RoomsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe())
+    this.store.dispatch(AuthActions.clearCurrentUser())
+    this.currentUserId = ''
+
   }
 
 }

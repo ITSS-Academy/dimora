@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Bạn có chắc chắn muốn xóa?</h2>
+<mat-dialog-content>Khi đã xóa, bạn không thể hoàn tác lại thao tác này!</mat-dialog-content>
+<mat-dialog-actions>
+ <div class="button-container">
+   <button mat-stroked-button  mat-dialog-close>Quay lại</button>
+   <button mat-flat-button mat-dialog-close (click)="deleteRoom()">Tiếp tục</button>
+ </div>
+</mat-dialog-actions>
+

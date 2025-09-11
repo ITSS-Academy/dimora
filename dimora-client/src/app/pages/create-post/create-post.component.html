@@ -1,3 +1,6 @@
+@if (isLoading$ | async) {
+<app-loading></app-loading>
+}@else {
 <mat-stepper
   headerPosition="top"
   #stepper
@@ -5,19 +8,19 @@
   (click)="onStepperClick($event); onStepHeaderClick($event)"
 >
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(0)">
-    <ng-template matStepLabel>Started</ng-template>
+    <ng-template matStepLabel>Bắt đầu</ng-template>
     <div class="container-step-one" (click)="onStepContentClick($event)">
       <div class="step-one">
         <div id="word-one">
-          <h4>Step 1</h4>
-          <h1>Tell us about your place</h1>
+          <h4>Bước 1</h4>
+          <h1>Hãy cho chúng tôi biết về chỗ nghỉ của bạn</h1>
           <p>
-            In this step, we'll ask you which type of property you have and if
+            Ở bước này, chúng tôi sẽ hỏi bạn loại hình chỗ nghỉ và liệu
             <br />
-            guests will book the entire place or just a room. Then let us know
-            the
+            khách sẽ đặt toàn bộ chỗ nghỉ hay chỉ một phòng. Sau đó, hãy cho
+            chúng tôi biết vị
             <br />
-            location and how many guests can stay.
+            trí và số lượng khách có thể lưu trú.
           </p>
         </div>
         <div id="video">
@@ -37,21 +40,21 @@
         </div>
       </div>
       <div class="outline-button">
-        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-stroked-button matStepperPrevious>Trở về</button>
         <button mat-flat-button matStepperNext (click)="onStepCompleted(0)">
-          Next
+          Tiếp theo
         </button>
       </div>
     </div>
   </mat-step>
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(1)">
-    <ng-template matStepLabel>Structure</ng-template>
+    <ng-template matStepLabel>Cấu trúc</ng-template>
     <div class="container-step-two" (click)="onStepContentClick($event)">
       <div class="step-two">
         <div id="word-two">
           <div class="container">
             <h2 class="title">
-              Which of the following best describes your place?
+              Câu nào sau đây mô tả đúng nhất về nơi ở của bạn?
             </h2>
             <div class="options-grid">
               @for (roomType of roomTypes$ | async; track roomType.id) {
@@ -75,31 +78,31 @@
         </div>
       </div>
       <div class="actions">
-        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-stroked-button matStepperPrevious>Trở về</button>
         <button
           mat-flat-button
           matStepperNext
           [disabled]="roomForm.get('room_type_id')?.invalid"
           (click)="onStepCompleted(1)"
         >
-          Next
+          Tiếp theo
         </button>
       </div>
     </div>
   </mat-step>
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(2)">
-    <ng-template matStepLabel>Floor Plan</ng-template>
+    <ng-template matStepLabel>Mặt bằng</ng-template>
     <div class="container-step-three" (click)="onStepContentClick($event)">
       <div class="step-three">
-        <div id="word-four">
+        <div id="word-three">
           <div id="title">
-            <h1>Share some basics about your place</h1>
-            <p>You'll add more details later, like bed types.</p>
+            <h1>Chia sẻ một số thông tin cơ bản về chỗ nghỉ của bạn</h1>
+            <p>Bạn sẽ thêm nhiều chi tiết hơn sau, như loại giường.</p>
           </div>
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Guests</p>
+              <p>Khách</p>
               <div class="quantity">
                 <button (click)="decrease('guests')">-</button>
                 <span>{{ roomForm.get("guests")?.value }}</span>
@@ -110,7 +113,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Bedrooms</p>
+              <p>Phòng ngủ</p>
               <div class="quantity">
                 <button (click)="decrease('bedrooms')">-</button>
                 <span>{{ roomForm.get("bedrooms")?.value }}</span>
@@ -121,7 +124,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Beds</p>
+              <p>Giường</p>
               <div class="quantity">
                 <button (click)="decrease('beds')">-</button>
                 <span>{{ roomForm.get("beds")?.value }}</span>
@@ -132,7 +135,7 @@
 
           <div class="info-quantity">
             <div class="service-name">
-              <p>Bathrooms</p>
+              <p>Phòng tắm</p>
               <div class="quantity">
                 <button (click)="decrease('bathrooms')">-</button>
                 <span>{{ roomForm.get("bathrooms")?.value }}</span>
@@ -144,34 +147,34 @@
       </div>
 
       <div class="outline-button">
-        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-stroked-button matStepperPrevious>Trở về</button>
         <button
           mat-flat-button
           matStepperNext
           [disabled]="!canGoNextFromThird()"
           (click)="onStepCompleted(2)"
         >
-          Next
+          Tiếp theo
         </button>
       </div>
     </div>
   </mat-step>
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(3)">
-    <ng-template matStepLabel>Stand Out</ng-template>
+    <ng-template matStepLabel>Nổi bật</ng-template>
     <div class="container-step-four" (click)="onStepContentClick($event)">
       <div class="step-four">
         <div id="word-four">
-          <h4>Step 2</h4>
+          <h4>Bước 2</h4>
           <h1>
-            Make your place <br />
-            stand out
+            Làm cho chỗ nghỉ của bạn <br />
+            nổi bật
           </h1>
           <p>
-            In this step, you’ll add some of the amenities your place
+            Ở bước này, bạn sẽ thêm một số tiện nghi mà chỗ nghỉ của bạn
             <br />
-            offers, plus 5 or more photos. Then, you’ll create a title and the
-            description.
+            cung cấp, cùng với 5 ảnh trở lên. Sau đó, bạn sẽ tạo tiêu đề và mô
+            tả.
           </p>
         </div>
         <div id="video-four">
@@ -190,15 +193,15 @@
         </div>
       </div>
       <div class="outline-button">
-        <button mat-stroked-button matStepperPrevious>Back</button>
+        <button mat-stroked-button matStepperPrevious>Trở về</button>
         <button mat-flat-button matStepperNext (click)="onStepCompleted(3)">
-          Next
+          Tiếp theo
         </button>
       </div>
     </div>
   </mat-step>
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(4)">
-    <ng-template matStepLabel>Amenities</ng-template>
+    <ng-template matStepLabel>Tiện ích</ng-template>
     <form [formGroup]="roomForm">
       <div class="container-step-five" (click)="onStepContentClick($event)">
         <div class="step-five">
@@ -214,7 +217,7 @@
               </div> -->
 
             <!-- Guest favorites -->
-            <h2 class="title">What about these guest favorites?</h2>
+            <h2 class="title">Những tiện ích mà khách hàng yêu thích?</h2>
             <div class="amenities-grid">
               @for (amenity of this.amenities$ | async; track amenity.id) {
               <button
@@ -406,14 +409,14 @@
 
         <!-- Nút điều hướng -->
         <div class="outline-button">
-          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-stroked-button matStepperPrevious>Trở về</button>
           <button
             mat-flat-button
             matStepperNext
             [disabled]="roomForm.get('amenities')?.invalid"
             (click)="onStepCompleted(4)"
           >
-            Next
+            Tiếp theo
           </button>
         </div>
       </div>
@@ -421,7 +424,7 @@
   </mat-step>
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(5)">
-    <ng-template matStepLabel>Photos</ng-template>
+    <ng-template matStepLabel>Hình ảnh</ng-template>
     <form [formGroup]="roomForm">
       <div class="container-step-photos" (click)="onStepContentClick($event)">
         <div class="step-photos">
@@ -532,14 +535,14 @@
         </div>
 
         <div class="outline-button">
-          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-stroked-button matStepperPrevious>Trở về</button>
           <button
             mat-flat-button
             matStepperNext
             [disabled]="!canGoToStepEight()"
             (click)="onStepCompleted(5)"
           >
-            Next
+            Tiếp theo
           </button>
         </div>
       </div>
@@ -547,7 +550,7 @@
   </mat-step>
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(6)">
-    <ng-template matStepLabel>Title & Description</ng-template>
+    <ng-template matStepLabel>Tiêu đề & Mô tả</ng-template>
 
     <form [formGroup]="roomForm">
       <div class="container-step-seven" (click)="onStepContentClick($event)">
@@ -575,7 +578,7 @@
           <!-- Ô nhập mô tả -->
           <div class="input-section">
             <div class="input-label">
-              <label>Mô tả chi tiết *</label>
+              <label>Mô tả chi tiết </label>
               <span class="char-count"
                 >{{ roomForm.get("description")?.value?.length || 0 }}/500</span
               >
@@ -592,14 +595,14 @@
 
         <!-- Stepper navigation -->
         <div class="outline-button">
-          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-stroked-button matStepperPrevious>Trở về</button>
           <button
             mat-flat-button
             matStepperNext
             [disabled]="!canGoToStepNine()"
             (click)="onStepCompleted(6)"
           >
-            Next
+            Tiếp theo
           </button>
         </div>
       </div>
@@ -607,7 +610,7 @@
   </mat-step>
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(7)">
-    <ng-template matStepLabel>Location</ng-template>
+    <ng-template matStepLabel>Vị trí</ng-template>
 
     <form [formGroup]="roomForm">
       <div class="container-step-eight" (click)="onStepContentClick($event)">
@@ -619,7 +622,7 @@
           <!-- Map Container with Address Inputs -->
           <div class="map-container">
             <!-- Google Maps -->
-            <div class="map-background">
+            <div class="map-Background" style="height: 100%; width: 100%">
               <google-map
                 [center]="mapCenter"
                 [zoom]="mapZoom"
@@ -747,14 +750,14 @@
 
         <!-- Stepper navigation -->
         <div class="outline-button-step8">
-          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-stroked-button matStepperPrevious>Trở về</button>
           <button
             mat-flat-button
             matStepperNext
             [disabled]="!canGoToStepTen()"
             (click)="onStepCompleted(7)"
           >
-            Next
+            Tiếp theo
           </button>
         </div>
       </div>
@@ -762,7 +765,7 @@
   </mat-step>
 
   <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(8)">
-    <ng-template matStepLabel>Pricing</ng-template>
+    <ng-template matStepLabel>Giá</ng-template>
     <form [formGroup]="roomForm">
       <div class="container-step-nine" (click)="onStepContentClick($event)">
         <div class="step-eight">
@@ -791,14 +794,14 @@
         </div>
 
         <div class="outline-button">
-          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-stroked-button matStepperPrevious>Trở về</button>
           <button
             mat-flat-button
             matStepperNext
             [disabled]="roomForm.get('basePrice')?.invalid"
             (click)="createRoom()"
           >
-            Create Room
+            Tạo phòng
           </button>
         </div>
 
@@ -817,18 +820,18 @@
           />
         </mat-form-field>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperPrevious>Trở về</button>
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
     </mat-step>
-    
+
     <mat-step [stepControl]="roomForm" [editable]="isStepAccessible(9)">
       <ng-template matStepLabel>Hoàn thành</ng-template>
-      
+
       <div class="completion-step" (click)="onStepContentClick($event)">
         <h2>Xem lại thông tin phòng của bạn</h2>
-        
+
         <div class="summary-card">
           <div class="summary-section">
             <h3>Thông tin cơ bản</h3>
@@ -836,7 +839,7 @@
             <p><strong>Loại phòng:</strong> {{ roomForm.get('room_type_id')?.value || 'Chưa chọn' }}</p>
             <p><strong>Giá/đêm:</strong> {{ formatPrice(roomForm.get('price_per_night')?.value || 0) }}</p>
           </div>
-          
+
           <div class="summary-section">
             <h3>Thông tin chỗ ở</h3>
             <p><strong>Khách tối đa:</strong> {{ roomForm.get('max_guests')?.value || 0 }} khách</p>
@@ -844,7 +847,7 @@
             <p><strong>Giường:</strong> {{ roomForm.get('beds')?.value || 0 }}</p>
             <p><strong>Phòng tắm:</strong> {{ roomForm.get('bathrooms')?.value || 0 }}</p>
           </div>
-          
+
           <div class="summary-section">
             <h3>Tiện nghi</h3>
             <div class="amenities-summary">
@@ -853,13 +856,13 @@
               </span>
             </div>
           </div>
-          
+
           <div class="summary-section">
             <h3>Hình ảnh</h3>
             <p><strong>Số ảnh:</strong> {{ roomForm.get('images')?.value?.length || 0 }} ảnh</p>
           </div>
         </div>
-        
+
         <div class="form-status">
           <p *ngIf="isFormValid()" class="valid-status">
             ✅ Tất cả thông tin đã được điền đầy đủ
@@ -868,12 +871,12 @@
             ❌ Vui lòng kiểm tra lại các thông tin còn thiếu
           </p>
         </div>
-        
+
         <div class="action-buttons">
           <button mat-button matStepperPrevious>Quay lại</button>
-          <button 
-            mat-flat-button 
-            color="primary" 
+          <button
+            mat-flat-button
+            color="primary"
             (click)="onConfirm()"
             [disabled]="!isFormValid()">
             <mat-icon>check</mat-icon>
@@ -884,3 +887,5 @@
     </mat-step>
   <-- </mat-stepper> -->
 </mat-stepper>
+
+}

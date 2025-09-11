@@ -76,3 +76,7 @@ export const updateProfileFailure = createAction(
 export const clearAuthState = createAction(
   '[Auth] Clear Auth State',
 )
+
+export const clearCurrentUser = createAction(
+  '[Auth] Clear Current User',
+)

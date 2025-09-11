@@ -85,11 +85,11 @@
                     <span class="room-guests">{{ room.max_guests }} guest{{ room.max_guests > 1 ? 's' : '' }}</span>
                   </div>
                   <div class="room-amenities">
-                    @for (amenity of (room.amenities || []).slice(0, 3); track amenity) {
+                    @for (amenity of (room.amenities || []).slice(0, 2); track amenity) {
                       <span class="amenity-tag">{{ amenity.name }}</span>
                     }
-                    @if ((room.amenities || []).length > 3) {
-                      <span class="amenity-more">+{{ (room.amenities || []).length - 3 }} more</span>
+                    @if ((room.amenities || []).length > 2) {
+                      <span class="amenity-more">+{{ (room.amenities || []).length - 2 }} more</span>
                     }
                   </div>
                   <div class="room-price-info">
@@ -97,7 +97,12 @@
                       <span class="room-price">{{ formatPrice(room.price_per_night) }}</span>
                       <span class="price-period">per night</span>
                     </div>
-  
+                  </div>
+                  
+                  <div class="room-actions">
+                    <button mat-flat-button color="primary" class="view-detail-btn" (click)="navigateToDetail(room.id, $event)">
+                      Xem chi tiết
+                    </button>
                   </div>
                 </div>
               </div>

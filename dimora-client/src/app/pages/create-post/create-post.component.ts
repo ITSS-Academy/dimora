@@ -32,10 +32,11 @@ import {
   District,
   Ward,
 } from '../../services/location/location.service';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-create-post',
-  imports: [MaterialModule, ShareModule, GoogleMap, MapMarker],
+  imports: [MaterialModule, ShareModule, GoogleMap, MapMarker, LoadingComponent],
   templateUrl: './create-post.component.html',
   styleUrl: './create-post.component.scss',
 })
@@ -52,6 +53,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   isCreateRoom$!: Observable<boolean>;
   mineProfile$!: Observable<AuthModel>;
   mineProfile: AuthModel = <AuthModel>{};
+  isLoading$!: Observable<boolean>;
   constructor(
     private router: Router,
     private store: Store<{
@@ -68,8 +70,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.token$ = this.store.select('auth', 'idToken');
     this.amenities$ = this.store.select('amenities', 'amenities');
     this.roomTypes$ = this.store.select('roomTypes', 'roomTypes');
-    this.isCreateRoom$ = this.store.select('room', 'isCreatingRoom');
+    this.isCreateRoom$ = this.store.select('room', 'isCreatingSuccess');
     this.mineProfile$ = this.store.select('auth', 'mineProfile');
+    this.isLoading$ = this.store.select('room', 'isLoading');
   }
 
   ngOnInit(): void {
@@ -109,7 +112,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.onDocumentClick.bind(this));
 
     this.subscriptions.forEach((sub) => sub.unsubscribe());
-          this.store.dispatch(RoomActions.clearCreateRoomState());
+    this.store.dispatch(RoomActions.clearCreateRoomState());
 
   }
   private playVideo(videoRef: ElementRef<HTMLVideoElement> | undefined) {
